@@ -1,0 +1,1 @@
+server/wordnet/oewn-2025-sqlite-2.3.2.sqlite filter=lfs diff=lfs merge=lfs -text
