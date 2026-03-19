@@ -99,6 +99,9 @@ dist
 # Sveltekit cache directory
 .svelte-kit/
 
+# Games folder - exclude from git
+public/games/
+
 # vitepress build output
 **/.vitepress/dist
 
