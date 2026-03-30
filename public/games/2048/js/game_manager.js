@@ -79,6 +79,11 @@ GameManager.prototype.addRandomTile = function () {
 GameManager.prototype.actuate = function () {
   if (this.storageManager.getBestScore() < this.score) {
     this.storageManager.setBestScore(this.score);
+
+    // Send updated best score to the parent app
+    this.postGameEvent('BEST_SCORE', {
+      bestScore: this.score
+    });
   }
 
   // Clear the state when the game is over (game over only, not win)
@@ -95,7 +100,6 @@ GameManager.prototype.actuate = function () {
     bestScore:  this.storageManager.getBestScore(),
     terminated: this.isGameTerminated()
   });
-
 };
 
 // Represent the current game as an object
@@ -269,4 +273,15 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
 GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
+};
+
+// Send a game event to the parent SkillForge app via postMessage
+GameManager.prototype.postGameEvent = function (eventName, data) {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({
+      type: 'GAME_EVENT',
+      event: eventName,
+      data: data
+    }, '*');
+  }
 };

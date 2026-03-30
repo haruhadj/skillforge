@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import GameLibrary from './GameLibrary'
 import GamePlayer from './GamePlayer'
+import StatsPage from './StatsPage'
 import StartScreen from './StartScreen'
 import LoginScreen from './LoginScreen'
 import SignupScreen from './SignupScreen'
@@ -29,8 +30,8 @@ function SkillForge() {
     }
   }
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     setSelectedGame('')
     setCurrentView('start')
   }
@@ -39,10 +40,12 @@ function SkillForge() {
     setCurrentView('library')
   }
 
-  // If user is authenticated, show library directly
-  if (currentUser && currentView === 'start') {
-    setCurrentView('library')
-  }
+  // If user is authenticated, redirect to library
+  useEffect(() => {
+    if (currentUser && currentView === 'start') {
+      setCurrentView('library')
+    }
+  }, [currentUser, currentView])
 
   return (
     <div>
@@ -75,7 +78,12 @@ function SkillForge() {
             setCurrentView('play')
           }}
           onLogout={handleLogout}
+          onStats={() => setCurrentView('stats')}
         />
+      )}
+
+      {currentView === 'stats' && (
+        <StatsPage onBack={() => setCurrentView('library')} />
       )}
 
       {currentView === 'play' && (

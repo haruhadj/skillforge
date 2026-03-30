@@ -5,4 +5,21 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(),tailwindcss()],
+  server: {
+    host: true,
+    allowedHosts: [
+      'skillforge.haruhadj.duckdns.org'
+    ],
+    proxy: {
+      // Spelling Bee API — proxied so the iframe'd game can call /api/words, /api/tts
+      '/api/words': 'http://localhost:8787',
+      '/api/tts': 'http://localhost:8787',
+      '/api/log-current-word': 'http://localhost:8787',
+      // TicTacToe socket server
+      '/tictactoe-ws/': {
+        target: 'http://localhost:3001',
+        ws: true,
+      },
+    },
+  },
 });

@@ -23,4 +23,24 @@ export const games = [
     name: 'Sudoku',
     iframePath: '/games/sudoku/index.html',
   },
+  {
+    id: 'tictactoe',
+    name: 'Tic Tac Toe',
+    iframePath: '/games/tictactoe/index.html',
+  },
+  {
+    id: 'spelling-bee',
+    name: 'Spelling Bee',
+    iframePath: '/games/spelling-bee/index.html',
+  },
+  {
+    id: 'how-strong-is-your-vocabulary',
+    name: 'How Strong Is Your Vocabulary',
+    iframePath: '/games/how-strong-is-your-vocabulary/index.html',
+  },
+  {
+    id: 'math-game',
+    name: 'Math Game',
+    iframePath: '/games/math-game/index.html',
+  },
 ]
