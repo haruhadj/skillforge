@@ -1,5 +1,6 @@
 import React from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import ThemeToggle from './ThemeToggle'
 
 function StartScreen({ onLoginClick, onSignupClick, onAnonymousLogin }) {
   const { signInWithGoogle } = useAuth()
@@ -13,14 +14,17 @@ function StartScreen({ onLoginClick, onSignupClick, onAnonymousLogin }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="w-full max-w-lg rounded-3xl bg-white/80 p-10 shadow-lg backdrop-blur">
-        <h1 className="text-4xl font-semibold text-slate-900">SkillForge</h1>
-        <p className="mt-3 text-slate-600">Welcome to SkillForge — your learning playground.</p>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-linear-to-br from-slate-50 to-slate-100 dark:from-gray-950 dark:to-gray-900 transition-colors duration-300">
+      <div className="absolute top-5 right-5">
+        <ThemeToggle />
+      </div>
+      <div className="w-full max-w-lg rounded-3xl bg-white/80 dark:bg-gray-800/80 p-10 shadow-xl dark:shadow-2xl dark:shadow-black/30 backdrop-blur border border-white/20 dark:border-gray-700/50">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white text-center tracking-tight">SkillForge</h1>
+        <p className="mt-3 text-slate-600 dark:text-gray-400 text-center">Your learning playground.</p>
 
         <div className="mt-10 space-y-4">
           <button
-            className="w-full rounded-xl bg-white border border-slate-300 px-5 py-3 text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 flex items-center justify-center gap-3"
+            className="w-full rounded-xl bg-white dark:bg-gray-700 border border-slate-200 dark:border-gray-600 px-5 py-3.5 text-slate-700 dark:text-gray-200 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-gray-600 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-gray-600 flex items-center justify-center gap-3"
             onClick={handleGoogleSignIn}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -34,14 +38,14 @@ function StartScreen({ onLoginClick, onSignupClick, onAnonymousLogin }) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <button
-              className="w-full rounded-xl bg-indigo-600 px-5 py-3 text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+              className="w-full rounded-xl bg-indigo-600 dark:bg-indigo-500 px-5 py-3.5 text-white font-medium transition-all duration-200 hover:bg-indigo-700 dark:hover:bg-indigo-400 hover:shadow-lg hover:shadow-indigo-500/25 focus:outline-none focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-800"
               onClick={onLoginClick}
             >
               Login
             </button>
 
             <button
-              className="w-full rounded-xl bg-slate-200 px-5 py-3 text-slate-700 transition hover:bg-slate-300 focus:outline-none focus:ring-4 focus:ring-slate-200"
+              className="w-full rounded-xl bg-slate-200 dark:bg-gray-700 px-5 py-3.5 text-slate-700 dark:text-gray-200 font-medium transition-all duration-200 hover:bg-slate-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-gray-600"
               onClick={onSignupClick}
             >
               Create Account
@@ -49,7 +53,7 @@ function StartScreen({ onLoginClick, onSignupClick, onAnonymousLogin }) {
           </div>
 
           <button
-            className="w-full rounded-xl border border-dashed border-slate-300 px-5 py-3 text-sm font-medium text-slate-600 hover:border-slate-400 hover:text-slate-800"
+            className="w-full rounded-xl border border-dashed border-slate-300 dark:border-gray-600 px-5 py-3 text-sm font-medium text-slate-500 dark:text-gray-500 hover:border-slate-400 dark:hover:border-gray-500 hover:text-slate-700 dark:hover:text-gray-300 transition-colors duration-200"
             onClick={onAnonymousLogin}
           >
             Continue as guest (development)

@@ -1,0 +1,21 @@
+{
+  "name": "skillforge-game-servers",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend servers for SkillForge games that require server-side logic",
+  "scripts": {
+    "start": "node start-all.js",
+    "tictactoe": "node games/tictactoe/socket-server.js",
+    "spelling-bee": "node games/spelling-bee/server.js"
+  },
+  "dependencies": {
+    "@google-cloud/text-to-speech": "^6.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "node-cache": "^5.1.2",
+    "socket.io": "^4.8.3"
+  }
+}
