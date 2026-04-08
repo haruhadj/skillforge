@@ -14,8 +14,13 @@ export default function GamePlayer({ gameId, onBack }) {
     if (!currentUser || !iframeSrc) return
 
     const uid = currentUser.uid
+    const allowedOrigin = window.location.origin
 
     function handleMessage(event) {
+      const iframeWindow = iframeRef.current?.contentWindow
+      if (!iframeWindow || event.source !== iframeWindow) return
+      if (event.origin !== allowedOrigin) return
+
       const msg = event.data
       if (!msg || msg.type !== 'GAME_EVENT') return
 
@@ -33,7 +38,7 @@ export default function GamePlayer({ gameId, onBack }) {
           iframeRef.current?.contentWindow?.postMessage({
             type: 'RESTORE_PROGRESS',
             data: stats,
-          }, '*')
+          }, allowedOrigin)
         })
       }
     }

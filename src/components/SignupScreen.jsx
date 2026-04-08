@@ -1,20 +1,32 @@
 import React, { useState } from 'react'
+import toast from 'react-hot-toast'
 import ThemeToggle from './ThemeToggle'
 
 function SignupScreen({ onBack, onSubmit }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match')
+      toast.error('Passwords do not match')
       return
     }
 
-    onSubmit({ email, password })
+    if (password.length < 8) {
+      toast.error('Password must be at least 8 characters')
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      await onSubmit({ email, password })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -59,16 +71,19 @@ function SignupScreen({ onBack, onSubmit }) {
           </label>
 
           <button
-            className="w-full rounded-xl bg-indigo-600 dark:bg-indigo-500 px-5 py-3.5 text-white font-medium transition-all duration-200 hover:bg-indigo-700 dark:hover:bg-indigo-400 hover:shadow-lg hover:shadow-indigo-500/25 focus:outline-none focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-800"
+            className="w-full rounded-xl bg-indigo-600 dark:bg-indigo-500 px-5 py-3.5 text-white font-medium transition-all duration-200 hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed dark:hover:bg-indigo-400 hover:shadow-lg hover:shadow-indigo-500/25 focus:outline-none focus:ring-4 focus:ring-indigo-200 dark:focus:ring-indigo-800"
             type="submit"
+            disabled={isSubmitting}
           >
-            Create Account
+            {isSubmitting ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
 
         <button
           className="mt-4 w-full rounded-xl bg-slate-100 dark:bg-gray-700 px-5 py-3 text-slate-700 dark:text-gray-300 font-medium transition-colors duration-200 hover:bg-slate-200 dark:hover:bg-gray-600"
           onClick={onBack}
+          disabled={isSubmitting}
+          type="button"
         >
           Back
         </button>
