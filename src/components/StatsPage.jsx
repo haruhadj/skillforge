@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
 import { getAllScores } from '../services/gameDataService'
 import { games } from '../games/games'
@@ -8,14 +9,22 @@ export default function StatsPage({ onBack }) {
   const { currentUser } = useAuth()
   const [scores, setScores] = useState({})
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!currentUser) {
-      setLoading(false)
       return
     }
+
     getAllScores(currentUser.uid)
-      .then(setScores)
+      .then((loadedScores) => {
+        setScores(loadedScores)
+        setError('')
+      })
+      .catch((fetchError) => {
+        setError('Could not load your statistics right now.')
+        toast.error(`Failed to load stats: ${fetchError.message}`)
+      })
       .finally(() => setLoading(false))
   }, [currentUser])
 
@@ -41,11 +50,26 @@ export default function StatsPage({ onBack }) {
           </p>
         )}
 
-        {loading && (
-          <p className="mt-12 text-center text-slate-500 dark:text-gray-400">Loading…</p>
+        {loading && currentUser && (
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {games.map((game) => (
+              <div
+                key={game.id}
+                className="rounded-2xl border border-slate-200 dark:border-gray-700/50 bg-white dark:bg-gray-800/80 p-5 shadow-sm dark:shadow-lg dark:shadow-black/20 animate-pulse"
+              >
+                <div className="h-5 w-32 rounded bg-slate-200 dark:bg-gray-700" />
+                <div className="mt-4 h-8 w-24 rounded bg-slate-200 dark:bg-gray-700" />
+                <div className="mt-3 h-3 w-40 rounded bg-slate-200 dark:bg-gray-700" />
+              </div>
+            ))}
+          </div>
         )}
 
-        {!loading && currentUser && (
+        {!loading && error && (
+          <p className="mt-12 text-center text-red-600 dark:text-red-400">{error}</p>
+        )}
+
+        {!loading && currentUser && !error && (
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {games.map((game) => {
               const data = scores[game.id]
