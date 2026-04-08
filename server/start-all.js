@@ -14,6 +14,10 @@ const servers = [
     script: path.join(__dirname, 'games', 'tictactoe', 'socket-server.js'),
   },
   {
+    name: 'Chroma Memory Socket',
+    script: path.join(__dirname, 'games', 'chroma-memory', 'socket-server.js'),
+  },
+  {
     name: 'Spelling Bee API',
     script: path.join(__dirname, 'games', 'spelling-bee', 'server.js'),
   },

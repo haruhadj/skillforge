@@ -43,4 +43,9 @@ export const games = [
     name: 'Math Game',
     iframePath: '/games/math-game/index.html',
   },
+  {
+    id: 'chroma-memory',
+    name: 'Chroma Memory',
+    iframePath: '/games/chroma-memory/index.html',
+  },
 ]

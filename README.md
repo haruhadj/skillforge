@@ -165,6 +165,10 @@ Games communicate with the parent SkillForge app via `window.postMessage()`:
 
 All messages include a guard (`window.parent !== window`) so games function normally when opened standalone outside the iframe.
 
+## Multiplayer Games
+
+SkillForge supports real-time multiplayer via a Socket.IO WebSocket server. See [MULTIPLAYER.md](MULTIPLAYER.md) for the full guide covering architecture, room flow, socket events, LAN play, and how to add more multiplayer games.
+
 ## Development
 
 ### Available Scripts

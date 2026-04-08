@@ -1,0 +1,604 @@
+{
+  "exam_info": {
+    "institution": "SURIGAO DEL SUR STATE UNIVERSITY",
+    "campus": "Lianga Campus",
+    "location": "Lianga, Surigaodel Sur",
+    "subject": "RIZAL: Life, Works and Writings",
+    "type": "FINAL EXAMINATION"
+  },
+  "questions": [
+    {
+      "number": 1,
+      "text": "Which among the following was Rizal's godfather?",
+      "options": {
+        "a": "Father Pedro Casanas",
+        "b": "Father Rufino Collantes"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 2,
+      "text": "Which among the following was not Rizal's brother or sister?",
+      "options": {
+        "a": "Paciano",
+        "b": "Olimpia",
+        "c": "Dr. Rafael Palma"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 3,
+      "text": "Which among the following isn't part of Rizal's races?",
+      "options": {
+        "a": "Negrito",
+        "b": "Indian",
+        "c": "Malay"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 4,
+      "text": "The real surname of the Rizal family was Mercado, which was adopted first by whom?",
+      "options": {
+        "a": "Domingo Lamco",
+        "b": "Leon Ma. Guerrero",
+        "c": "Francisco Mercado"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 5,
+      "text": "Which among the stories told by Rizal's mother left a deep impression on Rizal's mind about 'death of a martyr'?",
+      "options": {
+        "a": "Story of the Moth",
+        "b": "Children's Friend",
+        "c": "Ill-fated Moth"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 6,
+      "text": "The death of the three priest martyrs awakened Rizal's spirit of patriotism. Which among the following isn't part of the three martyrs?",
+      "options": {
+        "a": "Gomez",
+        "b": "Borromeo",
+        "c": "Zamora"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 7,
+      "text": "When Rizal was eleven he was sent to what school to study which was under the supervision of the Jesuits?",
+      "options": {
+        "a": "San Juan de Letran",
+        "b": "Ateneo Municipal",
+        "c": "La Concordia College"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 8,
+      "text": "Who among the professors in Ateneo did Rizal consider to be the best and also helped Rizal to study harder and improve his poetry?",
+      "options": {
+        "a": "Father Sanchez",
+        "b": "Father Burgos",
+        "c": "Father Lleonart"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 9,
+      "text": "Rizal went to University of Santo Tomas to seek higher education. Which among the following wasn't Rizal's course on that institution?",
+      "options": {
+        "a": "Philosophy and Letters",
+        "b": "Medicine",
+        "c": "Literature"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 10,
+      "text": "What course did Father Pablo Ramon, Ateneo's Rector, advice Rizal to take?",
+      "options": {
+        "a": "Medicine",
+        "b": "Philosophy and Letters",
+        "c": "Arts"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 11,
+      "text": "Rizal Completed his medicine course in what university in Spain?",
+      "options": {
+        "a": "University Central de Madrid",
+        "b": "University Central de Barcelona",
+        "c": "Universidad de Barcelona"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 12,
+      "text": "Rizal joined freemasonry as aid against the friars in the Philippines. In which Masonic lodge did Rizal first join?",
+      "options": {
+        "a": "Acacia",
+        "b": "Solidaridad",
+        "c": "Publicidad"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 13,
+      "text": "After completing his studies in Madrid, Rizal went to Paris and Germany to specialize what field in medicine?",
+      "options": {
+        "a": "Ophthalmology",
+        "b": "Obstetrics",
+        "c": "Pathology"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 14,
+      "text": "When Rizal was in Paris, he worked as an assistant to a famous French doctor named?",
+      "options": {
+        "a": "Dr. Louis De Weckert",
+        "b": "Dr. Adoplh Meyer",
+        "c": "Dr. Feodor Jagor"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 15,
+      "text": "After acquiring enough experience in his specialization in Paris, Rizal left for what German city famous for its old university and romantic surroundings?",
+      "options": {
+        "a": "Berlin",
+        "b": "Heidelberg",
+        "c": "Wilhelmsfeld"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 16,
+      "text": "What interests did Ferdinand Blumentritt, Director of the Ateneo of Leitmeritz, have which ultimately became the reason for his acquaintance with Rizal?",
+      "options": {
+        "a": "Studying Philippine History",
+        "b": "Studying Philippine Language",
+        "c": "Studying Philippine Geography"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 17,
+      "text": "While Rizal was in Germany he translated several famous books into tagalog, one of which was Schiller's William Tell and another was Fairy Tales by a famous writer named?",
+      "options": {
+        "a": "Hans Christian Andersen",
+        "b": "Aesop",
+        "c": "Harriet Beecher Stowe"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 18,
+      "text": "When Rizal was in Berlin he came in contact with great scientists, one of which was Dr. Feodor Jagor who wrote a famous book, which foretold the downfall of Spanish rule in the Philippines and the coming of America to Philippine shores, entitled what?",
+      "options": {
+        "a": "The Paradise of the East",
+        "b": "Travels in the Philippines",
+        "c": "Pearl of the Orient Sea"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 19,
+      "text": "Rizal wanted to master French so he took private lessons from a professor named?",
+      "options": {
+        "a": "Fabian Bourzat",
+        "b": "Isabelle Delobele",
+        "c": "Lucile Cerdole"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 20,
+      "text": "Who became the savior of Noli Me Tangere?",
+      "options": {
+        "a": "Maximo Viola",
+        "b": "Eduardo de Lete",
+        "c": "Valentin Ventura"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 21,
+      "text": "Upon arriving in his hometown from abroad, Rizal was called with a certain name for he was a doctor who came from Germany, what was his name?",
+      "options": {
+        "a": "The German Doctor",
+        "b": "Doctor Uliman",
+        "c": "Kind German"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 22,
+      "text": "Governor-General Terrero assigned a young Spanish lieutenant as a bodyguard to Rizal as a security measure. Who was this Spanish lieutenant?",
+      "options": {
+        "a": "Jose Rodriguez",
+        "b": "Jose Taviel de Andrade",
+        "c": "Gregorio Echavarria"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 23,
+      "text": "Who was the theologian from the Manila Cathedral who became a gallant defender of Noli?",
+      "options": {
+        "a": "Father Vicente Garcia",
+        "b": "Father Federico Fauna",
+        "c": "Father Jose Beck"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 24,
+      "text": "Rizal befriended a Japanese journalist who wrote two political novels (Nankai-no-Daiharan and O-unabara). What was his name?",
+      "options": {
+        "a": "Usui",
+        "b": "Kagumi",
+        "c": "Tetcho"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 25,
+      "text": "What country did Rizal describe as 'the land par excellence of freedom but only for the whites'?",
+      "options": {
+        "a": "America",
+        "b": "United Kingdom",
+        "c": "Japan"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 26,
+      "text": "Rizal's greatest achievement while in London was his annotation of Sucesos de las Islas Filipinas written by whom?",
+      "options": {
+        "a": "Morga",
+        "b": "Morayta",
+        "c": "Beckett"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 27,
+      "text": "While Rizal was in London, he became the honorary president of a patriotic society named what?",
+      "options": {
+        "a": "Asociacion de Indio",
+        "b": "Asociacion de Felipinas",
+        "c": "Asociacion La Solidaridad"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 28,
+      "text": "During his 2nd sojourn in Paris, Rizal formed a club which was purely social and temporary for young Filipinos. What was the name?",
+      "options": {
+        "a": "Kidlat",
+        "b": "Indios en Paris",
+        "c": "Indios Bravos"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 29,
+      "text": "Rizal formed another society which pledged its members to excel in intellectual and physical prowess. What was the name?",
+      "options": {
+        "a": "Kidlat",
+        "b": "Indios en Paris",
+        "c": "Indios Bravos"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 30,
+      "text": "Who was Rizal's bitter enemy of the pen who later authored the first book-length biography of the hero?",
+      "options": {
+        "a": "Wenceslao Retana",
+        "b": "Fray Rodriguez",
+        "c": "Salvador Font"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 31,
+      "text": "Who became the saviour of El Filibusterismo?",
+      "options": {
+        "a": "Maximo Viola",
+        "b": "Eduardo de Lete",
+        "c": "Valentin Ventura"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 32,
+      "text": "One of the reasons why Rizal decided to return to Manila was the formation of a society named what?",
+      "options": {
+        "a": "La Liga Filipina",
+        "b": "La Solidaridad",
+        "c": "La Mano Roja"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 33,
+      "text": "Rizal conceived the establishment of a Filipino colony in North Borneo (Sabah) which he considered to be as what?",
+      "options": {
+        "a": "New Filipinas",
+        "b": "New Calamba",
+        "c": "New Manila"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 34,
+      "text": "Who was the Governor-General that plotted the 'Spanish Trap' against Rizal?",
+      "options": {
+        "a": "Despujol",
+        "b": "Blanco",
+        "c": "Polavieja"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 35,
+      "text": "Which member of the society Rizal founded became the 'real father of revolution'?",
+      "options": {
+        "a": "Andres Bonifacio",
+        "b": "Apolinario Mabini",
+        "c": "Emilio Aguinaldo"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 36,
+      "text": "Where was Rizal deported due to incriminatory leaflets found on Lucia's pillow cases?",
+      "options": {
+        "a": "Dapitan",
+        "b": "Cebu",
+        "c": "Zamboanga"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 37,
+      "text": "The novel El Filibusterismo was dedicated by Rizal to whom?",
+      "options": {
+        "a": "Gom-bur-za",
+        "b": "Filipinos",
+        "c": "Fellow reformists"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 38,
+      "text": "According to Wenceslao Retana, what was Rizal's only vice?",
+      "options": {
+        "a": "Hard liquor",
+        "b": "Lottery",
+        "c": "Smoking"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 39,
+      "text": "The friars hired a spy who assumed what name to incriminate Rizal?",
+      "options": {
+        "a": "Pablo Mercado",
+        "b": "Protacio Rizal",
+        "c": "Simon Mercado Rizal"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 40,
+      "text": "Who was the woman which Rizal considered to be his wife?",
+      "options": {
+        "a": "Leonor Rivera",
+        "b": "Josephine Bracken",
+        "c": "Nellie Bousted"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 41,
+      "text": "Who was the only Spanish priest who went in defense to Rizal's Noli publicly?",
+      "options": {
+        "a": "Father Sanchez",
+        "b": "Father Vilaclara",
+        "c": "Father Obach"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 42,
+      "text": "Which among the following pen-names did Rizal use in writing La Vision del Fray Rodriguez?",
+      "options": {
+        "a": "Laong Laan",
+        "b": "Makisig",
+        "c": "Dimas Alang"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 43,
+      "text": "What was the title of Rizal's first article in the patriotic newspaper La Solidaridad?",
+      "options": {
+        "a": "Letter to the Young Women of Malolos",
+        "b": "La Vision del Fray Rodriguez",
+        "c": "Los Agricultores Filipinos"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 44,
+      "text": "What was the name of the poem that Rizal submitted for the literary contest held by Liceo Artistico-Literario in 1879?",
+      "options": {
+        "a": "A La Juventud Filipina",
+        "b": "Felicitacion",
+        "c": "El Heroismo de Colon"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 45,
+      "text": "What was the title of the first poem which Rizal wrote when he was eight years old?",
+      "options": {
+        "a": "In Memory of My Town",
+        "b": "Sa Aking Mga Kababata",
+        "c": "Recuerdo A Mi Pueblo"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 46,
+      "text": "What sculptural masterpiece did Rizal carve for Father Lleonart?",
+      "options": {
+        "a": "Sacred Heart of Jesus",
+        "b": "The Virgin Mary",
+        "c": "The Holy Trinity"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 47,
+      "text": "This novel was described as a romantic novel; it is a 'work of the heart' and a 'book of feeling'.",
+      "options": {
+        "a": "El Filibusterismo",
+        "b": "Noli Me Tangere",
+        "c": "Makamasa"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 48,
+      "text": "This novel was considered to be a political novel; a 'work of the head' and a 'book of the thought'.",
+      "options": {
+        "a": "El Filibusterismo",
+        "b": "Noli Me Tangere",
+        "c": "Makamisa"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 49,
+      "text": "Which among the following isn't part of the species Rizal discovered and named after him?",
+      "options": {
+        "a": "Apogonia rizali",
+        "b": "Raco rizali",
+        "c": "Rhacophorus rizali"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 50,
+      "text": "What is Rizal's literary masterpiece which was considered to be the 'a priceless gem of Philippine Literature'?",
+      "options": {
+        "a": "Mi Ultimo Adios",
+        "b": "Noli Me Tangere",
+        "c": "El Filibusterismo"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 51,
+      "text": "Rizal considers Noli Me Tangere as superior to El Filibusterismo",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 52,
+      "text": "The name 'Jose' was by his mother because she was a devotee of San Juan",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 53,
+      "text": "Dr. Pio Viola was named emissary to Dapitan, in order to inform Rizal of the plan of the Katipunan to launch a revolution.",
+      "type": "True/False",
+      "answer": "Valenzuela",
+      "note": "Correction of underlined word 'Viola'"
+    },
+    {
+      "number": 54,
+      "text": "Don Pedro and Don Miguel Camus along with other Filipino residents urged Rizal in Singapore to disembark and seek protection of the British law.",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 55,
+      "text": "Rizal chose Lt. Luis Taviel de Andrade as his defense counsel for his trial.",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 56,
+      "text": "Governor-General Camilo Polavieja ordered Rizal to be shot at 7:00 o'clock in the morning of December 30 at Laangbayan Field (Luneta).",
+      "type": "True/False",
+      "answer": "Bagumbayan",
+      "note": "Correction of underlined word 'Laangbayan'"
+    },
+    {
+      "number": 57,
+      "text": "Jose Rizal named Philippines as the 'Pearl of the Orient Sea'",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 58,
+      "text": "The Dominican friars helped Polavieja to replace Governor-General Blanco which ultimately sealed the death of Rizal.",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 59,
+      "text": "Rizal hid his last poem in an alcohol lamp and left it to his sister Trinidad.",
+      "type": "True/False",
+      "answer": "cooking lamp",
+      "note": "Correction of underlined word 'alcohol'"
+    },
+    {
+      "number": 60,
+      "text": "Before he was shot, Rizal requested that he be shot facing the firing squad and the request was accepted.",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 61,
+      "text": "Rizal had a premonition that he will somehow die on December 30 as proved by an entry on his diary on January 1, 1883.",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 62,
+      "text": "Jose Rizal's first teacher was his mother.",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 63,
+      "text": "In 1880 the Artistic-Literary Lyceum held a literary contest to commemorate the fourth centennial of the death of Homer where Rizal won.",
+      "type": "True/False",
+      "answer": "Cervantes",
+      "note": "Correction of underlined word 'Homer'"
+    },
+    {
+      "number": 64,
+      "text": "Rizal was not awarded his Doctor's diploma because he did not present the thesis required for graduation nor paid the corresponding fees.",
+      "type": "True/False",
+      "answer": "T"
+    },
+    {
+      "number": 65,
+      "text": "Ferdinand Blumentritt is considered to be Jose Rizal's bestfriend.",
+      "type": "True/False",
+      "answer": "T"
+    }
+  ]
+}
