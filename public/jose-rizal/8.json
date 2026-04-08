@@ -1,0 +1,1722 @@
+{
+  "quiz_bank": {
+    "meta": {
+      "title": "Rizal's Novels Quiz Bank",
+      "description": "Comprehensive quiz questions for Junior and Senior High School covering Noli Me Tangere and El Filibusterismo by José Rizal.",
+      "novels": ["Noli Me Tangere", "El Filibusterismo"],
+      "total_questions": 160,
+      "question_types": ["multiple_choice", "identification", "true_or_false"],
+      "difficulty_levels": ["easy", "medium", "hard"],
+      "grade_levels": ["Grade 9", "Grade 10", "Grade 11", "Grade 12"]
+    },
+    "novels": [
+      {
+        "id": "NMT",
+        "title": "Noli Me Tangere",
+        "author": "José Rizal",
+        "published": 1887,
+        "language": "Spanish",
+        "setting": "Philippines during Spanish colonial period",
+        "multiple_choice": [
+          {
+            "id": "NMT-MC-001",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "What does the title 'Noli Me Tangere' mean in English?",
+            "choices": {
+              "A": "Let Me Go",
+              "B": "Touch Me Not",
+              "C": "Do Not Touch Me",
+              "D": "Love Me Not"
+            },
+            "answer": "C",
+            "explanation": "'Noli Me Tangere' is a Latin phrase meaning 'Touch Me Not' or 'Do Not Touch Me,' taken from the Bible (John 20:17) where the risen Christ speaks these words to Mary Magdalene."
+          },
+          {
+            "id": "NMT-MC-002",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "In what year was Noli Me Tangere first published?",
+            "choices": {
+              "A": "1896",
+              "B": "1887",
+              "C": "1891",
+              "D": "1872"
+            },
+            "answer": "B",
+            "explanation": "Noli Me Tangere was published in 1887 in Berlin, Germany."
+          },
+          {
+            "id": "NMT-MC-003",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "What language was Noli Me Tangere originally written in?",
+            "choices": {
+              "A": "Tagalog",
+              "B": "English",
+              "C": "Spanish",
+              "D": "Latin"
+            },
+            "answer": "C",
+            "explanation": "Rizal wrote Noli Me Tangere in Spanish, the official language during the Spanish colonial period in the Philippines."
+          },
+          {
+            "id": "NMT-MC-004",
+            "difficulty": "easy",
+            "category": "Author",
+            "question": "When was José Rizal born?",
+            "choices": {
+              "A": "1851",
+              "B": "1841",
+              "C": "1861",
+              "D": "1871"
+            },
+            "answer": "C",
+            "explanation": "José Rizal was born on June 19, 1861, in Calamba, Laguna, Philippines."
+          },
+          {
+            "id": "NMT-MC-005",
+            "difficulty": "easy",
+            "category": "Author",
+            "question": "When did José Rizal die?",
+            "choices": {
+              "A": "1906",
+              "B": "1896",
+              "C": "1916",
+              "D": "1886"
+            },
+            "answer": "B",
+            "explanation": "José Rizal was executed by the Spanish colonial government on December 30, 1896, at Bagumbayan (now Rizal Park) in Manila."
+          },
+          {
+            "id": "NMT-MC-006",
+            "difficulty": "easy",
+            "category": "Author",
+            "question": "How did José Rizal die?",
+            "choices": {
+              "A": "He drowned",
+              "B": "He died of cancer",
+              "C": "He died in a fire",
+              "D": "He was executed"
+            },
+            "answer": "D",
+            "explanation": "José Rizal was executed by firing squad by the Spanish colonial government on December 30, 1896."
+          },
+          {
+            "id": "NMT-MC-007",
+            "difficulty": "easy",
+            "category": "Author",
+            "question": "What was José Rizal's occupation/profession?",
+            "choices": {
+              "A": "A schoolteacher",
+              "B": "An ophthalmologist (eye doctor)",
+              "C": "A literature professor",
+              "D": "A scientist"
+            },
+            "answer": "B",
+            "explanation": "José Rizal was a physician specializing in ophthalmology (eye doctor), in addition to being a writer, nationalist, and polymath."
+          },
+          {
+            "id": "NMT-MC-008",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Who is the main protagonist of Noli Me Tangere?",
+            "choices": {
+              "A": "Elías",
+              "B": "Crisóstomo Ibarra",
+              "C": "Father Dámaso",
+              "D": "Captain Tiago"
+            },
+            "answer": "B",
+            "explanation": "Juan Crisóstomo Ibarra is the main protagonist — an idealistic young Filipino who returns from studying in Europe."
+          },
+          {
+            "id": "NMT-MC-009",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "What is Crisóstomo Ibarra's first name?",
+            "choices": {
+              "A": "Santiago",
+              "B": "Pablo",
+              "C": "Juan",
+              "D": "Crisóstomo"
+            },
+            "answer": "C",
+            "explanation": "His full name is Juan Crisóstomo Ibarra. 'Juan' is his first name while 'Crisóstomo' is his middle name."
+          },
+          {
+            "id": "NMT-MC-010",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "What is Ibarra's father's name?",
+            "choices": {
+              "A": "José",
+              "B": "Pedro",
+              "C": "Rafael",
+              "D": "Miguel"
+            },
+            "answer": "C",
+            "explanation": "Ibarra's father's name is Don Rafael Ibarra, a respected landowner who died in prison under unjust circumstances."
+          },
+          {
+            "id": "NMT-MC-011",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Who is María Clara's real (biological) father?",
+            "choices": {
+              "A": "Captain Tiago",
+              "B": "Father Dámaso",
+              "C": "Father Salví",
+              "D": "Lieutenant Guevara"
+            },
+            "answer": "B",
+            "explanation": "Father Dámaso is revealed to be María Clara's biological father, a secret that exposes the hypocrisy of the friars."
+          },
+          {
+            "id": "NMT-MC-012",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What are the names of Sisa's two sons?",
+            "choices": {
+              "A": "Lucas and Pedro",
+              "B": "Cristian and Bernardo",
+              "C": "Crispín and Basilio",
+              "D": "Rafael and Tiburcio"
+            },
+            "answer": "C",
+            "explanation": "Sisa's two sons are Crispín and Basilio, who work as sextons (church assistants) in the town parish."
+          },
+          {
+            "id": "NMT-MC-013",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What do Crispín and Basilio work as?",
+            "choices": {
+              "A": "Farm assistants",
+              "B": "Store assistants",
+              "C": "Fishermen",
+              "D": "Sextons (church assistants)"
+            },
+            "answer": "D",
+            "explanation": "Crispín and Basilio are sextons who assist in the parish church, where Crispín is falsely accused of stealing money."
+          },
+          {
+            "id": "NMT-MC-014",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Why was Ibarra's father imprisoned?",
+            "choices": {
+              "A": "He intentionally killed a tax collector",
+              "B": "He accidentally killed a tax collector",
+              "C": "He intentionally killed a young boy",
+              "D": "He accidentally killed a young boy"
+            },
+            "answer": "B",
+            "explanation": "Don Rafael Ibarra accidentally killed a tax collector who was abusing a child. Despite the accidental nature of the act, the friars manipulated the situation, leading to his imprisonment."
+          },
+          {
+            "id": "NMT-MC-015",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "How long did Crisóstomo Ibarra study in Europe?",
+            "choices": {
+              "A": "Five years",
+              "B": "Six years",
+              "C": "Seven years",
+              "D": "Ten years"
+            },
+            "answer": "C",
+            "explanation": "Ibarra studied in Europe for seven years before returning to the Philippines, hoping to reform society through education."
+          },
+          {
+            "id": "NMT-MC-016",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "What kind of building does Ibarra plan to create to honor his father and help his town?",
+            "choices": {
+              "A": "A hospital",
+              "B": "A community center",
+              "C": "A gymnasium",
+              "D": "A school"
+            },
+            "answer": "D",
+            "explanation": "Ibarra's dream project is to build a school in San Diego, believing education is the key to uplifting the Filipino people."
+          },
+          {
+            "id": "NMT-MC-017",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Why didn't Ibarra's father go to confession before he died?",
+            "choices": {
+              "A": "He was lazy",
+              "B": "He wasn't religious",
+              "C": "He disagreed with it morally",
+              "D": "He didn't like the priest"
+            },
+            "answer": "D",
+            "explanation": "Don Rafael Ibarra refused to confess to Father Dámaso because of personal reasons and disagreements with the friar."
+          },
+          {
+            "id": "NMT-MC-018",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What is the name of María Clara's aunt?",
+            "choices": {
+              "A": "Cristina",
+              "B": "Raquel",
+              "C": "Elena",
+              "D": "Isabel"
+            },
+            "answer": "D",
+            "explanation": "Tía Isabel is María Clara's aunt who helps raise her in the home of Captain Tiago."
+          },
+          {
+            "id": "NMT-MC-019",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What discipline did Tasio (Pilosopo Tasyo) study?",
+            "choices": {
+              "A": "Mathematics",
+              "B": "Biology",
+              "C": "Philosophy",
+              "D": "Literature"
+            },
+            "answer": "C",
+            "explanation": "Tasio studied philosophy and is considered eccentric by townsfolk who call him 'crazy,' but he is actually a wise, forward-thinking man."
+          },
+          {
+            "id": "NMT-MC-020",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What is Sisa's husband's main vice?",
+            "choices": {
+              "A": "Opium",
+              "B": "Alcohol",
+              "C": "Gambling",
+              "D": "Laziness"
+            },
+            "answer": "C",
+            "explanation": "Sisa's husband is a gambler whose vices contribute to the family's poverty and suffering."
+          },
+          {
+            "id": "NMT-MC-021",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Who does Ibarra describe as 'the poetic embodiment of my homeland'?",
+            "choices": {
+              "A": "Elías",
+              "B": "Isabel",
+              "C": "His father",
+              "D": "María Clara"
+            },
+            "answer": "D",
+            "explanation": "Ibarra describes María Clara as the embodiment of his homeland — she symbolizes the Philippines itself, beautiful but oppressed."
+          },
+          {
+            "id": "NMT-MC-022",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Who does Father Salví frequently compete with for power in the town?",
+            "choices": {
+              "A": "Captain Pablo",
+              "B": "The ensign",
+              "C": "Father Sibyla",
+              "D": "Father Dámaso"
+            },
+            "answer": "D",
+            "explanation": "Father Salví and Father Dámaso frequently clash over power and influence in the town of San Diego."
+          },
+          {
+            "id": "NMT-MC-023",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "Why doesn't the gravedigger bury Don Rafael Ibarra in the cemetery?",
+            "choices": {
+              "A": "He thinks it's shameful",
+              "B": "He does bury him there",
+              "C": "There is no room",
+              "D": "It is not allowed by the friars"
+            },
+            "answer": "D",
+            "explanation": "Father Dámaso orders that Don Rafael's body not be buried in the Catholic cemetery due to their conflict, forcing the gravedigger to bury him elsewhere."
+          },
+          {
+            "id": "NMT-MC-024",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "What do the guards take from Sisa near the end of her sanity?",
+            "choices": {
+              "A": "A cow",
+              "B": "A horse",
+              "C": "A hen",
+              "D": "Her sons"
+            },
+            "answer": "C",
+            "explanation": "The Civil Guard takes Sisa's hen, a small but devastating blow that worsens her mental breakdown as she searches desperately for her sons."
+          },
+          {
+            "id": "NMT-MC-025",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Who sides with the liberals at the town council meeting?",
+            "choices": {
+              "A": "María Clara",
+              "B": "The mayor",
+              "C": "Tasio",
+              "D": "Don Filipo"
+            },
+            "answer": "D",
+            "explanation": "Don Filipo leads the liberal faction in the town council meeting, often clashing with the more conservative members aligned with the church."
+          },
+          {
+            "id": "NMT-MC-026",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "What is the primary social cancer (kanser ng lipunan) that Noli Me Tangere exposes?",
+            "choices": {
+              "A": "Poverty and hunger",
+              "B": "Colonial oppression and abuses by the friars",
+              "C": "Lack of education",
+              "D": "Filipino laziness"
+            },
+            "answer": "B",
+            "explanation": "Rizal uses the metaphor of a 'social cancer' to describe the corruption, abuse, and oppression caused by the Spanish friars and colonial government in Philippine society."
+          },
+          {
+            "id": "NMT-MC-027",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "Who rescues the boatman from a crocodile during the picnic scene?",
+            "choices": {
+              "A": "Captain Pablo",
+              "B": "Captain Tiago",
+              "C": "Ibarra",
+              "D": "María Clara"
+            },
+            "answer": "C",
+            "explanation": "During the picnic on the lake, Ibarra bravely jumps in and saves the boatman from a crocodile, showcasing his courage and heroism."
+          },
+          {
+            "id": "NMT-MC-028",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "Who did Ibarra's father often seek advice from?",
+            "choices": {
+              "A": "Captain Tiago",
+              "B": "Tasio",
+              "C": "Elías",
+              "D": "Father Dámaso"
+            },
+            "answer": "B",
+            "explanation": "Don Rafael Ibarra often sought advice from Tasio, the old philosopher, who was one of the few wise and honest people in the town."
+          },
+          {
+            "id": "NMT-MC-029",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "Who tries to free the elder Ibarra from prison?",
+            "choices": {
+              "A": "The younger Ibarra",
+              "B": "Father Dámaso",
+              "C": "Lieutenant Guevara",
+              "D": "Father Salví"
+            },
+            "answer": "C",
+            "explanation": "Lieutenant Guevara attempts to help Don Rafael Ibarra while imprisoned, serving as one of the few just officials in the novel."
+          },
+          {
+            "id": "NMT-MC-030",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "What does Elías symbolize in Noli Me Tangere?",
+            "choices": {
+              "A": "The oppressive Spanish government",
+              "B": "The ilustrado class seeking reform through education",
+              "C": "The oppressed Filipino masses seeking revolution",
+              "D": "The corrupt Catholic Church"
+            },
+            "answer": "C",
+            "explanation": "Elías represents the suffering Filipino masses who advocate for radical change and revolution, contrasting with Ibarra's more moderate, reform-through-education approach."
+          }
+        ],
+        "identification": [
+          {
+            "id": "NMT-ID-001",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "He is the protagonist of Noli Me Tangere who returned from Europe after seven years to help his countrymen through education.",
+            "answer": "Juan Crisóstomo Ibarra",
+            "alternate_answers": ["Crisóstomo Ibarra", "Ibarra"]
+          },
+          {
+            "id": "NMT-ID-002",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "She is the love interest of Ibarra and symbolizes the Filipino motherland — beautiful yet oppressed.",
+            "answer": "María Clara",
+            "alternate_answers": ["Maria Clara"]
+          },
+          {
+            "id": "NMT-ID-003",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "He is the antagonistic friar who opposes Ibarra and is later revealed to be María Clara's biological father.",
+            "answer": "Father Dámaso",
+            "alternate_answers": ["Padre Damaso", "Padre Dámaso", "Father Damaso"]
+          },
+          {
+            "id": "NMT-ID-004",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "She is the tragic mother who loses her sanity searching for her two sons, Crispín and Basilio.",
+            "answer": "Sisa",
+            "alternate_answers": []
+          },
+          {
+            "id": "NMT-ID-005",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "He is Ibarra's loyal friend from the lower class who advocates for the rights of the oppressed Filipinos.",
+            "answer": "Elías",
+            "alternate_answers": []
+          },
+          {
+            "id": "NMT-ID-006",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "In what city was Noli Me Tangere first published?",
+            "answer": "Berlin",
+            "alternate_answers": ["Berlin, Germany"]
+          },
+          {
+            "id": "NMT-ID-007",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is the wealthy host of the dinner party that opens the novel, and is the adoptive father of María Clara.",
+            "answer": "Captain Tiago",
+            "alternate_answers": ["Capitan Tiago", "Santiago de los Santos"]
+          },
+          {
+            "id": "NMT-ID-008",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is the old, eccentric philosopher of San Diego who is called 'crazy' by townspeople but is actually very wise.",
+            "answer": "Tasio",
+            "alternate_answers": ["Pilosopo Tasyo", "Pilosopo Tasio", "Don Anastacio"]
+          },
+          {
+            "id": "NMT-ID-009",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is the scheming curate of San Diego who lusts after María Clara and plots against Ibarra.",
+            "answer": "Father Salví",
+            "alternate_answers": ["Padre Salvi", "Padre Salví", "Father Salvi"]
+          },
+          {
+            "id": "NMT-ID-010",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "What project did Ibarra propose in San Diego to uplift the lives of the Filipino people?",
+            "answer": "A school (escuela)",
+            "alternate_answers": ["schoolhouse", "building a school"]
+          },
+          {
+            "id": "NMT-ID-011",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "This is the Latin phrase from which Rizal drew the title of his novel, found in the Bible in the Gospel of John.",
+            "answer": "Noli Me Tangere",
+            "alternate_answers": []
+          },
+          {
+            "id": "NMT-ID-012",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is the younger son of Sisa who survives the tragedy at the church and later appears in El Filibusterismo.",
+            "answer": "Basilio",
+            "alternate_answers": []
+          },
+          {
+            "id": "NMT-ID-013",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "What literary device does Rizal use when he refers to colonial society's problems as a 'social cancer'?",
+            "answer": "Metaphor",
+            "alternate_answers": []
+          },
+          {
+            "id": "NMT-ID-014",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "What is the name of the fictional town in Laguna where most of the events of Noli Me Tangere take place?",
+            "answer": "San Diego",
+            "alternate_answers": []
+          },
+          {
+            "id": "NMT-ID-015",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "She is the leader of the liberal faction in the town council who fights for progressive changes in the community.",
+            "answer": "Don Filipo",
+            "alternate_answers": ["Don Filipo Lino"]
+          },
+          {
+            "id": "NMT-ID-016",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "Who is the mysterious stranger that helps Basilio bury his mother Sisa at the end of Noli Me Tangere?",
+            "answer": "Elías",
+            "alternate_answers": []
+          },
+          {
+            "id": "NMT-ID-017",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What is the name of the young boy (son of Sisa) who is falsely accused by the church of stealing money?",
+            "answer": "Crispín",
+            "alternate_answers": ["Crispin"]
+          },
+          {
+            "id": "NMT-ID-018",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "What does María Clara's decision to enter the convent at the end symbolize?",
+            "answer": "The Philippine nation's entrapment under colonial and religious oppression",
+            "alternate_answers": ["oppression of the Philippines", "resignation of the Filipino spirit"]
+          },
+          {
+            "id": "NMT-ID-019",
+            "difficulty": "easy",
+            "category": "Author",
+            "question": "What country was José Rizal born in?",
+            "answer": "The Philippines",
+            "alternate_answers": ["Philippines"]
+          },
+          {
+            "id": "NMT-ID-020",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "At whose dinner party does the story of Noli Me Tangere begin?",
+            "answer": "Captain Tiago's",
+            "alternate_answers": ["Capitan Tiago", "Santiago de los Santos"]
+          }
+        ],
+        "true_or_false": [
+          {
+            "id": "NMT-TF-001",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "Noli Me Tangere was first published in the Philippines.",
+            "answer": false,
+            "explanation": "It was published in Berlin, Germany in 1887, not in the Philippines."
+          },
+          {
+            "id": "NMT-TF-002",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "Noli Me Tangere was originally written in Spanish.",
+            "answer": true,
+            "explanation": "Rizal wrote the novel in Spanish, the official language of the Spanish colonial period in the Philippines."
+          },
+          {
+            "id": "NMT-TF-003",
+            "difficulty": "easy",
+            "category": "Author",
+            "question": "José Rizal was executed by the Spanish colonial government in 1896.",
+            "answer": true,
+            "explanation": "Rizal was shot by firing squad on December 30, 1896, at Bagumbayan (now Rizal Park) in Manila."
+          },
+          {
+            "id": "NMT-TF-004",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Crisóstomo Ibarra studied in Europe for five years before returning to the Philippines.",
+            "answer": false,
+            "explanation": "Ibarra studied in Europe for seven years, not five."
+          },
+          {
+            "id": "NMT-TF-005",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "María Clara is the love interest of the protagonist Crisóstomo Ibarra.",
+            "answer": true,
+            "explanation": "María Clara and Ibarra are sweethearts whose relationship is central to the novel's plot."
+          },
+          {
+            "id": "NMT-TF-006",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Sisa's two sons are named Crispín and Basilio.",
+            "answer": true,
+            "explanation": "Crispín and Basilio are Sisa's sons who work as sextons in the church, and their suffering drives their mother to madness."
+          },
+          {
+            "id": "NMT-TF-007",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Captain Tiago is María Clara's biological father.",
+            "answer": false,
+            "explanation": "Captain Tiago is María Clara's adoptive father. Her biological father is revealed to be Father Dámaso, the corrupt friar."
+          },
+          {
+            "id": "NMT-TF-008",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Ibarra's father was imprisoned because he intentionally killed a tax collector.",
+            "answer": false,
+            "explanation": "Don Rafael Ibarra accidentally, not intentionally, killed a tax collector who was abusing a child."
+          },
+          {
+            "id": "NMT-TF-009",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Elías is a wealthy ilustrado who supports Ibarra's school project.",
+            "answer": false,
+            "explanation": "Elías is from the oppressed lower class, not a wealthy ilustrado. He represents the masses calling for revolution rather than reform."
+          },
+          {
+            "id": "NMT-TF-010",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Ibarra's school project in San Diego is successfully completed without any problems.",
+            "answer": false,
+            "explanation": "The school project faces sabotage — an assassin plants a trap during the cornerstone-laying ceremony, though the attempt is foiled."
+          },
+          {
+            "id": "NMT-TF-011",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Pilosopo Tasyo is considered wise and forward-thinking, though the townspeople call him crazy.",
+            "answer": true,
+            "explanation": "Don Anastacio (Tasyo) is a philosopher whose ideas are ahead of his time; the ignorant townsfolk dismiss him as eccentric or insane."
+          },
+          {
+            "id": "NMT-TF-012",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Father Dámaso is a kind and understanding friar who supports Ibarra's reforms.",
+            "answer": false,
+            "explanation": "Father Dámaso is one of the main antagonists — corrupt, abusive, and a direct opponent of Ibarra's plans for education and reform."
+          },
+          {
+            "id": "NMT-TF-013",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "The title 'Noli Me Tangere' was taken by Rizal from the Bible, specifically the Gospel of John.",
+            "answer": true,
+            "explanation": "Rizal drew the title from John 20:17, where the risen Christ says 'Noli Me Tangere' (Touch Me Not) to Mary Magdalene."
+          },
+          {
+            "id": "NMT-TF-014",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "María Clara ultimately ends up happily married to Ibarra at the end of the novel.",
+            "answer": false,
+            "explanation": "María Clara enters a convent at the end of the novel, separating from Ibarra forever — a tragic conclusion symbolizing the Philippines trapped under colonial oppression."
+          },
+          {
+            "id": "NMT-TF-015",
+            "difficulty": "medium",
+            "category": "Themes",
+            "question": "One of the main themes of Noli Me Tangere is the abuse of power by the Spanish friars in the Philippines.",
+            "answer": true,
+            "explanation": "Exposing the corruption and abuses of the Spanish friars (and colonial system) is one of Rizal's central purposes in writing Noli Me Tangere."
+          },
+          {
+            "id": "NMT-TF-016",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "Ibarra and Elías have the same vision for achieving freedom — both believe in peaceful reform through education.",
+            "answer": false,
+            "explanation": "They have contrasting visions: Ibarra believes in peaceful reform and education, while Elías believes the only path to true freedom is revolution."
+          },
+          {
+            "id": "NMT-TF-017",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "Don Rafael Ibarra was buried in the Catholic cemetery of San Diego according to the orders of Father Dámaso.",
+            "answer": false,
+            "explanation": "Father Dámaso ordered that Don Rafael's body be removed from the Catholic cemetery, so he was buried elsewhere — even in a Chinese cemetery at one point."
+          },
+          {
+            "id": "NMT-TF-018",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "María Clara's character was partially inspired by Rizal's real-life sweetheart, Leonor Rivera.",
+            "answer": true,
+            "explanation": "It is widely acknowledged that Rizal modeled María Clara after Leonor Rivera, his longtime sweetheart from Camiling, Tarlac."
+          },
+          {
+            "id": "NMT-TF-019",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "Ibarra escapes from prison at the end of Noli Me Tangere with the help of Elías.",
+            "answer": true,
+            "explanation": "Elías helps Ibarra escape from prison and flee by boat. Elías sacrifices himself to protect Ibarra, and their fates diverge at the novel's end."
+          },
+          {
+            "id": "NMT-TF-020",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "Noli Me Tangere was banned by the Spanish colonial authorities and the Catholic Church in the Philippines after its publication.",
+            "answer": true,
+            "explanation": "The novel was immediately banned by Spanish authorities and the Church in the Philippines because of its sharp criticism of colonial rule and clerical abuse."
+          }
+        ]
+      },
+      {
+        "id": "EF",
+        "title": "El Filibusterismo",
+        "author": "José Rizal",
+        "published": 1891,
+        "language": "Spanish",
+        "setting": "Philippines during Spanish colonial period (13 years after Noli Me Tangere)",
+        "multiple_choice": [
+          {
+            "id": "EF-MC-001",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "When was El Filibusterismo published?",
+            "choices": {
+              "A": "1887",
+              "B": "1896",
+              "C": "1891",
+              "D": "1901"
+            },
+            "answer": "C",
+            "explanation": "El Filibusterismo was published in 1891 in Ghent, Belgium, four years after Noli Me Tangere."
+          },
+          {
+            "id": "EF-MC-002",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "What does the term 'filibustero' mean?",
+            "choices": {
+              "A": "One who promotes the government",
+              "B": "One who defends the church",
+              "C": "One who is against the government",
+              "D": "One who protects the poor"
+            },
+            "answer": "C",
+            "explanation": "'Filibustero' refers to a Filipino who was accused of advocating independence from Spain — essentially a subversive or anti-government agitator."
+          },
+          {
+            "id": "EF-MC-003",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Who is the protagonist of El Filibusterismo?",
+            "choices": {
+              "A": "Basilio",
+              "B": "Isagani",
+              "C": "Simoun",
+              "D": "Padre Florentino"
+            },
+            "answer": "C",
+            "explanation": "Simoun is the main protagonist — a mysterious jeweler who is secretly Crisóstomo Ibarra, plotting revolution against the Spanish colonial government."
+          },
+          {
+            "id": "EF-MC-004",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Who is Simoun's true identity?",
+            "choices": {
+              "A": "Elías",
+              "B": "Basilio",
+              "C": "Captain Tiago",
+              "D": "Juan Crisóstomo Ibarra"
+            },
+            "answer": "D",
+            "explanation": "Simoun is revealed to be the transformed Crisóstomo Ibarra from Noli Me Tangere, who faked his death and reinvented himself as a wealthy jeweler to plot revenge."
+          },
+          {
+            "id": "EF-MC-005",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "What is Simoun's profession/cover in El Filibusterismo?",
+            "choices": {
+              "A": "A soldier",
+              "B": "A friar",
+              "C": "A doctor",
+              "D": "A jeweler"
+            },
+            "answer": "D",
+            "explanation": "Simoun disguises himself as a wealthy jeweler who sells gems to the Spanish elite, using his position to gain influence while secretly planning a revolution."
+          },
+          {
+            "id": "EF-MC-006",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "What is Simoun's disguise that he wears to conceal his identity?",
+            "choices": {
+              "A": "A black wig",
+              "B": "A fake nose",
+              "C": "Reading glasses",
+              "D": "Blue goggles and a white wig"
+            },
+            "answer": "D",
+            "explanation": "Simoun wears distinctive blue-tinted goggles and a white wig as part of his disguise to avoid being recognized as the former Ibarra."
+          },
+          {
+            "id": "EF-MC-007",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "What is Basilio studying in El Filibusterismo?",
+            "choices": {
+              "A": "Law",
+              "B": "Medicine",
+              "C": "Religion",
+              "D": "Engineering"
+            },
+            "answer": "B",
+            "explanation": "Basilio (son of Sisa from Noli Me Tangere) has grown up and is now a medical student, supported by Captain Tiago."
+          },
+          {
+            "id": "EF-MC-008",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Who is Basilio's sweetheart in El Filibusterismo?",
+            "choices": {
+              "A": "Paulita Gomez",
+              "B": "María Clara",
+              "C": "Juli",
+              "D": "Doña Victorina"
+            },
+            "answer": "C",
+            "explanation": "Juli (Juliana de Dios) is Basilio's sweetheart, a devout and selfless young woman who sacrifices greatly for the man she loves."
+          },
+          {
+            "id": "EF-MC-009",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What is the relationship between Simoun and María Clara?",
+            "choices": {
+              "A": "Siblings",
+              "B": "Cousins",
+              "C": "Former lovers",
+              "D": "Friends"
+            },
+            "answer": "C",
+            "explanation": "Simoun (as Ibarra) and María Clara were former lovers. Simoun's desire to save and be with María Clara is part of his motivation."
+          },
+          {
+            "id": "EF-MC-010",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "What event does Simoun plan to use to initiate his revolution?",
+            "choices": {
+              "A": "A graduation ceremony",
+              "B": "A wedding celebration",
+              "C": "A religious festival",
+              "D": "A military parade"
+            },
+            "answer": "B",
+            "explanation": "Simoun plans to set off a bomb during the wedding celebration of Paulita Gomez and Juanito Pelaez, intending to eliminate the Spanish elite in attendance."
+          },
+          {
+            "id": "EF-MC-011",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Who throws the bomb into the sea, foiling Simoun's plan?",
+            "choices": {
+              "A": "Basilio",
+              "B": "Padre Florentino",
+              "C": "Don Custodio",
+              "D": "Isagani"
+            },
+            "answer": "D",
+            "explanation": "Isagani, out of love for Paulita Gomez who is at the wedding, throws the bomb/lamp into the river to prevent the explosion, inadvertently saving everyone but ruining Simoun's plan."
+          },
+          {
+            "id": "EF-MC-012",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What does Simoun use as a bomb at the wedding?",
+            "choices": {
+              "A": "A necklace",
+              "B": "A book",
+              "C": "A flag",
+              "D": "A lamp"
+            },
+            "answer": "D",
+            "explanation": "Simoun hides a powerful explosive inside a beautiful pomegranate-shaped lamp given as a gift for the wedding, intended to detonate at the reception."
+          },
+          {
+            "id": "EF-MC-013",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Who does Simoun gain influence with (his primary political patron)?",
+            "choices": {
+              "A": "Don Custodio",
+              "B": "Captain Tiago",
+              "C": "Padre Salví",
+              "D": "The Governor-General of the Philippines"
+            },
+            "answer": "D",
+            "explanation": "Simoun gains the trust and patronage of the Governor-General, which gives him tremendous political power and access to elite Spanish society."
+          },
+          {
+            "id": "EF-MC-014",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "How was Ibarra (Simoun) supposedly killed in Noli Me Tangere?",
+            "choices": {
+              "A": "He was not killed; he escaped",
+              "B": "Shot by the Civil Guard after escaping prison",
+              "C": "His political partner shot him",
+              "D": "Killed by his former fiancée María Clara"
+            },
+            "answer": "A",
+            "explanation": "Ibarra was never actually killed — he escaped with the help of Elías and later reinvented himself as Simoun. The 'death' was staged."
+          },
+          {
+            "id": "EF-MC-015",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What happened to Tandang Selo after Juli left the house to serve as a servant?",
+            "choices": {
+              "A": "He gets arrested",
+              "B": "He gets sick and dies",
+              "C": "He runs away into the woods",
+              "D": "He loses the ability to speak"
+            },
+            "answer": "D",
+            "explanation": "Tandang Selo, Juli's grandfather, is so devastated by Juli's departure into servitude that he loses the ability to speak from grief."
+          },
+          {
+            "id": "EF-MC-016",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "How does Juli pay the ransom after Tales is kidnapped by bandits?",
+            "choices": {
+              "A": "She sells the farm to the church",
+              "B": "She asks Simoun for a loan",
+              "C": "She enters indentured servitude",
+              "D": "She sells the locket Basilio gave her"
+            },
+            "answer": "C",
+            "explanation": "Juli agrees to serve in the home of Padre Camorra as an indentured servant to raise money for her father Tales' ransom."
+          },
+          {
+            "id": "EF-MC-017",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Who claims that Tales' (Cabesang Tales') farm is rightfully theirs?",
+            "choices": {
+              "A": "Captain Tiago",
+              "B": "The mayor",
+              "C": "Simoun",
+              "D": "The religious order in the neighboring town"
+            },
+            "answer": "D",
+            "explanation": "The Dominican friars of the neighboring parish claim ownership of Cabesang Tales' land, forcing him to pay rent on his own property — a story representing widespread land-grabbing by religious orders."
+          },
+          {
+            "id": "EF-MC-018",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Why does Tales lose his court case against the religious order?",
+            "choices": {
+              "A": "He does not have money to pay for lawyers",
+              "B": "He does not have a legitimate right to the land",
+              "C": "He becomes a bandit first",
+              "D": "The judges do not want to rule against the church"
+            },
+            "answer": "D",
+            "explanation": "Despite having a legitimate case, Tales loses because the judges are too afraid or corrupt to rule against the powerful religious orders."
+          },
+          {
+            "id": "EF-MC-019",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What does Basilio realize when he first sees Simoun in the woods?",
+            "choices": {
+              "A": "He could blackmail Simoun by threatening to reveal his identity",
+              "B": "Simoun knew his brother",
+              "C": "He is the same stranger who helped Basilio bury his mother 13 years ago",
+              "D": "He also wants to be a revolutionary"
+            },
+            "answer": "C",
+            "explanation": "Basilio recognizes Simoun as the mysterious stranger who helped him bury his mother Sisa at the end of Noli Me Tangere, realizing Simoun is actually Ibarra."
+          },
+          {
+            "id": "EF-MC-020",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "What do Basilio and Isagani want to establish at the university?",
+            "choices": {
+              "A": "A school to teach Tagalog to Filipinos",
+              "B": "A school to teach Spanish to Filipinos",
+              "C": "A school to teach martial arts",
+              "D": "A revolutionary society"
+            },
+            "answer": "B",
+            "explanation": "The Filipino students petition to establish a school where Tagalog students can learn Spanish — ironically, the language of their colonizers — to gain greater opportunity and equality."
+          },
+          {
+            "id": "EF-MC-021",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "What is Simoun's view of the Filipino students' effort to create a Spanish language school?",
+            "choices": {
+              "A": "It's a good and progressive idea",
+              "B": "It's naive and will further colonize Filipinos' minds",
+              "C": "It will help Filipinos gain respect and equality",
+              "D": "It's dangerous to criticize the church's education"
+            },
+            "answer": "B",
+            "explanation": "Simoun cynically views the students' efforts as naive — he believes that learning the colonizer's language only further subjugates the Filipino mind rather than liberating it."
+          },
+          {
+            "id": "EF-MC-022",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "What do Rizal's words 'a clay jar bashing against an iron pot' (in describing Tales' lawsuit) represent?",
+            "choices": {
+              "A": "Metaphor",
+              "B": "Personification",
+              "C": "Imagery",
+              "D": "Simile"
+            },
+            "answer": "D",
+            "explanation": "This is a simile — a direct comparison using 'against' that illustrates the hopelessness of a poor farmer fighting the all-powerful church through the justice system."
+          },
+          {
+            "id": "EF-MC-023",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "What does the title El Filibusterismo signify?",
+            "choices": {
+              "A": "It refers to wealth",
+              "B": "It symbolizes peace",
+              "C": "It signifies rebellion and subversion",
+              "D": "It indicates confusion"
+            },
+            "answer": "C",
+            "explanation": "The title signifies rebellion, subversion, and filibusterism — the act of advocating for independence and challenging the colonial order, which was considered a crime by Spanish authorities."
+          },
+          {
+            "id": "EF-MC-024",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "Who ultimately receives the dying Simoun and hears his final confession?",
+            "choices": {
+              "A": "Basilio",
+              "B": "Don Custodio",
+              "C": "Isagani",
+              "D": "Padre Florentino"
+            },
+            "answer": "D",
+            "explanation": "Padre Florentino, a secular Filipino priest who represents the ideal church figure, receives the dying Simoun and delivers the novel's famous closing monologue about freedom and sacrifice."
+          },
+          {
+            "id": "EF-MC-025",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "How does Simoun die at the end of El Filibusterismo?",
+            "choices": {
+              "A": "He is shot by the Civil Guard",
+              "B": "He is captured and executed",
+              "C": "He poisons himself after his plan fails",
+              "D": "He drowns in the sea"
+            },
+            "answer": "C",
+            "explanation": "After his revolutionary plan collapses, Simoun takes poison to avoid capture and dies at the home of Padre Florentino, who refuses to let him suffer alone."
+          },
+          {
+            "id": "EF-MC-026",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Who is the romantic interest of Isagani that he ultimately loses to another man?",
+            "choices": {
+              "A": "Juli",
+              "B": "Doña Victorina",
+              "C": "María Clara",
+              "D": "Paulita Gomez"
+            },
+            "answer": "D",
+            "explanation": "Paulita Gomez is Isagani's love interest, who eventually leaves him for the wealthier and more socially acceptable Juanito Pelaez, breaking Isagani's heart."
+          },
+          {
+            "id": "EF-MC-027",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "In Chapter 1, the steamer Tabo is heading toward which province?",
+            "choices": {
+              "A": "Palawan",
+              "B": "Batangas",
+              "C": "Mindoro",
+              "D": "Laguna"
+            },
+            "answer": "D",
+            "explanation": "The steamer Tabo sails from Manila toward Laguna, setting the opening scene of El Filibusterismo and introducing the key characters including Simoun."
+          },
+          {
+            "id": "EF-MC-028",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "Who is Juli's father in El Filibusterismo?",
+            "choices": {
+              "A": "Tandang Selo",
+              "B": "Cabesang Tales",
+              "C": "Captain Tiago",
+              "D": "Don Custodio"
+            },
+            "answer": "B",
+            "explanation": "Cabesang Tales (Telesforo Juan de Dios) is Juli's father, a hardworking farmer who loses his land to the friars and eventually becomes a bandit in desperation."
+          },
+          {
+            "id": "EF-MC-029",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "What is the primary message of Padre Florentino's closing speech in El Filibusterismo?",
+            "choices": {
+              "A": "The Philippines should continue to submit to Spain",
+              "B": "Violence and revolution are necessary for freedom",
+              "C": "Freedom must be earned through noble sacrifice and virtue, not violence",
+              "D": "Education alone will liberate the Filipino people"
+            },
+            "answer": "C",
+            "explanation": "Padre Florentino's speech argues that true freedom cannot be achieved through hatred and violence; instead, the Philippines must produce virtuous, self-sacrificing heroes worthy of liberty."
+          },
+          {
+            "id": "EF-MC-030",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "Whose financial assistance helped Rizal publish El Filibusterismo?",
+            "choices": {
+              "A": "Marcelo H. del Pilar",
+              "B": "Antonio Luna",
+              "C": "Valentin Ventura",
+              "D": "Ferdinand Blumentritt"
+            },
+            "answer": "C",
+            "explanation": "Valentin Ventura, a close friend of Rizal, provided the financial support needed to publish El Filibusterismo in Ghent, Belgium in 1891."
+          }
+        ],
+        "identification": [
+          {
+            "id": "EF-ID-001",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "He is the protagonist of El Filibusterismo who disguises himself as a wealthy jeweler while secretly plotting revolution.",
+            "answer": "Simoun",
+            "alternate_answers": []
+          },
+          {
+            "id": "EF-ID-002",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "He is the true identity of Simoun, the protagonist of Noli Me Tangere who returned under a new identity.",
+            "answer": "Juan Crisóstomo Ibarra",
+            "alternate_answers": ["Crisóstomo Ibarra", "Ibarra"]
+          },
+          {
+            "id": "EF-ID-003",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "He is Sisa's son who grew up to become a medical student and is a major character in El Filibusterismo.",
+            "answer": "Basilio",
+            "alternate_answers": []
+          },
+          {
+            "id": "EF-ID-004",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "She is Basilio's sweetheart who enters servitude to pay for her father's ransom and later jumps to her death.",
+            "answer": "Juli",
+            "alternate_answers": ["Juliana de Dios"]
+          },
+          {
+            "id": "EF-ID-005",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "In what city was El Filibusterismo published?",
+            "answer": "Ghent",
+            "alternate_answers": ["Ghent, Belgium"]
+          },
+          {
+            "id": "EF-ID-006",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "He is the idealistic student who throws Simoun's bomb into the river, saving the wedding guests but destroying the revolution.",
+            "answer": "Isagani",
+            "alternate_answers": []
+          },
+          {
+            "id": "EF-ID-007",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is the elderly Filipino secular priest who shelters the dying Simoun and delivers the novel's famous closing monologue.",
+            "answer": "Padre Florentino",
+            "alternate_answers": ["Father Florentino"]
+          },
+          {
+            "id": "EF-ID-008",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is Juli's father, a hardworking tenant farmer who loses his land to the friars and eventually becomes a bandit.",
+            "answer": "Cabesang Tales",
+            "alternate_answers": ["Tales", "Telesforo Juan de Dios"]
+          },
+          {
+            "id": "EF-ID-009",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "She is Isagani's love interest who leaves him to marry the wealthier Juanito Pelaez.",
+            "answer": "Paulita Gomez",
+            "alternate_answers": []
+          },
+          {
+            "id": "EF-ID-010",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "What is the name of the ship or steamer that appears at the opening of El Filibusterismo?",
+            "answer": "Tabo",
+            "alternate_answers": ["Steamer Tabo"]
+          },
+          {
+            "id": "EF-ID-011",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "What object did Simoun disguise as a bomb that he intended to use at the wedding?",
+            "answer": "A lamp",
+            "alternate_answers": ["pomegranate lamp", "a kerosene lamp"]
+          },
+          {
+            "id": "EF-ID-012",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is Juli's grandfather who loses the ability to speak after Juli leaves for servitude.",
+            "answer": "Tandang Selo",
+            "alternate_answers": []
+          },
+          {
+            "id": "EF-ID-013",
+            "difficulty": "medium",
+            "category": "Themes",
+            "question": "What theme does the character of Juli represent most strongly in El Filibusterismo?",
+            "answer": "Sacrifice and the suffering of the oppressed Filipino",
+            "alternate_answers": ["sacrifice", "suffering of the innocent", "oppression of women"]
+          },
+          {
+            "id": "EF-ID-014",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "Who did Simoun dedicate El Filibusterismo to (the three martyr priests)?",
+            "answer": "Fathers Gómez, Burgos, and Zamora (GOMBURZA)",
+            "alternate_answers": ["GOMBURZA", "Gomez, Burgos, and Zamora"]
+          },
+          {
+            "id": "EF-ID-015",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "What is the friar who harasses Juli and eventually causes her death?",
+            "answer": "Padre Camorra",
+            "alternate_answers": ["Father Camorra"]
+          },
+          {
+            "id": "EF-ID-016",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "What does Simoun write the night he planned to set off the bomb?",
+            "answer": "Mane, Thecel, Phares",
+            "alternate_answers": ["Mene, Tekel, Upharsin"]
+          },
+          {
+            "id": "EF-ID-017",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "He is the student who sponsored lavish student parties and represents the wealthy, privileged class of ilustrados.",
+            "answer": "Macaraig",
+            "alternate_answers": []
+          },
+          {
+            "id": "EF-ID-018",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "El Filibusterismo was dedicated to the three martyred priests of 1872. What is their collective name?",
+            "answer": "GOMBURZA",
+            "alternate_answers": ["Gomez, Burgos, and Zamora", "Fathers Gómez, Burgos, and Zamora"]
+          },
+          {
+            "id": "EF-ID-019",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Who financially supported Basilio's medical studies in El Filibusterismo?",
+            "answer": "Captain Tiago",
+            "alternate_answers": ["Capitan Tiago"]
+          },
+          {
+            "id": "EF-ID-020",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "What does Padre Florentino throw into the sea after Simoun's death, along with Simoun's treasures?",
+            "answer": "Simoun's jewels and treasures",
+            "alternate_answers": ["the chest of jewels", "Simoun's gold and gems"]
+          }
+        ],
+        "true_or_false": [
+          {
+            "id": "EF-TF-001",
+            "difficulty": "easy",
+            "category": "Publication & History",
+            "question": "El Filibusterismo was published in 1891 in Ghent, Belgium.",
+            "answer": true,
+            "explanation": "El Filibusterismo was indeed published in 1891 in Ghent, Belgium, with financial help from Rizal's friend Valentin Ventura."
+          },
+          {
+            "id": "EF-TF-002",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Simoun is actually Crisóstomo Ibarra in disguise.",
+            "answer": true,
+            "explanation": "Simoun is the transformed Ibarra who faked his death after the events of Noli Me Tangere and reinvented himself as a wealthy jeweler."
+          },
+          {
+            "id": "EF-TF-003",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Basilio is a law student in El Filibusterismo.",
+            "answer": false,
+            "explanation": "Basilio is a medical student, not a law student. He is supported by Captain Tiago and studies medicine."
+          },
+          {
+            "id": "EF-TF-004",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Simoun works as a jeweler as his cover identity in El Filibusterismo.",
+            "answer": true,
+            "explanation": "Simoun poses as a wealthy jeweler who sells precious gems to the Spanish elite, using his influence to advance his revolutionary plans."
+          },
+          {
+            "id": "EF-TF-005",
+            "difficulty": "easy",
+            "category": "Characters",
+            "question": "Juli is the sweetheart of Isagani in El Filibusterismo.",
+            "answer": false,
+            "explanation": "Juli is the sweetheart of Basilio, not Isagani. Isagani's love interest is Paulita Gomez."
+          },
+          {
+            "id": "EF-TF-006",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Simoun's revolutionary plan is successfully carried out and the Spanish officials are killed at the wedding.",
+            "answer": false,
+            "explanation": "Isagani throws the lamp-bomb into the river before it can explode, foiling Simoun's plan entirely and preventing any deaths."
+          },
+          {
+            "id": "EF-TF-007",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Isagani throws the lamp into the river because he hates Simoun and wants to betray the revolution.",
+            "answer": false,
+            "explanation": "Isagani acts out of love for Paulita Gomez, who is attending the wedding. He throws the lamp to save her life, not to betray any cause."
+          },
+          {
+            "id": "EF-TF-008",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "Cabesang Tales loses his land because he fails to pay the annual rent to the religious order.",
+            "answer": false,
+            "explanation": "Cabesang Tales diligently cultivates his land and pays rent, but the friars keep raising the rent until he can no longer pay. Ultimately the friars claim ownership of his land entirely through the courts."
+          },
+          {
+            "id": "EF-TF-009",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Padre Florentino represents the ideal, virtuous Filipino priest who stands apart from the corrupt friars.",
+            "answer": true,
+            "explanation": "Padre Florentino is a secular Filipino priest who embodies genuine piety and patriotism, contrasting sharply with the corrupt Spanish friars in the novel."
+          },
+          {
+            "id": "EF-TF-010",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Paulita Gomez remains loyal to Isagani and does not marry anyone else in the story.",
+            "answer": false,
+            "explanation": "Paulita Gomez abandons Isagani and marries the wealthier Juanito Pelaez, breaking Isagani's heart in one of the novel's subplots."
+          },
+          {
+            "id": "EF-TF-011",
+            "difficulty": "medium",
+            "category": "Plot",
+            "question": "El Filibusterismo is dedicated to the three martyred priests collectively known as GOMBURZA.",
+            "answer": true,
+            "explanation": "Rizal dedicated El Filibusterismo to the memory of Fathers Gómez, Burgos, and Zamora (GOMBURZA) — the three Filipino priests executed by the Spanish in 1872."
+          },
+          {
+            "id": "EF-TF-012",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "Tandang Selo loses the ability to speak after Juli leaves the house to serve as a servant.",
+            "answer": true,
+            "explanation": "Devastated by Juli's departure into servitude, Tandang Selo falls mute from grief — one of the novel's most poignant moments of silent suffering."
+          },
+          {
+            "id": "EF-TF-013",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "Simoun dies peacefully of old age at the end of El Filibusterismo.",
+            "answer": false,
+            "explanation": "Simoun poisons himself after his revolutionary plan fails, dying in the home of Padre Florentino while confessing his failures."
+          },
+          {
+            "id": "EF-TF-014",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "The ending of El Filibusterismo suggests that violent revolution alone cannot bring true freedom to the Philippines.",
+            "answer": true,
+            "explanation": "Padre Florentino's closing speech argues that freedom must be earned through virtue and sacrifice — not through hatred and violence — reflecting Rizal's own ambivalence about revolution."
+          },
+          {
+            "id": "EF-TF-015",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "Simoun gains political influence by befriending the Governor-General of the Philippines.",
+            "answer": true,
+            "explanation": "Simoun cultivates a relationship with the Governor-General, which grants him tremendous access to Spanish colonial power and social influence."
+          },
+          {
+            "id": "EF-TF-016",
+            "difficulty": "hard",
+            "category": "Plot",
+            "question": "The steamer Tabo in Chapter 1 is heading toward Manila.",
+            "answer": false,
+            "explanation": "The steamer Tabo is sailing from Manila toward Laguna, not toward Manila. This opening scene sets the stage for the story."
+          },
+          {
+            "id": "EF-TF-017",
+            "difficulty": "hard",
+            "category": "Characters",
+            "question": "Juli commits suicide by jumping out of a window to escape from Padre Camorra.",
+            "answer": true,
+            "explanation": "When Padre Camorra attempts to assault Juli, she jumps from the window to her death, choosing death over dishonor — one of the novel's most tragic moments."
+          },
+          {
+            "id": "EF-TF-018",
+            "difficulty": "medium",
+            "category": "Characters",
+            "question": "El Filibusterismo is primarily a love story between Simoun and María Clara.",
+            "answer": false,
+            "explanation": "While Simoun's desire to save María Clara is a motivating factor, El Filibusterismo is primarily a political novel about revolution, colonialism, and social injustice."
+          },
+          {
+            "id": "EF-TF-019",
+            "difficulty": "hard",
+            "category": "Publication & History",
+            "question": "Valentin Ventura provided the financial assistance that allowed Rizal to publish El Filibusterismo.",
+            "answer": true,
+            "explanation": "Rizal's close friend Valentin Ventura paid for the printing costs of El Filibusterismo in Ghent, Belgium after Rizal ran out of funds."
+          },
+          {
+            "id": "EF-TF-020",
+            "difficulty": "hard",
+            "category": "Themes",
+            "question": "The term 'filibustero' was considered a compliment by Spanish colonial authorities.",
+            "answer": false,
+            "explanation": "'Filibustero' was a derogatory label used by Spanish authorities to brand Filipinos who advocated independence or subversion as criminals and enemies of the state."
+          }
+        ]
+      }
+    ],
+    "combined_questions": {
+      "description": "Questions that reference or compare both novels",
+      "multiple_choice": [
+        {
+          "id": "BOTH-MC-001",
+          "difficulty": "easy",
+          "category": "Comparison",
+          "question": "Which of Rizal's two novels was published first?",
+          "choices": {
+            "A": "El Filibusterismo (1891)",
+            "B": "Noli Me Tangere (1887)",
+            "C": "Both were published in the same year",
+            "D": "Neither — they were published posthumously"
+          },
+          "answer": "B",
+          "explanation": "Noli Me Tangere was published in 1887, while El Filibusterismo followed four years later in 1891."
+        },
+        {
+          "id": "BOTH-MC-002",
+          "difficulty": "medium",
+          "category": "Characters",
+          "question": "Which character appears in both Noli Me Tangere and El Filibusterismo, transformed by tragedy?",
+          "choices": {
+            "A": "Elías",
+            "B": "Sisa",
+            "C": "Basilio",
+            "D": "Captain Tiago"
+          },
+          "answer": "C",
+          "explanation": "Basilio appears as a young boy in Noli Me Tangere and returns as a medical student in El Filibusterismo, having survived the horrors of his childhood."
+        },
+        {
+          "id": "BOTH-MC-003",
+          "difficulty": "medium",
+          "category": "Themes",
+          "question": "How does the tone of El Filibusterismo differ from Noli Me Tangere?",
+          "choices": {
+            "A": "El Fili is more hopeful and romantic",
+            "B": "Noli is darker while El Fili is optimistic",
+            "C": "El Fili is darker, more cynical, and advocates revolution over reform",
+            "D": "Both novels have the same tone and themes"
+          },
+          "answer": "C",
+          "explanation": "Noli Me Tangere is generally more hopeful and romantic, while El Filibusterismo is noticeably darker, cynical, and explores revolutionary violence as a response to colonial oppression."
+        },
+        {
+          "id": "BOTH-MC-004",
+          "difficulty": "hard",
+          "category": "Themes",
+          "question": "What overarching purpose did Rizal state in writing both novels?",
+          "choices": {
+            "A": "To entertain Filipino readers with adventure stories",
+            "B": "To expose the social cancers afflicting Philippine society under Spanish rule and awaken national consciousness",
+            "C": "To promote the Spanish language among Filipinos",
+            "D": "To document Philippine history for future scholars"
+          },
+          "answer": "B",
+          "explanation": "Rizal's stated goal was to expose the social cancers — corruption, injustice, clerical abuse, and colonial oppression — and awaken the Filipino people's national identity and sense of dignity."
+        },
+        {
+          "id": "BOTH-MC-005",
+          "difficulty": "medium",
+          "category": "Comparison",
+          "question": "What is the connection between the protagonist of Noli Me Tangere and El Filibusterismo?",
+          "choices": {
+            "A": "They are father and son",
+            "B": "They are the same person — Ibarra becomes Simoun",
+            "C": "They are brothers",
+            "D": "They are unrelated characters"
+          },
+          "answer": "B",
+          "explanation": "Crisóstomo Ibarra from Noli Me Tangere and Simoun from El Filibusterismo are the same person. After faking his death, Ibarra reinvented himself as the jeweler Simoun."
+        }
+      ],
+      "identification": [
+        {
+          "id": "BOTH-ID-001",
+          "difficulty": "easy",
+          "category": "Author",
+          "question": "He is the Philippine national hero who wrote both Noli Me Tangere and El Filibusterismo.",
+          "answer": "José Rizal",
+          "alternate_answers": ["Jose Rizal", "Dr. José Rizal"]
+        },
+        {
+          "id": "BOTH-ID-002",
+          "difficulty": "medium",
+          "category": "Themes",
+          "question": "What term did Rizal use to describe the social ills of Philippine society under Spanish rule?",
+          "answer": "Social cancer (kansera ng lipunan)",
+          "alternate_answers": ["social cancer", "cancer of society"]
+        },
+        {
+          "id": "BOTH-ID-003",
+          "difficulty": "hard",
+          "category": "History",
+          "question": "What Philippine law requires all high school and college students to read Rizal's novels?",
+          "answer": "Republic Act 1425 (Rizal Law)",
+          "alternate_answers": ["RA 1425", "Rizal Law"]
+        },
+        {
+          "id": "BOTH-ID-004",
+          "difficulty": "medium",
+          "category": "Characters",
+          "question": "What character connects both novels as a tragic mother in Noli and an influence on Basilio's story in El Fili?",
+          "answer": "Sisa",
+          "alternate_answers": []
+        },
+        {
+          "id": "BOTH-ID-005",
+          "difficulty": "hard",
+          "category": "Themes",
+          "question": "Both novels were written during what period of Philippine history?",
+          "answer": "Spanish colonial period",
+          "alternate_answers": ["Spanish colonization", "Spanish rule in the Philippines"]
+        }
+      ],
+      "true_or_false": [
+        {
+          "id": "BOTH-TF-001",
+          "difficulty": "easy",
+          "category": "Comparison",
+          "question": "El Filibusterismo is a sequel to Noli Me Tangere.",
+          "answer": true,
+          "explanation": "El Filibusterismo (1891) is the direct sequel to Noli Me Tangere (1887), continuing the story 13 years later with many of the same characters."
+        },
+        {
+          "id": "BOTH-TF-002",
+          "difficulty": "easy",
+          "category": "Author",
+          "question": "Both Noli Me Tangere and El Filibusterismo were written by José Rizal.",
+          "answer": true,
+          "explanation": "José Rizal, the Philippine national hero, is the sole author of both novels."
+        },
+        {
+          "id": "BOTH-TF-003",
+          "difficulty": "medium",
+          "category": "Comparison",
+          "question": "Both novels were published in the Philippines during Rizal's lifetime.",
+          "answer": false,
+          "explanation": "Both novels were published in Europe — Noli Me Tangere in Berlin, Germany (1887) and El Filibusterismo in Ghent, Belgium (1891) — as they were banned in the Philippines."
+        },
+        {
+          "id": "BOTH-TF-004",
+          "difficulty": "medium",
+          "category": "Themes",
+          "question": "Noli Me Tangere is generally considered darker and more pessimistic than El Filibusterismo.",
+          "answer": false,
+          "explanation": "It is actually El Filibusterismo that is considered the darker, more cynical novel. Noli Me Tangere, while tragic, has more elements of romance and idealistic hope."
+        },
+        {
+          "id": "BOTH-TF-005",
+          "difficulty": "medium",
+          "category": "History",
+          "question": "Republic Act 1425, known as the Rizal Law, requires Filipino students to study Rizal's life and works including his two novels.",
+          "answer": true,
+          "explanation": "RA 1425 (Rizal Law), signed in 1956, mandates the study of Rizal's life, works, and writings — including Noli Me Tangere and El Filibusterismo — in all Philippine schools and universities."
+        },
+        {
+          "id": "BOTH-TF-006",
+          "difficulty": "hard",
+          "category": "Comparison",
+          "question": "Ibarra's approach in Noli Me Tangere (reform through education) evolves into Simoun's approach in El Filibusterismo (revolution through force).",
+          "answer": true,
+          "explanation": "This character evolution — from idealistic reformer to cynical revolutionary — is one of the most significant thematic arcs linking the two novels, reflecting Rizal's exploration of colonial despair."
+        },
+        {
+          "id": "BOTH-TF-007",
+          "difficulty": "hard",
+          "category": "Themes",
+          "question": "Both novels ultimately endorse violent revolution as the best solution to Philippine colonial oppression.",
+          "answer": false,
+          "explanation": "Neither novel fully endorses violent revolution. Noli advocates reform; El Fili shows revolution failing. Padre Florentino's closing speech explicitly argues that violence alone cannot achieve genuine freedom."
+        },
+        {
+          "id": "BOTH-TF-008",
+          "difficulty": "medium",
+          "category": "Characters",
+          "question": "Basilio appears in both Noli Me Tangere and El Filibusterismo.",
+          "answer": true,
+          "explanation": "Basilio first appears as a child in Noli Me Tangere (son of Sisa) and returns as a grown medical student in El Filibusterismo."
+        },
+        {
+          "id": "BOTH-TF-009",
+          "difficulty": "hard",
+          "category": "History",
+          "question": "The publication of Noli Me Tangere had no significant impact on the Philippine revolution against Spain.",
+          "answer": false,
+          "explanation": "Rizal's novels, especially Noli Me Tangere, were hugely influential in awakening Filipino national consciousness and inspiring the Philippine revolution against Spanish colonial rule."
+        },
+        {
+          "id": "BOTH-TF-010",
+          "difficulty": "medium",
+          "category": "Author",
+          "question": "José Rizal was already living in the Philippines when he wrote both novels.",
+          "answer": false,
+          "explanation": "Rizal wrote both novels while living in Europe — Noli in Madrid and Berlin, and El Fili primarily in Biarritz and Ghent — during his years of study and exile abroad."
+        }
+      ]
+    }
+  }
+}

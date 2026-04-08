@@ -1,0 +1,1107 @@
+{
+  "exam_title": "LIFE AND WORKS OF RIZAL",
+  "institution": "COR JESU COLLEGE, INC.",
+  "subject": "LET REVIEW",
+  "questions": [
+    {
+      "number": 1,
+      "question": "What was the law that was passed to make as the Philippine National Hero?",
+      "options": {
+        "A": "RA 1267",
+        "B": "RA 9262",
+        "C": "Act 10173",
+        "D": "RA 1425"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 2,
+      "question": "This senator authored the Rizal Law on June 12, 1956.",
+      "options": {
+        "A": "CM Recto",
+        "B": "Wenceslao Retana",
+        "C": "Carlos Quirino",
+        "D": "Rafael Palma"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 3,
+      "question": "What was the institution that had the strong opposition of the enactment of Rizal Law?",
+      "options": {
+        "A": "The Government",
+        "B": "Catholic Church",
+        "C": "Human Rights Advocate",
+        "D": "Protestant Church"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 4,
+      "question": "Who was the writer who was very critical with Rizal which made the latter challenged him to have a fist fight?",
+      "options": {
+        "A": "Wenceslao Retana",
+        "B": "Carlos Quirino",
+        "C": "CM Recto",
+        "D": "Rafael Palma"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 5,
+      "question": "What is the complete name of Rizal?",
+      "options": {
+        "A": "Jose Protacio Alonzo Mercado",
+        "B": "Jose Protacio Rizal Mercado y Alonzo Realonda",
+        "C": "Jose Alonzo Rizal y Realonda",
+        "D": "Jose Protacio Mercado Rizal Y Realonda"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 6,
+      "question": "Who was the Chinese ancestor of Rizal?",
+      "options": {
+        "A": "Domingo Lam-co",
+        "B": "Domingo Caoco",
+        "C": "Domingo Sy",
+        "D": "Domingo Lao"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 7,
+      "question": "What is the etymology of the family name, Rizal?",
+      "options": {
+        "A": "Ricial",
+        "B": "Racial",
+        "C": "Rizan",
+        "D": "Rizian"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 8,
+      "question": "She was the one who died last in Rizal Family. She was entrusted by Rizal with his untitled poem.",
+      "options": {
+        "A": "Lucia",
+        "B": "Trinidad",
+        "C": "Conception",
+        "D": "Narcisa"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 9,
+      "question": "She was the first heartbreak of Rizal?",
+      "options": {
+        "A": "Conception",
+        "B": "Segunda Katigbak",
+        "C": "Leonor Rivera",
+        "D": "Olympia"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 10,
+      "question": "They were the parents of Rizal?",
+      "options": {
+        "A": "Francisco and Josefa",
+        "B": "Francisco and Maria",
+        "C": "Francisco and Teodora",
+        "D": "Francisco and Saturnina"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 11,
+      "question": "Donya Teodora was considered to be Rizal's first teacher. At what age did he learn the alphabet?",
+      "options": {
+        "A": "3",
+        "B": "4",
+        "C": "5",
+        "D": "6"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 12,
+      "question": "At 8, Rizal had his first poem. What was its title?",
+      "options": {
+        "A": "Kindiman",
+        "B": "Sa Aking mga Kababata",
+        "C": "Imno sa Talisay",
+        "D": "Awit ng Manlalakbay"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 13,
+      "question": "Who developed Rizal's knowledge in Spanish Language?",
+      "options": {
+        "A": "Juancho",
+        "B": "Donya Teodora",
+        "C": "Justiniano",
+        "D": "Fidel"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 14,
+      "question": "Rizal's formal schooling started in",
+      "options": {
+        "A": "Letran",
+        "B": "Ateneo",
+        "C": "Santo Tomas",
+        "D": "Colegio de San Juan"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 15,
+      "question": "The following were the priests executed during Cavite Mutiny, EXCEPT:",
+      "options": {
+        "A": "Mariano Gomez",
+        "B": "Jose Maria",
+        "C": "Jose Burgos",
+        "D": "Jacinto Zamora"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 16,
+      "question": "Who's life was the reason of Donya Teodora's conviction for two years?",
+      "options": {
+        "A": "Don Alberto",
+        "B": "Don Tiburcio",
+        "C": "Don Juancho",
+        "D": "Don Crisostomo"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 17,
+      "question": "She was considered as the puppy love of Rizal.",
+      "options": {
+        "A": "Leonor Rivera",
+        "B": "Josephine Bracken",
+        "C": "Segunda Katigbak",
+        "D": "Leonor Valenzuela"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 18,
+      "question": "Which of the writings of Rizal which literally mean \"The Philippine Youth\"?",
+      "options": {
+        "A": "Por La Educacion Recibe Lustre La Patria",
+        "B": "A La Juventad Filipina",
+        "C": "A La Virgen Maria",
+        "D": "Al Nino Jesus"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 19,
+      "question": "Why did Rizal transfer from UST to another school?",
+      "options": {
+        "A": "He failed to attain high academic rank",
+        "B": "He experienced adversities with the school administration",
+        "C": "He didn't like his course",
+        "D": "He wanted to experience European life"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 20,
+      "question": "Did Rizal's whole family know about his plan of studying abroad?",
+      "options": {
+        "A": "Yes, his parents willingly supported his plan of studying abroad.",
+        "B": "Yes, even his siblings gave him allowance.",
+        "C": "No, he was the only one who knew his plan.",
+        "D": "No, only Paciano, his brother, and Miguel, his brother-in-law, knew about it."
+      },
+      "answer": "D"
+    },
+    {
+      "number": 21,
+      "question": "In what school did Rizal finish his medical course?",
+      "options": {
+        "A": "SS Salvadora",
+        "B": "Universidad Central de Madrid",
+        "C": "Academy of San Carlos",
+        "D": "Academia de Bellas Artes de San Fernando"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 22,
+      "question": "Which of the following was NOT the reason why Rizal deleted the chapter about Elias and Salome?",
+      "options": {
+        "A": "Lack of funds",
+        "B": "May mislead the intention of the novel",
+        "C": "It's his own love story",
+        "D": "To save in the printing"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 23,
+      "question": "Who was the savior of Rizal's first novel?",
+      "options": {
+        "A": "Maximo Viola",
+        "B": "Mariano Ponce",
+        "C": "Ferdinand Blumentritt",
+        "D": "Marcelo H. Del Pilar"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 24,
+      "question": "In what Gospel was the first novel of Rizal inspired from?",
+      "options": {
+        "A": "John",
+        "B": "Luke",
+        "C": "Matthew",
+        "D": "Mark"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 25,
+      "question": "Which of the following is NOT a theme of Noli Me Tangere?",
+      "options": {
+        "A": "The political and social condition of the Philippines",
+        "B": "The faith of the Filipinos",
+        "C": "The abuses of the Spanish Government",
+        "D": "Wrong beliefs and lifestyle of Filipinos"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 26,
+      "question": "He is the main protagonist in Noli Me tangere who was educated in Europe and whose main aim is to establish a school?",
+      "options": {
+        "A": "Crisostomo",
+        "B": "Rafael",
+        "C": "Fidel",
+        "D": "Kapitan Tiago"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 27,
+      "question": "What were the last words of Rizal before his execution?",
+      "options": {
+        "A": "Mi Ultimo Adios",
+        "B": "Hasta Luego",
+        "C": "Doloroso",
+        "D": "Consummatum est"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 28,
+      "question": "To whom did Rizal dedicate his second novel?",
+      "options": {
+        "A": "Katipuneros",
+        "B": "His parents",
+        "C": "GomBurZa",
+        "D": "the Friars"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 29,
+      "question": "Rizal and Bracken had a son, but did not survive. What was his name?",
+      "options": {
+        "A": "Francisco",
+        "B": "Antonio",
+        "C": "Solomon",
+        "D": "Juan"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 30,
+      "question": "Before his execution, Rizal wrote a poem and placed it in a lamp so his sister could keep it. In what language such poem was written?",
+      "options": {
+        "A": "Filipino",
+        "B": "Spanish",
+        "C": "French",
+        "D": "English"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 31,
+      "question": "During a classroom lesson, the Social Studies teacher asked why, despite more than 300 years of Spanish rule, majority of Filipinos could not speak Spanish. What could be a possible reason for this?",
+      "options": {
+        "A": "Spanish, as an official language, was opposed by Filipinos.",
+        "B": "The Filipinos in general were not interested to learn Spanish.",
+        "C": "Spain outlawed the teaching and learning of Spanish by Filipinos.",
+        "D": "The Spaniards did not propagate the Spanish language."
+      },
+      "answer": "D"
+    },
+    {
+      "number": 32,
+      "question": "During much of the Spanish occupation, how were the natives of the Philippines called?",
+      "options": {
+        "A": "principalia",
+        "B": "indios",
+        "C": "insulares",
+        "D": "peninsulares"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 33,
+      "question": "Rizal focused the 'La Liga Filipina' to: I. Unite the whole country. II. Revolt against the Spaniards. III. Fight violence and injustices.",
+      "options": {
+        "A": "II only",
+        "B": "I and II only",
+        "C": "II and III only",
+        "D": "I and III only"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 34,
+      "question": "The Filipino students are taught to emulate the young Jose Rizal, who was everything listed below, EXCEPT",
+      "options": {
+        "A": "motivated",
+        "B": "loner",
+        "C": "very observant",
+        "D": "reflective"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 35,
+      "question": "What was Rizal's greatest resentment during his student days that motivated him to work harder?",
+      "options": {
+        "A": "unequal treatment of students by the Jesuits",
+        "B": "use of Spanish as a medium of instruction",
+        "C": "passivity of Filipino students",
+        "D": "prevailing discrimination"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 36,
+      "question": "Which work of Rizal was said to be an angry man's personal debate on whether or not a violent revolution would solve the Philippine crisis during the Spanish times?",
+      "options": {
+        "A": "Junto al Pasig",
+        "B": "Noli Me Tangere",
+        "C": "A la Juventud Filipina",
+        "D": "El Filibusterismo"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 37,
+      "question": "Who was known as the Lakambini of the Katipunan?",
+      "options": {
+        "A": "Trinidad Rizal",
+        "B": "Melchora Aquino",
+        "C": "Gregoria de Jesus",
+        "D": "Delfina Herbosa"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 38,
+      "question": "Which of the following occurred first?",
+      "options": {
+        "A": "Cry of Balintawak",
+        "B": "execution of Rizal at Bagumbayan",
+        "C": "trial and execution of Bonifacio",
+        "D": "proclamation of Philippine Independence at Cavite"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 39,
+      "question": "Where did Rizal and Bonifacio not agree?",
+      "options": {
+        "A": "in the inclusion of women in the Katipunan",
+        "B": "in how to win independence from Spain",
+        "C": "in the manner of organizing the Katipunan",
+        "D": "in their religious convictions"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 40,
+      "question": "Who was the 'boy general' that tried to delay American advances by making a last stand at Pasong Tirad?",
+      "options": {
+        "A": "Antonio Luna",
+        "B": "Juan Luna",
+        "C": "Gregorio del Pilar",
+        "D": "Macario Sakay"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 41,
+      "question": "For which are the Filipinos thankful for Julian Felipe?",
+      "options": {
+        "A": "the tune of the National Anthem",
+        "B": "the making of the national flag",
+        "C": "the lyrics of the National Anthem",
+        "D": "the draft of the Malolos Constitution"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 42,
+      "question": "Who was the great Filipino reformist known for his work, Fray Botod, which exposed the ignorance, abuses, and immorality of a certain friar?",
+      "options": {
+        "A": "Apolinario Mabini",
+        "B": "Emilio Jacinto",
+        "C": "Graciano Lopez-Jaena",
+        "D": "Marcelo H. del Pilar"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 43,
+      "question": "Who was known for the parody of 'Our Father' and the 'Ten Commandments' in his attempt to campaign against the abuses of the friars?",
+      "options": {
+        "A": "Antonio Luna",
+        "B": "Pedro Paterno",
+        "C": "Graciano Lopez-Jaena",
+        "D": "Marcelo H. del Pilar"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 44,
+      "question": "What replaced the tribute as a form of taxation in the Hispanic Philippine colony in 1884?",
+      "options": {
+        "A": "Donativo",
+        "B": "Santotum",
+        "C": "Diezmos prediales",
+        "D": "Cedula personal"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 45,
+      "question": "How did the Hispanic conquest affect the physical features of the conquered native Filipinos, especially in lowland regions?",
+      "options": {
+        "A": "Indian mestizos",
+        "B": "slit-eyed Chinitos",
+        "C": "light-skinned, high-nosed mestizos",
+        "D": "Fil-Am half-breeds"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 46,
+      "question": "In whose painting/s was slavery in the Philippines during the Spanish period clearly depicted?",
+      "options": {
+        "A": "Antonio Luna",
+        "B": "Felix Hidalgo",
+        "C": "Juan Luna",
+        "D": "Jose Rizal"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 47,
+      "question": "Which religious institution is the only living remnant of the Philippine Revolution of 1896 today?",
+      "options": {
+        "A": "Unitarian Church of the Philippines",
+        "B": "Roman Catholic Church",
+        "C": "Philippine Independent Church",
+        "D": "United Church of the Philippines"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 48,
+      "question": "Who was the second editor of La Solidaridad with the penname Dolores Manapat?",
+      "options": {
+        "A": "Graciano Lopez-Jaena",
+        "B": "Jose Rizal",
+        "C": "Marcelo H. del Pilar",
+        "D": "Mariano Ponce"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 49,
+      "question": "How many ships arrived to the Philippines from Mexico during the Galleon Trade?",
+      "options": {
+        "A": "two",
+        "B": "three",
+        "C": "one",
+        "D": "five"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 50,
+      "question": "What is a non-debatable evidence left by Rizal proving his faith in God despite being estranged from his religion?",
+      "options": {
+        "A": "El Filibusterismo",
+        "B": "Mi Ultimo Adios",
+        "C": "retraction paper",
+        "D": "Noli Me Tangere"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 51,
+      "question": "What was the signal of the Philippine Rebellion against Spain?",
+      "options": {
+        "A": "Pact of Biak-na-Bato",
+        "B": "Battle of San Juan del Monte",
+        "C": "La Liga Filipina",
+        "D": "Cry of Pugadlawin"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 52,
+      "question": "Who were the rich landowners during the Spanish Era?",
+      "options": {
+        "A": "cabezas de barangay",
+        "B": "gobernadorcillo",
+        "C": "hacienderos",
+        "D": "encomienderos"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 53,
+      "question": "What was the goal of the Propaganda Movements for the Philippine colony as a province of Spain?",
+      "options": {
+        "A": "reformation",
+        "B": "autonomy",
+        "C": "assimilation",
+        "D": "independence"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 54,
+      "question": "What message was taken from Rizal's La Indolencia del Filipino?",
+      "options": {
+        "A": "Rise in arms against Spain; don't be lazy.",
+        "B": "The rich natural resources and favorable climate encourage the Filipino get-by mentality.",
+        "C": "The Filipino lack of unity will penalize them.",
+        "D": "Study well. This is the only way to go up!"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 55,
+      "question": "Who was the Filipino general assassinated by the Kawit Company at Cabanatuan, Nueva Ecija in 1889?",
+      "options": {
+        "A": "Artemio Ricarte",
+        "B": "Antonio Luna",
+        "C": "Macario Sakay",
+        "D": "Gregorio del Pilar"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 56,
+      "question": "The La Liga Filipina was founded to carry out among which of the following aims?",
+      "options": {
+        "A": "to discourage the revolutionary ideas and spread of Masonry",
+        "B": "to work for the separation of the archipelagos from Spain",
+        "C": "to assassinate abusive and tyrannical governors and friars",
+        "D": "to unite the whole archipelago into one compact, vigorous and homogenous body"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 57,
+      "question": "La Solidaridad is to the reformist while _______ is to the Katipunaros.",
+      "options": {
+        "A": "Bravos Indios",
+        "B": "Kalayaan",
+        "C": "Pahayagan",
+        "D": "The Decalogue"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 58,
+      "question": "To whom did Rizal dedicate his first novel, Noli Me Tangere?",
+      "options": {
+        "A": "to his mother",
+        "B": "to the Spaniards",
+        "C": "to the Fatherland",
+        "D": "GOMBURZA"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 59,
+      "question": "What was the oldest existing college for girls in the Philippines, founded in 1632?",
+      "options": {
+        "A": "College of Sta. Rosa",
+        "B": "Assumption College",
+        "C": "College of Sta. Isabel",
+        "D": "College of La Concordia"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 60,
+      "question": "What was the highest position occupied by the Filipinos during the Spanish period?",
+      "options": {
+        "A": "gobernadorcillo",
+        "B": "cabeza de barangay",
+        "C": "Governor-General",
+        "D": "alcalde mayor"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 61,
+      "question": "Who was the Spanish governor-general who ordered the deportation of Dr. Jose Rizal to Dapitan?",
+      "options": {
+        "A": "Rafael Izquierdo",
+        "B": "Emilio Terrero",
+        "C": "Eulogio Despujol",
+        "D": "Primo de Rivera"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 62,
+      "question": "What was a college song for Rizal's young pupils in Dapitan?",
+      "options": {
+        "A": "Hymn to Talisay",
+        "B": "My Retreat",
+        "C": "a la Nacion",
+        "D": "Sa Mga Kababayan"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 63,
+      "question": "The following documents were gathered by Spaniards during Rizal's preliminary investigation, except",
+      "options": {
+        "A": "Speeches of Emilio Jacinto",
+        "B": "Letters of Marcelo H. del Pilar",
+        "C": "copy of Kundiman and Hymn to Talisay",
+        "D": "Letters to Galicano Apacible"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 64,
+      "question": "What case was charged against Rizal by the Spanish authorities?",
+      "options": {
+        "A": "rebellion",
+        "B": "forgery",
+        "C": "heresy",
+        "D": "filibuster"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 65,
+      "question": "What was a book written by Kemphis, which was Rizal's last gift to Josephine Bracken?",
+      "options": {
+        "A": "Mi Ultimo Adios",
+        "B": "Imitation of Christ",
+        "C": "Faith in God",
+        "D": "Retraction"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 66,
+      "question": "Who was the governor-general who approved Rizal's application as volunteer physician to Cuba?",
+      "options": {
+        "A": "Polavieja",
+        "B": "Blanco",
+        "C": "Carnicero",
+        "D": "Ochande"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 67,
+      "question": "What was an anti-clerical novel of Eugene Sue which provided Rizal a model for his Noli Me Tangere?",
+      "options": {
+        "A": "The Wandering Jew",
+        "B": "Uncle Tom's Cabin",
+        "C": "Spolarium",
+        "D": "Costumbres"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 68,
+      "question": "Where was the second Spanish settlement proclaimed by Legazpi?",
+      "options": {
+        "A": "Bohol",
+        "B": "Panay",
+        "C": "Cebu",
+        "D": "Maynila"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 69,
+      "question": "What was the earliest banking institutions, and at the same time a charitable institution?",
+      "options": {
+        "A": "Banco Trinidad",
+        "B": "Obras Pias",
+        "C": "La Independencia",
+        "D": "Banco Espanol Filipinos"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 70,
+      "question": "Who made the popular Filipino bamboo organ?",
+      "options": {
+        "A": "Panday Pira",
+        "B": "Diego Lerra",
+        "C": "Father Valderrama",
+        "D": "Hermano Pule"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 71,
+      "question": "Who was the famous artist who made the illustrations for Rizal's Noli Me Tangere under the pen name 'Juan Bulan.' Who was he?",
+      "options": {
+        "A": "Fernando Amorsolo",
+        "B": "Ben Cab",
+        "C": "Juan Luna",
+        "D": "Felix Hidalgo"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 72,
+      "question": "The real conquest of the Philippines by the Spaniards was achieved",
+      "options": {
+        "A": "more by the sword than by the cross",
+        "B": "more by the aid of the Filipinos helping the Spaniards",
+        "C": "more by the cross than by the sword",
+        "D": "none of the above"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 73,
+      "question": "The famous 'Great Triumvirate' of the Propaganda Movement was composed of",
+      "options": {
+        "A": "Rizal, Jaena, del Pilar",
+        "B": "Rizal, Ponce, Luna",
+        "C": "Rizal, Jaena, Panganiban",
+        "D": "none of the above"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 74,
+      "question": "What was the name used by Jose Rizal going to Europe?",
+      "options": {
+        "A": "Jose Protacio Rizal",
+        "B": "Jose Rizal",
+        "C": "Jose Mercado",
+        "D": "Jose Protacio Mercado Rizal"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 75,
+      "question": "What literary piece made Jose Rizal won the first prize in Ateneo?",
+      "options": {
+        "A": "Consejo de los Dioses",
+        "B": "A La Juventud Filipina",
+        "C": "Junta Al Pasig",
+        "D": "Sa Aking mga Kababata"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 76,
+      "question": "In June 1869, Rizal was enrolled in a school in Binan, Laguna. Who was his first teacher in school?",
+      "options": {
+        "A": "Maestro Lucas Padua",
+        "B": "Maestro Justiniano Aquino-Cruz",
+        "C": "Maestro Jose Bech",
+        "D": "Maestro Leon Monroy"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 77,
+      "question": "Immediately below are 4 statements about the Philippines during Rizal's time. Which statement is false?",
+      "options": {
+        "A": "The system of government was called frailocracy.",
+        "B": "The Philippines was represented in the Spanish Cortes.",
+        "C": "The big plantations were owned by religious organizations.",
+        "D": "The justice system served the interests of the Spanish colonial government."
+      },
+      "answer": "B"
+    },
+    {
+      "number": 78,
+      "question": "The character 'Crisostomo Ibarra' is to Noli Me Tangere as the character '________' is to El Filibusterismo.",
+      "options": {
+        "A": "Elias",
+        "B": "Maria Clara",
+        "C": "Isagani",
+        "D": "Simoun"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 79,
+      "question": "A year after Rizal's execution, a friend of Rizal declared: 'Not only is Rizal the most prominent man of his own people but the greatest man the Malayan race has produced.' Who was this friend of Rizal?",
+      "options": {
+        "A": "Ferdinand Blumentritt",
+        "B": "Adolf Meyer",
+        "C": "Antonio Ma. Regidor",
+        "D": "Fernando Maria Guerrero"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 80,
+      "question": "In 1884, Rizal delivered a speech in honor of two Filipinos who won the first and second prizes in the National Exposition of Fine Arts in Madrid, Spain. These artists were:",
+      "options": {
+        "A": "Juan Luna and Manuel Hidalgo",
+        "B": "Juan Luna and Felix Hidalgo",
+        "C": "Antonio Luna and Manuel Hidalgo",
+        "D": "Antonio Luna and Felix Hidalgo"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 81,
+      "question": "Which book inspired Rizal to write the 'Noli Me Tangere?'",
+      "options": {
+        "A": "William Tell",
+        "B": "The Wandering Jew",
+        "C": "Uncle Tom's Cabin",
+        "D": "History of the French Revolution"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 82,
+      "question": "Why were the GOMBURZA executed? I. They actively supported the secularization movement. II. They refused to submit to the authority of the regular priests. III. They were accused as the leaders of the 1872 Cavite Mutiny. IV. They wrote propaganda materials that exposed the abuses of the friars.",
+      "options": {
+        "A": "I and III",
+        "B": "III and IV",
+        "C": "I and II",
+        "D": "II and III"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 83,
+      "question": "Who are the principalias? I. Filipinos who lived and studied in Europe. II. Unchristianized natives and free from colonial rule. III. Spaniards that were living in the Philippines. IV. Indios who held positions in the Spanish colonial government.",
+      "options": {
+        "A": "III and IV",
+        "B": "I and II",
+        "C": "I and IV",
+        "D": "II and III"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 84,
+      "question": "Which statement on the term 'Filipino' is NOT TRUE?",
+      "options": {
+        "A": "Originally, it was the name associated with Spaniards born in the Philippines or the creoles.",
+        "B": "It is a term which the inhabitants of the Philippines gradually learned to equate with racial quality, human dignity and love of country.",
+        "C": "It is a term or label which gradually became associated with the ilustrados during Rizal's time.",
+        "D": "It was a derogatory term for the native inhabitants as used by the Spaniards."
+      },
+      "answer": "D"
+    },
+    {
+      "number": 85,
+      "question": "Who were the ilustrados?",
+      "options": {
+        "A": "Filipinos who held positions in the Spanish colonial government",
+        "B": "Children of inter-marriages between Spaniards, Filipinos and Chinese.",
+        "C": "Filipinos from middle class families who were able to study in Europe.",
+        "D": "Spaniards who were born in Spain and occupy the highest social class."
+      },
+      "answer": "C"
+    },
+    {
+      "number": 86,
+      "question": "Which event paved way for the influx of liberal ideas from Europe which is also influenced by the emergence of Filipino consciousness?",
+      "options": {
+        "A": "1872 Cavite Mutiny",
+        "B": "Opening of the Suez Canal",
+        "C": "The Secularization Movement",
+        "D": "Emergence of Middle Class"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 87,
+      "question": "What is the aim of secularization movement?",
+      "options": {
+        "A": "Transfer of authority over parishes from secular priests to the regular priests.",
+        "B": "Transfer of authority over parishes from regular priests to the secular priests.",
+        "C": "The use of indigenous language in church services.",
+        "D": "Standing of Filipino priests to Europe to be educated."
+      },
+      "answer": "B"
+    },
+    {
+      "number": 88,
+      "question": "Which describes the social conditions in Spain during the 19th century? I. Civil unrest due to civil war II. Ruled by incompetent officials III. Occupied by the French IV. Political and economic stagnation",
+      "options": {
+        "A": "I and II",
+        "B": "II and III",
+        "C": "II and IV",
+        "D": "I and III"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 89,
+      "question": "What are the contributions of the Propaganda Movement in the history of the Philippines? I. It inspired the Philippine revolution of 1896. II. It became a catalyst for the development of Filipino Nationalism. III. It paved way for the independence of the Philippines from Spain. IV. It served as an eye-opener for the Filipinos about the abuses of the Spaniard.",
+      "options": {
+        "A": "II, III and IV",
+        "B": "I, III, and IV",
+        "C": "I, II and IV",
+        "D": "I, II, and III"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 90,
+      "question": "The objective of the passage of Rizal Law in 1952 is to boost or rekindle the dwindling sense of Filipino identity and nationalism. What was believed to have caused the shrinking sense of Filipino identity and nationalism?",
+      "options": {
+        "A": "Strong American presence in the Philippines",
+        "B": "Filipino's divisive politics",
+        "C": "Economic stagnation",
+        "D": "Prevalence of poverty and corruption"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 91,
+      "question": "What movement was established by Ilustrados which exposed the conditions of the Philippines and demanded reforms from Spain?",
+      "options": {
+        "A": "Confiado de San Jose",
+        "B": "Katipunan",
+        "C": "Circulo Hispano-Filipino",
+        "D": "Propaganda"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 92,
+      "question": "Evaluate the following statements: I. College students are required to read the unexpurgated versions of the Noli Me Tangere and El Filibusterismo of the Rizal course. II. Students whose faith could be damaged are exempted to take the Rizal course.",
+      "options": {
+        "A": "Both statements are true",
+        "B": "Statement I is true",
+        "C": "Statement II is true",
+        "D": "Neither of the statements is true"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 93,
+      "question": "Which is NOT an objective of Rizal Law?",
+      "options": {
+        "A": "Promote sense of nationalism.",
+        "B": "Promote intellectual development.",
+        "C": "Develop civic conscience.",
+        "D": "Develop moral character."
+      },
+      "answer": "B"
+    },
+    {
+      "number": 94,
+      "question": "What was the date of birth of Dr. Jose Rizal?",
+      "options": {
+        "A": "June 18, 1961",
+        "B": "July 19, 1871",
+        "C": "June 19, 1861",
+        "D": "May 19, 1761"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 95,
+      "question": "What is the Spanish name for Filipino native which the Filipinos resented?",
+      "options": {
+        "A": "Hudio",
+        "B": "Alferez",
+        "C": "Pinoy",
+        "D": "Indio"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 96,
+      "question": "What does 'Noli Me Tangere' mean?",
+      "options": {
+        "A": "Touch me not",
+        "B": "Marry me",
+        "C": "Do not detain me",
+        "D": "Do not dance with me"
+      },
+      "answer": "A"
+    },
+    {
+      "number": 97,
+      "question": "Who was the bodyguard assigned by Governor General Terrero to Rizal?",
+      "options": {
+        "A": "Lt. Jose Paterno De Gonzales",
+        "B": "Lt. Pedro Guerrero",
+        "C": "Lt. Jose Taviel de Andrade",
+        "D": "Lt. Manuel de la Paz"
+      },
+      "answer": "C"
+    },
+    {
+      "number": 98,
+      "question": "What is the real name of O-Sei-San?",
+      "options": {
+        "A": "Sei-San",
+        "B": "Michiko San",
+        "C": "Sai-San Han",
+        "D": "Seiko Usui"
+      },
+      "answer": "D"
+    },
+    {
+      "number": 99,
+      "question": "Artificial sea-level waterway located in Egypt and connects Mediterranean Sea to Red Sea.",
+      "options": {
+        "A": "Galleon Trade",
+        "B": "Suez Canal",
+        "C": "Ports to world trade",
+        "D": "Main Stream"
+      },
+      "answer": "B"
+    },
+    {
+      "number": 100,
+      "question": "It was a worldview founded on ideas of freedom and equality.",
+      "options": {
+        "A": "Revolution",
+        "B": "Liberalism",
+        "C": "Conservation",
+        "D": "Capitalism"
+      },
+      "answer": "B"
+    }
+  ]
+}

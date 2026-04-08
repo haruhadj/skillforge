@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node start-all.js",
     "tictactoe": "node games/tictactoe/socket-server.js",
+    "chroma-memory": "node games/chroma-memory/socket-server.js",
     "spelling-bee": "node games/spelling-bee/server.js"
   },
   "dependencies": {

@@ -27,8 +27,8 @@ export async function getAllScores(uid) {
   const ref = collection(db, 'users', uid, 'scores')
   const snapshot = await getDocs(ref)
   const scores = {}
-  snapshot.forEach((doc) => {
-    scores[doc.id] = doc.data()
+  snapshot.forEach((docSnap) => {
+    scores[docSnap.id] = docSnap.data()
   })
   return scores
 }
@@ -52,4 +52,17 @@ export async function getGameStats(uid, gameId) {
   const ref = doc(db, 'users', uid, 'gameStats', gameId)
   const snap = await getDoc(ref)
   return snap.exists() ? snap.data() : null
+}
+
+/**
+ * Fetch all game stats for a user. Returns a map: { gameId: { ...stats } }
+ */
+export async function getAllGameStats(uid) {
+  const ref = collection(db, 'users', uid, 'gameStats')
+  const snapshot = await getDocs(ref)
+  const stats = {}
+  snapshot.forEach((docSnap) => {
+    stats[docSnap.id] = docSnap.data()
+  })
+  return stats
 }

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/AuthContext'
-import { getAllScores } from '../services/gameDataService'
+import * as gameDataService from '../services/gameDataService'
 import { games } from '../games/games'
 import ThemeToggle from './ThemeToggle'
 
 export default function StatsPage({ onBack }) {
   const { currentUser } = useAuth()
   const [scores, setScores] = useState({})
+  const [gameStats, setGameStats] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -16,9 +17,14 @@ export default function StatsPage({ onBack }) {
       return
     }
 
-    getAllScores(currentUser.uid)
-      .then((loadedScores) => {
+    const loadAllGameStats = gameDataService.getAllGameStats
+      ? gameDataService.getAllGameStats(currentUser.uid)
+      : Promise.resolve({})
+
+    Promise.all([gameDataService.getAllScores(currentUser.uid), loadAllGameStats])
+      .then(([loadedScores, loadedGameStats]) => {
         setScores(loadedScores)
+        setGameStats(loadedGameStats)
         setError('')
       })
       .catch((fetchError) => {
@@ -73,6 +79,7 @@ export default function StatsPage({ onBack }) {
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {games.map((game) => {
               const data = scores[game.id]
+              const stats = gameStats[game.id]
               return (
                 <div
                   key={game.id}
@@ -93,6 +100,20 @@ export default function StatsPage({ onBack }) {
                       {data.updatedAt && (
                         <p className="text-xs text-slate-400 dark:text-gray-500">
                           Last updated: {data.updatedAt.toDate().toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  ) : stats?.accuracyPercentage != null ? (
+                    <div className="mt-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-500 dark:text-gray-400">Accuracy</span>
+                        <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                          {stats.accuracyPercentage.toFixed(2)}%
+                        </span>
+                      </div>
+                      {stats.updatedAt && (
+                        <p className="text-xs text-slate-400 dark:text-gray-500">
+                          Last updated: {stats.updatedAt.toDate().toLocaleDateString()}
                         </p>
                       )}
                     </div>

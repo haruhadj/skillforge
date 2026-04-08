@@ -25,6 +25,10 @@ export default defineConfig({
         target: 'http://localhost:3001',
         ws: true,
       },
+      '/chroma-memory-ws/': {
+        target: 'http://localhost:3002',
+        ws: true,
+      },
     },
   },
 });

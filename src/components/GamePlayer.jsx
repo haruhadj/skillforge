@@ -9,6 +9,7 @@ export default function GamePlayer({ gameId, onBack }) {
   const iframeSrc = game?.iframePath ?? null
   const { currentUser } = useAuth()
   const iframeRef = useRef(null)
+  const playerName = currentUser?.displayName || currentUser?.email || 'Player'
 
   useEffect(() => {
     if (!currentUser || !iframeSrc) return
@@ -25,10 +26,20 @@ export default function GamePlayer({ gameId, onBack }) {
       if (!msg || msg.type !== 'GAME_EVENT') return
 
       if (msg.event === 'BEST_SCORE') {
+        if (gameId === 'chroma-memory') return
         saveBestScore(uid, gameId, msg.data.bestScore)
       }
 
       if (msg.event === 'GAME_STATS') {
+        if (gameId === 'chroma-memory') {
+          const isSingleplayer = msg.data?.mode === 'singleplayer'
+          const accuracyPercentage = Number(msg.data?.accuracyPercentage)
+          if (!isSingleplayer || Number.isNaN(accuracyPercentage)) {
+            return
+          }
+          saveGameStats(uid, gameId, { accuracyPercentage })
+          return
+        }
         saveGameStats(uid, gameId, msg.data)
       }
 
@@ -46,6 +57,23 @@ export default function GamePlayer({ gameId, onBack }) {
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
   }, [currentUser, gameId, iframeSrc])
+
+  useEffect(() => {
+    if (!iframeSrc) return
+
+    const iframeWindow = iframeRef.current?.contentWindow
+    if (!iframeWindow) return
+
+    iframeWindow.postMessage(
+      {
+        type: 'PLAYER_INFO',
+        data: {
+          name: playerName,
+        },
+      },
+      window.location.origin,
+    )
+  }, [iframeSrc, playerName])
 
   return (
     <div className="fixed inset-0 flex flex-col bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
@@ -66,6 +94,17 @@ export default function GamePlayer({ gameId, onBack }) {
           className="flex-1 w-full h-full"
           title={gameId}
           src={iframeSrc}
+          onLoad={() => {
+            iframeRef.current?.contentWindow?.postMessage(
+              {
+                type: 'PLAYER_INFO',
+                data: {
+                  name: playerName,
+                },
+              },
+              window.location.origin,
+            )
+          }}
           frameBorder="0"
           allowFullScreen
         />

@@ -1,0 +1,451 @@
+{
+  "examination_details": {
+    "subject": "Life & Works of Rizal",
+    "institution": "St. Francis Xavier College",
+    "location": "San Francisco, Agusan del Sur",
+    "period": "Prelim",
+    "general_directions": "Read each item carefully. Circle the letter of the correct answer."
+  },
+  "questions": [
+    {
+      "number": 1,
+      "question": "Who is the Chinese great-great grandfather of Jose Rizal?",
+      "options": {
+        "A": "Eugenio Ursua",
+        "B": "Agustin Chinco",
+        "C": "Domingo Lamco",
+        "D": "Pedro Casañas"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 2,
+      "question": "The surname Mercado when translated to English means?",
+      "options": {
+        "A": "Church",
+        "B": "Market",
+        "C": "Pilgrimage",
+        "D": "Catholic Calendar"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 3,
+      "question": "The following are the reasons why Rizal was chosen and declared as the Philippine's National Hero, EXCEPT one:",
+      "options": {
+        "A": "He was a martyr at Bagumbayan where he willingly died for our country.",
+        "B": "Because of his complete self-indulgence, his personal interest and to think only of himself.",
+        "C": "He was a towering figure in the propaganda campaign from 1882-1896.",
+        "D": "He was the first Filipino to unite and awaken the Filipino people to peacefully rise for independence."
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 4,
+      "question": "Why did Don Lamco decided to drop the name Lam-co to Mercado?",
+      "options": {
+        "A": "Because he was an immigrant and a business tycoon",
+        "B": "To honor Rizal's endeavor from the Spaniards",
+        "C": "Because of Rizal's extreme intelligence",
+        "D": "To prevent conflict and hostility with the Spanish authorities."
+      },
+      "correct_answer": "D"
+    },
+    {
+      "number": 5,
+      "question": "Who is the first mentor of Rizal?",
+      "options": {
+        "A": "Maestro Celistino",
+        "B": "Leon Monroy",
+        "C": "Manuel Alberto",
+        "D": "Doña Teodora"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "number": 6,
+      "question": "Why Rizal described his father as a model of fathers?",
+      "options": {
+        "A": "His father is full of ambitions in life.",
+        "B": "Because his father was a good-looking guy.",
+        "C": "His father finished his studies in a prestigious University with flying colors.",
+        "D": "He had given them an education despite of their small fortune."
+      },
+      "correct_answer": "D"
+    },
+    {
+      "number": 7,
+      "question": "At the age of five, Rizal was able to?",
+      "options": {
+        "A": "Wrote poems",
+        "B": "Read Spanish Bible",
+        "C": "Read comic books",
+        "D": "Began joining religious processions"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "number": 8,
+      "question": "Why did the hero's parents decided to send their gifted son to Biñan?",
+      "options": {
+        "A": "Their house was far from the school",
+        "B": "His mentor Monroy died",
+        "C": "His mother's cousin frequented Calamba.",
+        "D": "They were concerned with the physical development of Rizal"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 9,
+      "question": "The hero's parents were blessed with how many children?",
+      "options": {
+        "A": "9",
+        "B": "11",
+        "C": "10",
+        "D": "12"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 10,
+      "question": "The following are the ancestries of Rizal, EXCEPT:",
+      "options": {
+        "A": "Korean",
+        "B": "Spanish",
+        "C": "Japanese",
+        "D": "Negrito"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 11,
+      "question": "The name of the Saint whose feast day is celebrated every March 19 that gave the mother of Rizal to derive his name.",
+      "options": {
+        "A": "St. John",
+        "B": "St. Joseph",
+        "C": "St. Jude",
+        "D": "St. Michael"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 12,
+      "question": "A woman of refined culture and character, who studied at Colegio de Sta. Rosa, with exemplary literary talents, with business ability and was considered the great mother of Rizal.",
+      "options": {
+        "A": "Teodora Mercado",
+        "B": "Teodora Alonso",
+        "C": "Melchora Alonso",
+        "D": "Melchora Mercado"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 13,
+      "question": "A great man who took Latin and Philosophy at the Colegio de San Jose, became a tenant farmer of the Dominican-owned hacienda, hardworking and independent minded.",
+      "options": {
+        "A": "Juan Mercado",
+        "B": "Juan Mercado Rizal",
+        "C": "Protacio Mercado",
+        "D": "Francisco Mercado"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "number": 14,
+      "question": "A well-known Rizalist who was the first to trace Jose Rizal's family roots and discovered the Chinese ancestry of Rizal.",
+      "options": {
+        "A": "Dr. Austin Craig",
+        "B": "Sir Thomas Brown",
+        "C": "Dr. Landa Jocano",
+        "D": "Dr. Otley Bayer"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 15,
+      "question": "What is the first native poem written by Rizal when he was eight (8) years old?",
+      "options": {
+        "A": "Mi Ultimo Adios",
+        "B": "Sa aking mga Kabata",
+        "C": "Amor Patrio",
+        "D": "Munting Gamo-gamo"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 16,
+      "question": "What is the complete name of the Philippine National Hero?",
+      "options": {
+        "A": "Dr. Jose Protacio Mercado Rizal Alonzo Y Realonda",
+        "B": "Dr. Jose Protacio Mercado Rizal Alonzo Y Magsalin",
+        "C": "Dr. Jose Protacio Mercado Rizal Magsalin Y Realonda",
+        "D": "Dr. Jose Protacio Magsalin Rizal Alonzo Y Realonda"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 17,
+      "question": "What are the two powerful novels of Dr. Jose Rizal that awakened Filipino Nationalism?",
+      "options": {
+        "A": "La Liga Filipina & Noli Me Tangere",
+        "B": "Noli Me Tangere & El Filibusterismo",
+        "C": "Me Ultimo Adios & El Filibusterismo",
+        "D": "Noli Me Tangere & La Solidaridad"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 18,
+      "question": "Who is the Spanish Ruler who imposed and established the first Spanish settlement in 1565 in Cebu?",
+      "options": {
+        "A": "Rafael Izquierdo",
+        "B": "Miguel Lopez De Legazpi",
+        "C": "Amadeo de Savoy",
+        "D": "Fernando Primo De Rivera"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 19,
+      "question": "The educational institution that was established in 1611 solely for the Spaniards and meztizos which opened its doors to Filipino students four decades before the end of the Spanish regime.",
+      "options": {
+        "A": "Colegio de San Juan de Letran",
+        "B": "Universidad de Manila",
+        "C": "University of Santo Tomas",
+        "D": "Colegio de Santa Isabel"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 20,
+      "question": "The sum of money paid to the government to be exempted from the Polo and compulsory labor imposed by the Spanish colonial authorities.",
+      "options": {
+        "A": "Falla",
+        "B": "Principallia",
+        "C": "Pollo y Servicio",
+        "D": "Taripa"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 21,
+      "question": "Who is the second child and brother of Rizal who convinced Rizal to study in Europe without their parent's permission?",
+      "options": {
+        "A": "Ambrocio",
+        "B": "Jose",
+        "C": "Saturnino",
+        "D": "Paciano"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "number": 22,
+      "question": "Our national hero was born on",
+      "options": {
+        "A": "June 16, 1869",
+        "B": "June 19, 1861",
+        "C": "June 18, 1961",
+        "D": "June 22, 1861"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 23,
+      "question": "What was the moral story of 'The Story of the Moth'?",
+      "options": {
+        "A": "Listen to elders who have more experiences",
+        "B": "Courage to face challenges in life",
+        "C": "Dying for another is worth it if it is for that person to see the light",
+        "D": "Painful times can make us stronger"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 24,
+      "question": "The sibling of Rizal who was an epileptic and died a spinster.",
+      "options": {
+        "A": "Josefa",
+        "B": "Olympia",
+        "C": "Soledad",
+        "D": "Saturnina"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 25,
+      "question": "The law which provides that 'courses on the life, works and writings of Jose Rizal, particularly his novels Noli Me Tangere and El Filibusterismo, shall be included in the curricula of all schools, colleges and universities, public or private.'",
+      "options": {
+        "A": "RA 1435",
+        "B": "RA 1542",
+        "C": "RA 1425",
+        "D": "RA 1452"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 26,
+      "question": "Who among the following was Rizal's first private tutor?",
+      "options": {
+        "A": "Maestro Leon Monroy",
+        "B": "Maestro Lucas Padua",
+        "C": "Maestro Celestino",
+        "D": "Maestro Capino"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 27,
+      "question": "Jose Rizal was the seventh of eleven children. Where was Rizal born?",
+      "options": {
+        "A": "Capas, Tarlac",
+        "B": "Balanga, Bataan",
+        "C": "Calamba, Laguna",
+        "D": "Cawit, Cavite"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 28,
+      "question": "Rizal's first sorrow was?",
+      "options": {
+        "A": "When he had his first downfall",
+        "B": "When his sister died",
+        "C": "When his mother disciplined him",
+        "D": "When his brother was killed by the Spaniards"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 29,
+      "question": "Which of the following is NOT a reason for the inclusion of Rizal's life and works in the curriculum of Filipino students?",
+      "options": {
+        "A": "To rededicate the lives of the youth to ideals of freedom and nationalism",
+        "B": "To pay tribute to our national hero for his contributions to our country",
+        "C": "For students to find inspiration for patriotism through the study of Rizal's life and works",
+        "D": "To establish Rizal's superiority over other national heroes and martyrs"
+      },
+      "correct_answer": "D"
+    },
+    {
+      "number": 30,
+      "question": "Which of the following statements best describes the situation of world politics at the time of Rizal's birth?",
+      "options": {
+        "A": "The poor were steadily gaining economic independence from their Spanish colonizers.",
+        "B": "Open revolution led to considerable loss of life for those who fought for their freedom.",
+        "C": "People were tired of the ways of the old world and were starting to move towards self-determination.",
+        "D": "The superpowers of the world were at the height of their affluence and domination over their colonies."
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 31,
+      "question": "Which of the following was in charge of keeping peace and order in the colonies but instead become notorious for abuses against the people?",
+      "options": {
+        "A": "Spanish Friars",
+        "B": "Guardia Civil",
+        "C": "Cabildo",
+        "D": "Alcalde Mayor"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 32,
+      "question": "Which of the following places did Don Francisco bring Rizal for pilgrimage as a young boy?",
+      "options": {
+        "A": "Turumba",
+        "B": "Penafrancia",
+        "C": "Antipolo",
+        "D": "Biñan"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 33,
+      "question": "Which of the following orders the Mercado children in proper birth order?",
+      "options": {
+        "A": "Paciano, Olympia, Lucia, Jose",
+        "B": "Saturnina, Narciso, Paciano, Trinidad",
+        "C": "Saturnina, Jose, Maria, Paciano",
+        "D": "Narcisa, Jose, Maria, Soledad"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 34,
+      "question": "Which of the following best exemplifies the significance of Rizal writing the 'To my Fellow Children'?",
+      "options": {
+        "A": "It is proof that even at an early age, Rizal was already manifesting love for his country;",
+        "B": "It is proof that Rizal was capable of expressing his feelings and emotions through poetry;",
+        "C": "It is proof that Rizal was against the Filipinos borrowing the language of the Spaniards;",
+        "D": "It is proof that Rizal gave much importance for Filipinos to have a language of their own."
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 35,
+      "question": "Which of the following was NOT a form of injustice that Rizal experienced firsthand during his boyhood years?",
+      "options": {
+        "A": "His mother was arrested and incarcerated on false accusations",
+        "B": "He witnessed how town folk were brutally tortured by the Guardia Civil",
+        "C": "His mother was arrested by officials and they were given money",
+        "D": "The GOMBURZA were cruelly executed after being implicated in the Cavite Mutiny"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 36,
+      "question": "Jose Rizal was executed by firing squad in 1896 at Bagumbayan, Manila. What is Bagumbayan now known as?",
+      "options": {
+        "A": "Luneta",
+        "B": "Rizal Stadium",
+        "C": "Cultural Center of the Philippines",
+        "D": "Rizal Hall"
+      },
+      "correct_answer": "A"
+    },
+    {
+      "number": 37,
+      "question": "What is the reason why Rizal's mother almost died during her delivery?",
+      "options": {
+        "A": "She had a contagious illness",
+        "B": "Rizal's head was big",
+        "C": "The Spaniards almost killed her",
+        "D": "She had twins"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 38,
+      "question": "At what age did Jose Rizal write his first dramatic work which was a Tagalog comedy?",
+      "options": {
+        "A": "10 years old",
+        "B": "9 years old",
+        "C": "8 years old",
+        "D": "7 years old"
+      },
+      "correct_answer": "C"
+    },
+    {
+      "number": 39,
+      "question": "A field of medicine Rizal specialized in due to the failing eyesight of his mother.",
+      "options": {
+        "A": "Anesthesiology",
+        "B": "Ophthalmology",
+        "C": "Radiology",
+        "D": "Medical Genetics"
+      },
+      "correct_answer": "B"
+    },
+    {
+      "number": 40,
+      "question": "Privileged class in Calamba where Rizal's family belonged.",
+      "options": {
+        "A": "Upper class",
+        "B": "Principalia",
+        "C": "Middle class",
+        "D": "Lower class"
+      },
+      "correct_answer": "B"
+    }
+  ]
+}

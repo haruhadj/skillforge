@@ -1,0 +1,634 @@
+{
+  "rizal_works_and_life_quiz": [
+    {
+      "student": "JONARD BALDON",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Who is Rizal's father?",
+          "answer": "Francisco Mercado"
+        },
+        {
+          "question_number": 2,
+          "question": "In February 17, 1872, who was the governor who ordered the Gom-Bur-Za to be executed?",
+          "answer": "Governor General Izgulerdo/Izguierdo"
+        },
+        {
+          "question_number": 3,
+          "question": "It is formerly known as Escuela Pia (school for poor boys).",
+          "answer": "Ateneo de Manila"
+        },
+        {
+          "question_number": 4,
+          "question": "Who was Rizal's first love?",
+          "answer": "Segunda Katigbak"
+        },
+        {
+          "question_number": 5,
+          "question": "It is the novel by Harriet Beecher Stowe, which portrays the brutalities of American slave owners and the pathetic conditions of the unfortunate Negro slaves inspired Dr. Jose Rizal to prepare a novel on the Philippines.",
+          "answer": "Uncle Tom's Cabin"
+        }
+      ]
+    },
+    {
+      "student": "ROMEO CABIC",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "It is a secret society of Filipino UST students.",
+          "answer": "Compañerismo"
+        },
+        {
+          "question_number": 2,
+          "question": "Who accompanied Rizal during his trip to Birhen Maria delos Dolores?",
+          "answer": "Saturnina, Maria, and Trinidad"
+        },
+        {
+          "question_number": 3,
+          "question": "Who is famous author of Don Quixote?",
+          "answer": "Cervantes"
+        },
+        {
+          "question_number": 4,
+          "question": "Translate \"El Consejo de los Dioses\" in English.",
+          "answer": "The Council of the Gods"
+        },
+        {
+          "question_number": 5,
+          "question": "After finishing the fourth year of his medical course, Rizal decided to study in",
+          "answer": "Spain"
+        }
+      ]
+    },
+    {
+      "student": "IAN GAN CAMASO",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "What is the true title of the missing chapter in Noli Me Tangere known as Chapter X?",
+          "answer": "ELIAS AND SALOME"
+        },
+        {
+          "question_number": 2,
+          "question": "What time did Rizal and Viola left Leitmeritz by train?",
+          "answer": "9:45 AM"
+        },
+        {
+          "question_number": 3,
+          "question": "Who is the pastor whom Rizal befriended during his stay in Wilhemsfeld?",
+          "answer": "PASTOR/DR KARL ULLMER"
+        },
+        {
+          "question_number": 4,
+          "question": "Can you cite at least one song composition of Rizal?",
+          "answer": "ALIN MANG LAHI (ANY RACE) AND LA DEPORTACION (DEPORTATION)"
+        },
+        {
+          "question_number": 5,
+          "question": "She was one of the daughters of Attorney Quintos and Regina.",
+          "answer": "BRIGIDA"
+        }
+      ]
+    },
+    {
+      "student": "ZEMMY CAMBA",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Novel of Harriet Beecher Stowe's that inspired Dr. Jose Rizal to prepare a novel in the Philippines.",
+          "answer": "UNCLE TOM'S CABIN"
+        },
+        {
+          "question_number": 2,
+          "question": "Rizal nationalistic essay and the first article written in Spanish sail.",
+          "answer": "AMOR PATRIA OR LOVE OF COUNTRY"
+        },
+        {
+          "question_number": 3,
+          "question": "When does Rizal first novel Noli Me Tangere came off the press?",
+          "answer": "MARCH, 1887"
+        },
+        {
+          "question_number": 4,
+          "question": "First private tutor of Jose Rizal.",
+          "answer": "MAESTRO CELESTINO"
+        },
+        {
+          "question_number": 5,
+          "question": "Rizal's first teacher in Biñan.",
+          "answer": "MAESTRO JUSTINIANO AQUINO CRUZ"
+        }
+      ]
+    },
+    {
+      "student": "ANDREW CARLIT",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "They call Dr. Jose Rizal, [Dr. Uliman] because he came from Germany?",
+          "answer": "Dr. Uliman"
+        },
+        {
+          "question_number": 2,
+          "question": "What year did Rizal return to the Philippines?",
+          "answer": "1887"
+        },
+        {
+          "question_number": 3,
+          "question": "What is the name of the Governor General when Rizal returned to the Philippines?",
+          "answer": "Governor General Emilio Terrero"
+        },
+        {
+          "question_number": 4,
+          "question": "Who is the Spanish Lieutenant that was assigned to secure Rizal's safety?",
+          "answer": "Don Jose Taviel de Andrade"
+        },
+        {
+          "question_number": 5,
+          "question": "Who is the steamer of the boat Rizal boarded to return to Calamba, Philippines?",
+          "answer": "Djemnah"
+        }
+      ]
+    },
+    {
+      "student": "ALLEN ACE CASTAÑEDA",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Jose Rizal's nickname",
+          "answer": "PEPE"
+        },
+        {
+          "question_number": 2,
+          "question": "Rizal wrote his first letter to",
+          "answer": "PROFESSOR FERDINAND BLUMENTRIT"
+        },
+        {
+          "question_number": 3,
+          "question": "Jose Rizal's mother is released in prison in what year in Ateneo",
+          "answer": "THIRD YEAR"
+        },
+        {
+          "question_number": 4,
+          "question": "He was angry at least bully for making him of fun",
+          "answer": "PEDRO"
+        },
+        {
+          "question_number": 5,
+          "question": "Why Jose Rizal decides to shift to medicine?",
+          "answer": "To cure his mother's failing eyesight"
+        }
+      ]
+    },
+    {
+      "student": "MARK JORDAN FLORES",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "She's pet name is Choleng",
+          "answer": "SOLEDAD"
+        },
+        {
+          "question_number": 2,
+          "question": "What is the pet name of Narcisa?",
+          "answer": "SISA"
+        },
+        {
+          "question_number": 3,
+          "question": "Who is the brother of Rizal that went to Manila for entrance examination on June 10, 1872?",
+          "answer": "PACIANO"
+        },
+        {
+          "question_number": 4,
+          "question": "Who is the scion of a rich family of San Miguel, Bulacan?",
+          "answer": "MAXIMO VIOLA"
+        },
+        {
+          "question_number": 5,
+          "question": "In 1865 Concha (Concepcion) died of sickness at the age of",
+          "answer": "3"
+        }
+      ]
+    },
+    {
+      "student": "MARK GEO GOTANGOGAN",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "[Name] proposed the writing of a novel about the Philippines during the reunion of Filipinos in the house of the Paternos in Madrid.",
+          "answer": "Dr. Jose Rizal"
+        },
+        {
+          "question_number": 2,
+          "question": "This the date where the novel was finally finished and ready for printing.",
+          "answer": "February 21, 1887"
+        },
+        {
+          "question_number": 3,
+          "question": "He is a bogus Spanish physician, lame, and henpecked husband of Doña Victori",
+          "answer": "Don Tiburcio de Espadaña"
+        },
+        {
+          "question_number": 4,
+          "question": "On his way to Paris, he stopped at Barcelona to visit his friend, a medical student and a member of a rich family of San Miguel, Bulacan.",
+          "answer": "Maximo Viola"
+        },
+        {
+          "question_number": 5,
+          "question": "In a letter dated [Date] he told Enrique Lete that he 'learned the solfeggio, the piano, and voice culture in one month and a half'.",
+          "answer": "November 27, 1878"
+        }
+      ]
+    },
+    {
+      "student": "JAKE PELLOSIS",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Who is the propagandist, writer, revolutionary leader and doctor from Bulacan that he was known the bestfriend of Jose Rizal in Europe?",
+          "answer": "DR. MAXIMO VIOLA"
+        },
+        {
+          "question_number": 2,
+          "question": "This is the famous Philippine literature piece by Jose Rizal was written in 1887 and made a radical change in the Philippine history?",
+          "answer": "\"TOUCH ME NOT\""
+        },
+        {
+          "question_number": 3,
+          "question": "The eternal city in rome was called also?",
+          "answer": "CITY OF CAESARS"
+        },
+        {
+          "question_number": 4,
+          "question": "When Rizal and Viola left berlin by train?",
+          "answer": "MAY 11, 1887"
+        },
+        {
+          "question_number": 5,
+          "question": "Who is the first teacher of Jose Rizal?",
+          "answer": "HIS MOTHER, DOÑA TEODORA ALONZO REALONDA"
+        }
+      ]
+    },
+    {
+      "student": "MARVIN SERRANO",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "What is the birth order of our National Hero among Rizal's children?",
+          "answer": "7th/Ikapito"
+        },
+        {
+          "question_number": 2,
+          "question": "Dr. Jose Rizal dedicated his second novel El Filibusterismo to?",
+          "answer": "GOMBURZA"
+        },
+        {
+          "question_number": 3,
+          "question": "The mode of transportation on the time of our National Hero where it is a 2-wheeled box-like passenger drawn by a pony?",
+          "answer": "Carromata"
+        },
+        {
+          "question_number": 4,
+          "question": "Rizal went to Paris and Germany to specialized this field of medicine?",
+          "answer": "Opthalmology"
+        },
+        {
+          "question_number": 5,
+          "question": "The title of leaflets found in Rizal's baggage that causes him to arrest?",
+          "answer": "Poor Friars"
+        }
+      ]
+    },
+    {
+      "student": "DESIREE JOY BAUZON",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Formula name of Ateneo de Manila 1872-1877.",
+          "answer": "ESCUELA PIA"
+        },
+        {
+          "question_number": 2,
+          "question": "How old was Rizal when he entered Ateneo?",
+          "answer": "11 YEARS OLD"
+        },
+        {
+          "question_number": 3,
+          "question": "When did Rizal took his private lessons to improve his knowledge in Spanish during his first year in Ateneo?",
+          "answer": "STA. ISABEL"
+        },
+        {
+          "question_number": 4,
+          "question": "When did Rizal boarded for his second year term in Ateneo?",
+          "answer": "NO. 6 MAGALLANES STREET"
+        },
+        {
+          "question_number": 5,
+          "question": "Give at least one reason Fr. Magin Fernando refused Rizal in Ateneo?",
+          "answer": "He is late for registration / He is sickly and undersized for his age."
+        }
+      ]
+    },
+    {
+      "student": "MEL JHEN CAABAY",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "What is the full name of our national hero?",
+          "answer": "Jose Protacio Rizal Mercado y Alonso Realonda"
+        },
+        {
+          "question_number": 2,
+          "question": "Who is the great-great father of Rizal on his father's side?",
+          "answer": "Domingo Lameo"
+        },
+        {
+          "question_number": 3,
+          "question": "Why did Doña Teodora (mother of Rizal) chose the name \"Jose\"?",
+          "answer": "She chose the name \"Jose\" because Doña Teodora was devoted to Saint San Jose."
+        },
+        {
+          "question_number": 4,
+          "question": "Described the home life of our National Hero?",
+          "answer": "The home life of our national hero is simple, contented and happy life."
+        },
+        {
+          "question_number": 5,
+          "question": "Give 5 subjects that Rizal got a highest grade when he is studying at Ateneo.",
+          "answer": "Biology, Philosophy, Chemistry, Physics, and Language"
+        }
+      ]
+    },
+    {
+      "student": "GEMMA ROSE CALICDAN",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "He is the Director of the Ateneo of Leitmeritz, Austria. Also became the best friend of Rizal.",
+          "answer": "Ferdinand Blumentritt"
+        },
+        {
+          "question_number": 2,
+          "question": "What book did Rizal vent to Blumentritt which was published in 2 Language\".",
+          "answer": "Aritmetical"
+        },
+        {
+          "question_number": 3,
+          "question": "Rizal found out that the cart of living in this city was the cheapert in Europe so he stayed for 2 months and half.",
+          "answer": "Leipzig"
+        },
+        {
+          "question_number": 4,
+          "question": "What season in Germany where people select a pine tree to adorned it with lanterns, light and etc?",
+          "answer": "Yuletide Season"
+        },
+        {
+          "question_number": 5,
+          "question": "Rizal was enchanted by this city because of its scientific atmosphere and the absence of race prejudice.",
+          "answer": "Berlin"
+        }
+      ]
+    },
+    {
+      "student": "JACKELYN CAZAR",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "He was the Spanish bodyguard of Rizal.",
+          "answer": "Lt. Taviel de Andrade/ Taviel de Andrade/ Lt. Andrade/ Andrade"
+        },
+        {
+          "question_number": 2,
+          "question": "What was the title of the poem wrote by Rizal that was dedicated to the industrious folks of Lipa before his departure from Calamba.",
+          "answer": "Himno al Trabajo/ Hymn to Labor"
+        },
+        {
+          "question_number": 3,
+          "question": "He published a series of eight pamphlets to blast Noli and other anti-Spanish writings.",
+          "answer": "Fr. Jose Rodriguez"
+        },
+        {
+          "question_number": 4,
+          "question": "Translate \"Noli Me Tangere \" in english.",
+          "answer": "\"Touch Me Not \""
+        },
+        {
+          "question_number": 5,
+          "question": "He is our National Hero.",
+          "answer": "Jose Rizal"
+        }
+      ]
+    },
+    {
+      "student": "ERICA JANE CELINO",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "She married Mariano Herbosa of Calamba, who was a nephew of father Casanas.",
+          "answer": "Lucia"
+        },
+        {
+          "question_number": 2,
+          "question": "His name \"Jose\" was chosen by his mother who was devoted of the Christian Saint",
+          "answer": "San Jose"
+        },
+        {
+          "question_number": 3,
+          "question": "He was baptized in the [Place] of his town on June 22, aged three days old?",
+          "answer": "Catholic Church"
+        },
+        {
+          "question_number": 4,
+          "question": "His mother almost died during the delivery because of his big",
+          "answer": "Head"
+        },
+        {
+          "question_number": 5,
+          "question": "He gave wise direction in the studies of Jose?",
+          "answer": "Uncle Jose Alberto"
+        }
+      ]
+    },
+    {
+      "student": "PRINCESS DELA CRUZ",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "First poem Rizal wrote during his days in Ateneo?",
+          "answer": "Mi Primera Inspiracion (My First Inspiration)"
+        },
+        {
+          "question_number": 2,
+          "question": "Who is Rizal first teacher in Biñan?",
+          "answer": "Maestro Justiniano Aquino Cruz"
+        },
+        {
+          "question_number": 3,
+          "question": "Who is the older brother of Rizal?",
+          "answer": "Paciano"
+        },
+        {
+          "question_number": 4,
+          "question": "Who is Rizal godfather?",
+          "answer": "Father Pedro Casanos"
+        },
+        {
+          "question_number": 5,
+          "question": "He known as bestfriend of Rizal in Europe?",
+          "answer": "Dr. Maximo Viola"
+        }
+      ]
+    },
+    {
+      "student": "KC LYN FRANCISCO",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "When was Rizal born?",
+          "answer": "June 19, 1861"
+        },
+        {
+          "question_number": 2,
+          "question": "He wrote his first poem at the age of",
+          "answer": "8"
+        },
+        {
+          "question_number": 3,
+          "question": "What is the title of his first poem?",
+          "answer": "Sa aking kababata"
+        },
+        {
+          "question_number": 4,
+          "question": "What courses that Rizal took in UST?",
+          "answer": "Philosophy & Letter and Medicine"
+        },
+        {
+          "question_number": 5,
+          "question": "The personalities whom Rizal got his inspiration in writing the El filibustirismo?",
+          "answer": "Gom-Bur-Za"
+        }
+      ]
+    },
+    {
+      "student": "CAROLINE GARIBAY",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "For how many months did it took for Rizal to learn German language?",
+          "answer": "11 months"
+        },
+        {
+          "question_number": 2,
+          "question": "Who was the first teacher of Rizal?",
+          "answer": "Doña Teodora Alonzo Realonda"
+        },
+        {
+          "question_number": 3,
+          "question": "True or False. Dr. Jose Rizal was a good singer.",
+          "answer": "False"
+        },
+        {
+          "question_number": 4,
+          "question": "Who helped Dr. Jose Rizal to publish Noli Me Tangere?",
+          "answer": "Maximo Viola"
+        },
+        {
+          "question_number": 5,
+          "question": "What is the meaning of Noli Me Tangere?",
+          "answer": "Touch Me Not"
+        }
+      ]
+    },
+    {
+      "student": "DANICA GUARDA",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Who is the girl who made Rizal's heart beat and she is said to be Rizal's love at first sight?",
+          "answer": "Segunda Katigbak"
+        },
+        {
+          "question_number": 2,
+          "question": "He is the rich friend of Rizal.",
+          "answer": "Maximo Viola"
+        },
+        {
+          "question_number": 3,
+          "question": "What is the favorite flower of our hero?",
+          "answer": "Forget-me-not"
+        },
+        {
+          "question_number": 4,
+          "question": "[City] was truly the \"Queen of the Danube.\"",
+          "answer": "Vienna"
+        },
+        {
+          "question_number": 5,
+          "question": "GOMBURZA is a three priests, who are they?",
+          "answer": "Mariano Gomez, Jose Burgos, Jacinto Zamora"
+        }
+      ]
+    },
+    {
+      "student": "REYNALIN RACUYA",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "It is a special place for him, that's why he record his daily life in his memoirs.",
+          "answer": "Biñan"
+        },
+        {
+          "question_number": 2,
+          "question": "Give atleast one school where Rizal studied.",
+          "answer": "UST, Ateneo"
+        },
+        {
+          "question_number": 3,
+          "question": "Give atleast two skill or talent of Rizal",
+          "answer": "Writer, novelist, doctor, musician, magician"
+        },
+        {
+          "question_number": 4,
+          "question": "He is the Savior of Noli",
+          "answer": "Dr. Maximo Viola"
+        },
+        {
+          "question_number": 5,
+          "question": "Rizal was suspected as [Nationality] spy.",
+          "answer": "French"
+        }
+      ]
+    },
+    {
+      "student": "BRENDA MAE C. RAMOS",
+      "questions": [
+        {
+          "question_number": 1,
+          "question": "Godfather of Rizal, a native of Calamba and close friend of the Rizal Family?",
+          "answer": "Father Pedro Casanas"
+        },
+        {
+          "question_number": 2,
+          "question": "Who is Rizal's first Teacher ?",
+          "answer": "Doña Teodora Alonzo Realendo"
+        },
+        {
+          "question_number": 3,
+          "question": "GOM-BUR-ZA stands for?",
+          "answer": "Mariano Gomez (Gomez), Jose Burgos (Burgos), Jacinto Zamora (Zamora)"
+        },
+        {
+          "question_number": 4,
+          "question": "What was Rizal's nickname?",
+          "answer": "Pepe"
+        },
+        {
+          "question_number": 5,
+          "question": "Her pet name was Concha, died of sickness at the of 3?",
+          "answer": "Concepcion"
+        }
+      ]
+    }
+  ]
+}
