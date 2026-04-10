@@ -1,0 +1,20 @@
+[
+  {
+    "origin": [
+      "http://localhost:5173",
+      "https://donna-carter-berry-ampland.trycloudflare.com"
+    ],
+    "method": ["GET", "HEAD", "POST", "PUT", "DELETE"],
+    "responseHeader": [
+      "Content-Type",
+      "Authorization",
+      "X-Firebase-Storage-Version",
+      "X-Goog-Upload-Protocol",
+      "X-Goog-Upload-Command",
+      "X-Goog-Upload-Header-Content-Length",
+      "X-Goog-Upload-Header-Content-Type",
+      "X-Goog-Upload-URL"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]
