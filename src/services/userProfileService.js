@@ -1,4 +1,4 @@
-import { auth, db, storage } from '../firebase'
+import { db } from '../firebase'
 import {
   doc,
   getDoc,
@@ -6,8 +6,6 @@ import {
   serverTimestamp,
   setDoc,
 } from 'firebase/firestore'
-import { updateProfile } from 'firebase/auth'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 
 export const USERNAME_REGEX = /^[A-Za-z0-9_]{3,20}$/
 
@@ -198,6 +196,15 @@ function validateProfilePhotoFile(file) {
   }
 }
 
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(new Error('Could not read the image file'))
+    reader.readAsDataURL(file)
+  })
+}
+
 export async function uploadProfilePhoto(uid, upload) {
   if (!uid) throw new Error('Missing user id')
 
@@ -210,29 +217,18 @@ export async function uploadProfilePhoto(uid, upload) {
     validateProfilePhotoFile(thumbFile)
   }
 
-  const mainExt = mainFile.name.split('.').pop().toLowerCase()
-  const mainRef = ref(storage, `profile-photos/${uid}.${mainExt}`)
-
-  await uploadBytes(mainRef, mainFile, { contentType: mainFile.type })
-  const photoURL = await getDownloadURL(mainRef)
-
-  let photoThumbURL = photoURL
-
-  if (thumbFile) {
-    const thumbExt = thumbFile.name.split('.').pop().toLowerCase()
-    const thumbRef = ref(storage, `profile-photos/${uid}-thumb.${thumbExt}`)
-    await uploadBytes(thumbRef, thumbFile, { contentType: thumbFile.type })
-    photoThumbURL = await getDownloadURL(thumbRef)
-  }
-
-  await Promise.all([
-    setDoc(
-      doc(db, 'users', uid),
-      { photoURL, photoThumbURL, updatedAt: serverTimestamp() },
-      { merge: true },
-    ),
-    auth.currentUser ? updateProfile(auth.currentUser, { photoURL }) : Promise.resolve(),
+  const [photoURL, photoThumbURL] = await Promise.all([
+    fileToDataURL(mainFile),
+    thumbFile ? fileToDataURL(thumbFile) : Promise.resolve(null),
   ])
 
-  return { photoURL, photoThumbURL }
+  const resolvedThumbURL = photoThumbURL ?? photoURL
+
+  await setDoc(
+    doc(db, 'users', uid),
+    { photoURL, photoThumbURL: resolvedThumbURL, updatedAt: serverTimestamp() },
+    { merge: true },
+  )
+
+  return { photoURL, photoThumbURL: resolvedThumbURL }
 }
