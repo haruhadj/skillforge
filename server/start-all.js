@@ -10,6 +10,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
  */
 const servers = [
   {
+    name: 'Chess Socket',
+    script: path.join(__dirname, 'games', 'chess', 'socket-server.js'),
+  },
+  {
     name: 'TicTacToe Socket',
     script: path.join(__dirname, 'games', 'tictactoe', 'socket-server.js'),
   },

@@ -1,8 +1,8 @@
 import { games } from '../games/games'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/useAuth'
 import ThemeToggle from './ThemeToggle'
 
-export default function GameLibrary({ onSelect, onLogout, onStats }) {
+export default function GameLibrary({ onSelect, onLogout, onStats, displayName }) {
   const { currentUser } = useAuth()
 
   return (
@@ -13,7 +13,7 @@ export default function GameLibrary({ onSelect, onLogout, onStats }) {
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Game Library</h2>
             {currentUser && (
               <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
-                Welcome back, {currentUser.displayName || currentUser.email}!
+                Welcome back, {displayName || currentUser.displayName || currentUser.email || 'Player'}!
               </p>
             )}
           </div>
@@ -24,7 +24,7 @@ export default function GameLibrary({ onSelect, onLogout, onStats }) {
               onClick={onStats}
               type="button"
             >
-              My Stats
+              Profile
             </button>
             <button
               className="rounded-xl bg-slate-900 dark:bg-gray-700 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-slate-800 dark:hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-slate-300 dark:focus:ring-gray-600"

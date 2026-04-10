@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import ThemeToggle from './ThemeToggle'
 
 function SignupScreen({ onBack, onSubmit }) {
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -21,9 +22,14 @@ function SignupScreen({ onBack, onSubmit }) {
       return
     }
 
+    if (!/^[A-Za-z0-9_]{3,20}$/.test(username.trim())) {
+      toast.error('Username must be 3-20 characters and use letters, numbers, or underscores only')
+      return
+    }
+
     try {
       setIsSubmitting(true)
-      await onSubmit({ email, password })
+      await onSubmit({ username: username.trim(), email, password })
     } finally {
       setIsSubmitting(false)
     }
@@ -37,6 +43,20 @@ function SignupScreen({ onBack, onSubmit }) {
       <div className="w-full max-w-md rounded-3xl bg-white dark:bg-gray-800 p-10 shadow-xl dark:shadow-2xl dark:shadow-black/30 border border-transparent dark:border-gray-700/50">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Create Account</h2>
         <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
+          <label className="block">
+            <span className="text-sm font-medium text-slate-700 dark:text-gray-300">Username</span>
+            <input
+              className="mt-2 w-full rounded-xl border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 text-slate-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 transition-colors duration-200 placeholder:text-slate-400 dark:placeholder:text-gray-500"
+              type="text"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              required
+              spellCheck={false}
+              autoCapitalize="off"
+              autoCorrect="off"
+            />
+          </label>
+
           <label className="block">
             <span className="text-sm font-medium text-slate-700 dark:text-gray-300">Email</span>
             <input

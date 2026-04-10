@@ -1,18 +1,15 @@
 import { useState } from 'react'
-import toast from 'react-hot-toast'
-import { useAuth } from '../contexts/AuthContext'
 import ThemeToggle from './ThemeToggle'
 
-function StartScreen({ onLoginClick, onSignupClick, onAnonymousLogin }) {
-  const { signInWithGoogle } = useAuth()
+function StartScreen({ onLoginClick, onSignupClick, onGoogleSignIn }) {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true)
-      await signInWithGoogle()
-    } catch (error) {
-      toast.error(`Google sign-in failed: ${error.message}`)
+      await onGoogleSignIn()
+    } catch {
+      // Error feedback is handled by the parent auth flow.
     } finally {
       setIsGoogleLoading(false)
     }
@@ -58,13 +55,6 @@ function StartScreen({ onLoginClick, onSignupClick, onAnonymousLogin }) {
               Create Account
             </button>
           </div>
-
-          <button
-            className="w-full rounded-xl border border-dashed border-slate-300 dark:border-gray-600 px-5 py-3 text-sm font-medium text-slate-500 dark:text-gray-500 hover:border-slate-400 dark:hover:border-gray-500 hover:text-slate-700 dark:hover:text-gray-300 transition-colors duration-200"
-            onClick={onAnonymousLogin}
-          >
-            Continue as guest (development)
-          </button>
         </div>
       </div>
     </div>
