@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/useAuth'
 import * as gameDataService from '../services/gameDataService'
 import { games } from '../games/games'
 import ThemeToggle from './ThemeToggle'

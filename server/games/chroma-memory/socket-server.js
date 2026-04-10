@@ -27,6 +27,7 @@ const io = new Server(server, {
         /^https?:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$/,
         /^https?:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}:\d+$/,
         /^https?:\/\/skillforge\.haruhadj\.duckdns\.org$/,
+        /^https?:\/\/[a-z0-9-]+\.trycloudflare\.com$/,
       ]
       return callback(allowed.some((re) => re.test(origin)) ? null : new Error('Not allowed by CORS'), true)
     },

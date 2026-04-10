@@ -1,19 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
 } from 'firebase/auth'
 import { auth } from '../firebase'
-
-const AuthContext = createContext()
-
-export function useAuth() {
-  return useContext(AuthContext)
-}
+import AuthContext from './auth-context'
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null)
@@ -29,10 +24,16 @@ export function AuthProvider({ children }) {
     return signInWithEmailAndPassword(auth, email, password)
   }
 
-  // Google sign in
+  // Google sign in (using popup method for all environments)
   async function signInWithGoogle() {
     const provider = new GoogleAuthProvider()
-    return signInWithPopup(auth, provider)
+    provider.setCustomParameters({ prompt: 'select_account' })
+
+    const result = await signInWithPopup(auth, provider)
+    return {
+      method: 'popup',
+      result,
+    }
   }
 
   // Logout function
@@ -55,7 +56,7 @@ export function AuthProvider({ children }) {
     signup,
     login,
     signInWithGoogle,
-    logout
+    logout,
   }
 
   return (

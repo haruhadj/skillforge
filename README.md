@@ -83,6 +83,9 @@ SkillForge is a modern web application developed as part of a Computer Science t
 
 5. **Configure environment variables**
    - Create a `.env` file in the `server/` directory for any required API keys (e.g., Google Cloud TTS credentials for Spelling Bee)
+   - Optional (frontend): set `VITE_CHESS_SOCKET_URL` in the project root `.env` to override chess multiplayer socket host in production
+     - Example: `VITE_CHESS_SOCKET_URL=https://your-domain.com:3004`
+   - Optional (server): set `CHESS_PORT` in `server/.env` if you do not want the default chess socket port `3004`
 
 6. **Start the development server**
    ```bash
@@ -168,6 +171,12 @@ All messages include a guard (`window.parent !== window`) so games function norm
 ## Multiplayer Games
 
 SkillForge supports real-time multiplayer via a Socket.IO WebSocket server. See [MULTIPLAYER.md](MULTIPLAYER.md) for the full guide covering architecture, room flow, socket events, LAN play, and how to add more multiplayer games.
+
+### Chess Multiplayer Notes
+
+- Chess socket server defaults to `http://localhost:3004` using path `/chess-ws/`
+- During deployment, ensure the `CHESS_PORT` service is reachable from clients
+- If chess socket host is different from the main app host, set `VITE_CHESS_SOCKET_URL` in frontend env
 
 ## Development
 

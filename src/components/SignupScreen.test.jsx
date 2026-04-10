@@ -32,6 +32,7 @@ describe('SignupScreen', () => {
 
     renderSignupScreen({ onSubmit })
 
+    await user.type(screen.getByLabelText(/username/i), 'student_user')
     await user.type(screen.getByLabelText(/email/i), 'student@example.com')
     await user.type(screen.getByLabelText(/^password$/i), 'password123')
     await user.type(screen.getByLabelText(/confirm password/i), 'different123')

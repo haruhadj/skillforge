@@ -6,6 +6,7 @@
   "description": "Backend servers for SkillForge games that require server-side logic",
   "scripts": {
     "start": "node start-all.js",
+    "chess": "node games/chess/socket-server.js",
     "tictactoe": "node games/tictactoe/socket-server.js",
     "chroma-memory": "node games/chroma-memory/socket-server.js",
     "spelling-bee": "node games/spelling-bee/server.js"
