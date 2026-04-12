@@ -92,9 +92,23 @@ To play across two different machines on the same network:
 
 ## Adding More Multiplayer Games
 
-See [ADDING_GAMES.md](ADDING_GAMES.md) for the full guide. For a game that needs a WebSocket backend:
+See [ADDING_GAMES.md](ADDING_GAMES.md) for the full deployment and registration guide, and [scripts/GAME_DATA_COLLECTION_PROMPT.md](scripts/GAME_DATA_COLLECTION_PROMPT.md) for the postMessage data collection integration. For a game that needs a WebSocket backend:
 
 1. Add the server file to `server/games/<game-id>/`.
 2. Register it in `server/start-all.js`.
 3. Add a Vite proxy rule in `vite.config.js` for the socket path.
 4. In the game frontend, connect to the socket server via the proxied path (use a relative URL so it works in both dev and production).
+
+### Score reporting for multiplayer games
+
+Multiplayer games that track per-mode statistics must include a `mode` field in their `GAME_STATS` message:
+
+```js
+postToParent('GAME_STATS', {
+  mode: 'multiplayer',  // or 'singleplayer'
+  score: finalScore,    // the numeric score for this match
+  // ... any other fields
+});
+```
+
+`GamePlayer.jsx` currently has a hardcoded branch for `chroma-memory` that routes these to `saveModeScoreStats()` for weighted per-mode aggregation. For any **new** multiplayer game that needs the same treatment, add a matching branch in `GamePlayer.jsx`'s `handleMessage` function — see the **Special Cases** section in `scripts/GAME_DATA_COLLECTION_PROMPT.md`.
