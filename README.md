@@ -178,6 +178,61 @@ SkillForge supports real-time multiplayer via a Socket.IO WebSocket server. See 
 - During deployment, ensure the `CHESS_PORT` service is reachable from clients
 - If chess socket host is different from the main app host, set `VITE_CHESS_SOCKET_URL` in frontend env
 
+## Production Deployment (Raspberry Pi + Nginx Proxy Manager)
+
+This project now includes a Docker production stack designed to run behind **Nginx Proxy Manager (NPM)**.
+
+### 1. Files included
+
+- `docker-compose.prod.yml` - runs frontend + backend game services
+- `Dockerfile.frontend` - builds Vite app and serves with Nginx
+- `nginx/skillforge.conf` - routes API + WebSocket paths inside the stack
+- `server/Dockerfile` - runtime image for all backend game services
+
+### 2. Run on Raspberry Pi
+
+```bash
+# from project root
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Frontend container is exposed on host port `8080`.
+
+### 3. Configure Nginx Proxy Manager
+
+Create one Proxy Host in NPM:
+
+- Domain: your domain/subdomain (example: `skillforge.yourdomain.com`)
+- Scheme: `http`
+- Forward Hostname/IP: your Raspberry Pi host (or Docker host)
+- Forward Port: `8080`
+- Websockets Support: **ON**
+- Block Common Exploits: ON (recommended)
+- SSL tab: request/attach Let's Encrypt certificate
+
+You do **not** need separate NPM routes for `/api` or websocket paths.
+The frontend container's Nginx already forwards:
+
+- `/api/*` -> Spelling Bee API service
+- `/tictactoe-ws/*` -> TicTacToe socket service
+- `/chess-ws/*` -> Chess socket service
+- `/chroma-memory-ws/*` -> Chroma Memory socket service
+
+### 4. Environment variables (production)
+
+For Spelling Bee API features, set these in your deployment environment before starting Compose:
+
+- `WORDSAPI_KEY`
+- `WORDSAPI_HOST` (optional, defaults to `wordsapiv1.p.rapidapi.com`)
+- `GOOGLE_APPLICATION_CREDENTIALS` (optional, only if using Google TTS)
+
+### 5. Update workflow
+
+```bash
+git pull
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
 ## Development
 
 ### Available Scripts

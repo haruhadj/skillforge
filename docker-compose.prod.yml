@@ -1,0 +1,70 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: skillforge-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - tictactoe
+      - chess
+      - chroma-memory
+      - spelling-bee
+
+  tictactoe:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: skillforge-tictactoe
+    restart: unless-stopped
+    command: ["node", "games/tictactoe/socket-server.js"]
+    environment:
+      - TICTACTOE_PORT=3001
+    expose:
+      - "3001"
+
+  chess:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: skillforge-chess
+    restart: unless-stopped
+    command: ["node", "games/chess/socket-server.js"]
+    environment:
+      - CHESS_PORT=3004
+    expose:
+      - "3004"
+
+  chroma-memory:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: skillforge-chroma-memory
+    restart: unless-stopped
+    command: ["node", "games/chroma-memory/socket-server.js"]
+    environment:
+      - CHROMA_MEMORY_PORT=3002
+    expose:
+      - "3002"
+
+  spelling-bee:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: skillforge-spelling-bee
+    restart: unless-stopped
+    command: ["node", "games/spelling-bee/server.js"]
+    environment:
+      - NODE_ENV=production
+      - PORT=8787
+      - WORDSAPI_KEY=${WORDSAPI_KEY}
+      - WORDSAPI_HOST=${WORDSAPI_HOST:-wordsapiv1.p.rapidapi.com}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
+    expose:
+      - "8787"
+
+networks:
+  default:
+    name: skillforge-net
