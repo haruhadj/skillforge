@@ -76,6 +76,7 @@ export async function ensureUserProfileDocument(user) {
     return null
   }
 
+  const existingProfile = await getUserProfile(user.uid)
   const profileRef = doc(db, 'users', user.uid)
   const payload = {
     email: user.email || null,
@@ -83,7 +84,10 @@ export async function ensureUserProfileDocument(user) {
     updatedAt: serverTimestamp(),
   }
 
-  const existingProfile = await getUserProfile(user.uid)
+  if (!existingProfile?.photoURL && user.photoURL) {
+    payload.photoURL = user.photoURL
+    payload.photoThumbURL = user.photoURL
+  }
 
   if (!existingProfile?.createdAt) {
     payload.createdAt = serverTimestamp()

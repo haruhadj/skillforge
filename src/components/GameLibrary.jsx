@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/useAuth'
 import ThemeToggle from './ThemeToggle'
 import { getUserProfile } from '../services/userProfileService'
 
-export default function GameLibrary({ onSelect, onLogout, onStats, displayName }) {
+export default function GameLibrary({ onSelect, onLogout, onStats, onLeaderboard, displayName }) {
   const { currentUser } = useAuth()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [avatarURL, setAvatarURL] = useState(null)
@@ -78,6 +78,16 @@ export default function GameLibrary({ onSelect, onLogout, onStats, displayName }
                       <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z" />
                     </svg>
                     My Profile
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setDropdownOpen(false); onLeaderboard() }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 dark:text-gray-200 dark:hover:bg-gray-700/60"
+                  >
+                    <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.496m0 0L12 12m0 0V3.75" />
+                    </svg>
+                    Leaderboard
                   </button>
                   <button
                     type="button"

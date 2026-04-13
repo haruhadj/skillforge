@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import { useAuth } from '../contexts/useAuth'
 import GameLibrary from './GameLibrary'
 import GamePlayer from './GamePlayer'
+import LeaderboardPage from './LeaderboardPage'
 import ProfilePage from './ProfilePage'
 import StartScreen from './StartScreen'
 import LoginScreen from './LoginScreen'
@@ -247,6 +248,7 @@ function SkillForge() {
                 onSelect={(gameId) => navigate(`/play/${gameId}`)}
                 onLogout={handleLogout}
                 onStats={() => navigate('/profile')}
+                onLeaderboard={() => navigate('/leaderboard')}
                 displayName={activePlayerName}
               />
             ) : (
@@ -259,6 +261,16 @@ function SkillForge() {
           element={
             canAccessGameViews ? (
               <ProfilePage onBack={() => navigate('/library')} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            canAccessGameViews ? (
+              <LeaderboardPage onBack={() => navigate('/library')} />
             ) : (
               <Navigate to="/" replace />
             )
