@@ -1,6 +1,7 @@
 import { db } from '../firebase'
 import {
   collection,
+  collectionGroup,
   doc,
   getDoc,
   getDocs,
@@ -151,4 +152,46 @@ export async function saveModeScoreStats(uid, gameId, mode, score) {
   }, { merge: true })
 
   return mergedStats
+}
+
+/**
+ * Fetch per-game leaderboard: top players ranked by bestScore for a given gameId.
+ * Returns an array sorted descending: [{ uid, bestScore, updatedAt }, ...]
+ */
+export async function getGameLeaderboard(gameId) {
+  const snap = await getDocs(collectionGroup(db, 'scores'))
+  const rows = []
+  snap.forEach((docSnap) => {
+    // path is users/{uid}/scores/{gameId}
+    if (docSnap.id !== gameId) return
+    const pathParts = docSnap.ref.path.split('/')
+    const uid = pathParts[1]
+    const data = docSnap.data()
+    if (data.bestScore != null) {
+      rows.push({ uid, bestScore: data.bestScore, updatedAt: data.updatedAt })
+    }
+  })
+  rows.sort((a, b) => b.bestScore - a.bestScore)
+  return rows
+}
+
+/**
+ * Fetch global leaderboard: top players ranked by total matches played across all games.
+ * Returns an array sorted descending: [{ uid, totalMatchCount }, ...]
+ */
+export async function getGlobalLeaderboard() {
+  const snap = await getDocs(collectionGroup(db, 'gameStats'))
+  const byUid = {}
+  snap.forEach((docSnap) => {
+    // path is users/{uid}/gameStats/{gameId}
+    const pathParts = docSnap.ref.path.split('/')
+    const uid = pathParts[1]
+    const data = docSnap.data()
+    const count = Number(data.totalMatchCount) || 0
+    if (!byUid[uid]) byUid[uid] = 0
+    byUid[uid] += count
+  })
+  return Object.entries(byUid)
+    .map(([uid, totalMatchCount]) => ({ uid, totalMatchCount }))
+    .sort((a, b) => b.totalMatchCount - a.totalMatchCount)
 }

@@ -19,6 +19,11 @@ export const games = [
     iframePath: '/games/chess/index.html',
   },
   {
+    id: 'geomaster',
+    name: 'GeoMaster',
+    iframePath: '/games/geomaster/index.html',
+  },
+  {
     id: 'sudoku',
     name: 'Sudoku',
     iframePath: '/games/sudoku/index.html',
@@ -47,5 +52,10 @@ export const games = [
     id: 'chroma-memory',
     name: 'Chroma Memory',
     iframePath: '/games/chroma-memory/index.html',
+  },
+  {
+    id: 'color-memory',
+    name: 'Color Memory',
+    iframePath: '/games/color-memory/index.html',
   },
 ]
