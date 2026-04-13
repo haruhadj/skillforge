@@ -87,35 +87,35 @@ export default function LeaderboardPage({ onBack }) {
   const metricLabel = viewMode === 'global' ? 'Total Matches' : 'Best Score'
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
+    <div className="min-h-screen gradient-bg transition-colors duration-500">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-slate-50/90 dark:bg-gray-950/90 backdrop-blur border-b border-slate-200 dark:border-gray-800">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 py-4 flex items-center gap-3">
+      <div className="sticky top-0 z-10 glass border-b border-slate-200/50 dark:border-gray-700/50">
+        <div className="mx-auto max-w-4xl px-6 py-4 flex items-center gap-3 animate-fade-in">
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hover:-translate-y-0.5"
           >
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
             </svg>
-            Library
+            Back
           </button>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white flex-1 text-center">Leaderboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white flex-1 text-center tracking-tight">Leaderboard</h1>
           <ThemeToggle />
         </div>
 
         {/* Filter bar */}
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 pb-4">
+        <div className="mx-auto max-w-4xl px-6 pb-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="inline-flex rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1">
+            <div className="inline-flex rounded-lg border border-slate-200 dark:border-gray-600 glass p-1">
               <button
                 type="button"
                 onClick={() => setViewMode('global')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${
                   viewMode === 'global'
-                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300'
-                    : 'text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white'
+                    ? 'bg-indigo-500/20 text-indigo-700 dark:bg-indigo-500/30 dark:text-indigo-300'
+                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white'
                 }`}
               >
                 All Games
@@ -123,17 +123,17 @@ export default function LeaderboardPage({ onBack }) {
               <button
                 type="button"
                 onClick={() => setViewMode('game')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${
                   viewMode === 'game'
-                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300'
-                    : 'text-slate-600 dark:text-gray-300 hover:text-slate-800 dark:hover:text-white'
+                    ? 'bg-indigo-500/20 text-indigo-700 dark:bg-indigo-500/30 dark:text-indigo-300'
+                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white'
                 }`}
               >
                 By Game
               </button>
             </div>
 
-            <div className="sm:min-w-56">
+            <div className="sm:min-w-64">
               <label className="sr-only" htmlFor="leaderboard-game-filter">Choose game</label>
               <select
                 id="leaderboard-game-filter"
@@ -143,7 +143,7 @@ export default function LeaderboardPage({ onBack }) {
                   setViewMode('game')
                 }}
                 disabled={viewMode !== 'game'}
-                className="w-full rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-slate-700 dark:text-gray-200 disabled:opacity-60"
+                className="w-full rounded-lg border border-slate-200 dark:border-gray-600 glass px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-gray-200 disabled:opacity-50 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               >
                 {games.map((game) => (
                   <option key={game.id} value={game.id}>{game.name}</option>
@@ -155,11 +155,11 @@ export default function LeaderboardPage({ onBack }) {
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6">
+      <div className="mx-auto max-w-4xl px-6 py-8">
         {loading && (
           <div className="space-y-3">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-16 rounded-2xl bg-slate-200 dark:bg-gray-800 animate-pulse" />
+              <div key={i} className="h-16 rounded-xl glass animate-pulse" />
             ))}
           </div>
         )}
