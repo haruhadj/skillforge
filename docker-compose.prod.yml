@@ -66,11 +66,14 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8787
+      - HOST=0.0.0.0
       - WORDSAPI_KEY=${WORDSAPI_KEY}
       - WORDSAPI_HOST=${WORDSAPI_HOST:-wordsapiv1.p.rapidapi.com}
-      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/tts-key.json
     expose:
       - "8787"
+    volumes:
+      - ./server/tts-key.json:/app/tts-key.json:ro
 
 networks:
   default:
