@@ -2,12 +2,15 @@ import 'dotenv/config';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import express from 'express';
+import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import NodeCache from 'node-cache';
 import textToSpeech from '@google-cloud/text-to-speech';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+
+app.use(cors());
 
 const PORT = Number(process.env.PORT) || 8787;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -121,7 +124,8 @@ async function fillPool(difficulty) {
 // Requires GOOGLE_APPLICATION_CREDENTIALS env var pointing to a service-account JSON key
 let ttsClient = null;
 function getTtsClient() {
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) return null;
+  const credsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  if (!credsPath || credsPath.trim() === '') return null;
   if (!ttsClient) {
     ttsClient = new textToSpeech.TextToSpeechClient();
   }
@@ -301,14 +305,16 @@ app.get('/api/tts', async (req, res) => {
 
 // ── SPA fallback: serve index.html for all non-API routes in production ──
 if (NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
+  app.get('*path', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
 
-app.listen(PORT, () => {
+const HOST = process.env.HOST || '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
   // eslint-disable-next-line no-console
-  console.log(`[${NODE_ENV}] Server listening on http://localhost:${PORT}`);
+  console.log(`[${NODE_ENV}] Server listening on http://${HOST}:${PORT}`);
   // Pre-warm word pools on startup (non-blocking)
   if (WORDSAPI_KEY) {
     // eslint-disable-next-line no-console
