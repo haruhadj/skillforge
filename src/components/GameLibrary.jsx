@@ -142,7 +142,7 @@ export default function GameLibrary({ onSelect, onLogout, onStats, onLeaderboard
                 <div className="flex flex-1 flex-col justify-between gap-4 p-5">
                   <div>
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white line-clamp-2">{game.name}</h3>
-                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-2 font-350">Educational game</p>
+                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-2 font-350">{game.description}</p>
                   </div>
                   
                   <button
