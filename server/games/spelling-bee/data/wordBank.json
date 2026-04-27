@@ -1,0 +1,1128 @@
+{
+  "easy": [
+    {
+      "word": "cat",
+      "definition": "A small domesticated carnivorous mammal.",
+      "partOfSpeech": "noun",
+      "example": "The cat sat on the mat.",
+      "topic": "animals"
+    },
+    {
+      "word": "sun",
+      "definition": "The star at the center of our solar system.",
+      "partOfSpeech": "noun",
+      "example": "The sun shines brightly today.",
+      "topic": "science"
+    },
+    {
+      "word": "jump",
+      "definition": "To push oneself off a surface and into the air.",
+      "partOfSpeech": "verb",
+      "example": "She can jump very high.",
+      "topic": "sports"
+    },
+    {
+      "word": "blue",
+      "definition": "A color resembling the sky on a clear day.",
+      "partOfSpeech": "adjective",
+      "example": "The blue sky was beautiful.",
+      "topic": "general"
+    },
+    {
+      "word": "fast",
+      "definition": "Moving or capable of moving at high speed.",
+      "partOfSpeech": "adjective",
+      "example": "The fast car zoomed past.",
+      "topic": "general"
+    },
+    {
+      "word": "tree",
+      "definition": "A woody perennial plant with a trunk.",
+      "partOfSpeech": "noun",
+      "example": "A bird sat in the tree.",
+      "topic": "science"
+    },
+    {
+      "word": "book",
+      "definition": "A written or printed work consisting of pages.",
+      "partOfSpeech": "noun",
+      "example": "She read the book in one day.",
+      "topic": "general"
+    },
+    {
+      "word": "rain",
+      "definition": "Water falling from clouds in drops.",
+      "partOfSpeech": "noun",
+      "example": "The rain fell softly.",
+      "topic": "science"
+    },
+    {
+      "word": "dog",
+      "definition": "A domesticated carnivorous mammal.",
+      "partOfSpeech": "noun",
+      "example": "The dog wagged its tail.",
+      "topic": "animals"
+    },
+    {
+      "word": "frog",
+      "definition": "A tailless amphibian with long hind legs.",
+      "partOfSpeech": "noun",
+      "example": "The frog jumped into the pond.",
+      "topic": "animals"
+    },
+    {
+      "word": "bear",
+      "definition": "A large heavy mammal with thick fur.",
+      "partOfSpeech": "noun",
+      "example": "The bear caught a fish from the river.",
+      "topic": "animals"
+    },
+    {
+      "word": "bird",
+      "definition": "A warm-blooded egg-laying vertebrate with feathers.",
+      "partOfSpeech": "noun",
+      "example": "The bird sang a beautiful song.",
+      "topic": "animals"
+    },
+    {
+      "word": "fish",
+      "definition": "A limbless cold-blooded aquatic vertebrate.",
+      "partOfSpeech": "noun",
+      "example": "We watched the fish swim in the tank.",
+      "topic": "animals"
+    },
+    {
+      "word": "moon",
+      "definition": "The natural satellite of the earth.",
+      "partOfSpeech": "noun",
+      "example": "The moon shone brightly at night.",
+      "topic": "science"
+    },
+    {
+      "word": "star",
+      "definition": "A luminous point in the night sky.",
+      "partOfSpeech": "noun",
+      "example": "She wished upon a star.",
+      "topic": "science"
+    },
+    {
+      "word": "atom",
+      "definition": "The smallest unit of a chemical element.",
+      "partOfSpeech": "noun",
+      "example": "Everything is made of atoms.",
+      "topic": "science"
+    },
+    {
+      "word": "cell",
+      "definition": "The smallest structural unit of a living organism.",
+      "partOfSpeech": "noun",
+      "example": "Each cell contains DNA.",
+      "topic": "science"
+    },
+    {
+      "word": "lake",
+      "definition": "A large body of water surrounded by land.",
+      "partOfSpeech": "noun",
+      "example": "They swam in the lake.",
+      "topic": "geography"
+    },
+    {
+      "word": "hill",
+      "definition": "A naturally raised area of land.",
+      "partOfSpeech": "noun",
+      "example": "They climbed to the top of the hill.",
+      "topic": "geography"
+    },
+    {
+      "word": "cave",
+      "definition": "A natural underground chamber.",
+      "partOfSpeech": "noun",
+      "example": "Bats live inside the cave.",
+      "topic": "geography"
+    },
+    {
+      "word": "isle",
+      "definition": "A small island.",
+      "partOfSpeech": "noun",
+      "example": "The isle was surrounded by clear water.",
+      "topic": "geography"
+    },
+    {
+      "word": "cake",
+      "definition": "A sweet baked dessert.",
+      "partOfSpeech": "noun",
+      "example": "She baked a chocolate cake.",
+      "topic": "food"
+    },
+    {
+      "word": "soup",
+      "definition": "A liquid dish made by boiling ingredients.",
+      "partOfSpeech": "noun",
+      "example": "Hot soup warms you up on cold days.",
+      "topic": "food"
+    },
+    {
+      "word": "rice",
+      "definition": "Grains from a cereal plant used as food.",
+      "partOfSpeech": "noun",
+      "example": "Rice is a staple food in many countries.",
+      "topic": "food"
+    },
+    {
+      "word": "corn",
+      "definition": "A tall cereal plant bearing grains on a cob.",
+      "partOfSpeech": "noun",
+      "example": "They picked fresh corn from the field.",
+      "topic": "food"
+    },
+    {
+      "word": "bake",
+      "definition": "To cook food by dry heat in an oven.",
+      "partOfSpeech": "verb",
+      "example": "Let us bake cookies today.",
+      "topic": "food"
+    },
+    {
+      "word": "drum",
+      "definition": "A percussion instrument struck with sticks.",
+      "partOfSpeech": "noun",
+      "example": "He played the drum in the band.",
+      "topic": "music"
+    },
+    {
+      "word": "harp",
+      "definition": "A stringed instrument played by plucking.",
+      "partOfSpeech": "noun",
+      "example": "The harp produced a beautiful sound.",
+      "topic": "music"
+    },
+    {
+      "word": "song",
+      "definition": "A short piece of music with words.",
+      "partOfSpeech": "noun",
+      "example": "She sang a lovely song.",
+      "topic": "music"
+    },
+    {
+      "word": "note",
+      "definition": "A single sound of a particular pitch.",
+      "partOfSpeech": "noun",
+      "example": "He held the note perfectly.",
+      "topic": "music"
+    },
+    {
+      "word": "goal",
+      "definition": "A point scored in a game.",
+      "partOfSpeech": "noun",
+      "example": "She scored the winning goal.",
+      "topic": "sports"
+    },
+    {
+      "word": "kick",
+      "definition": "To strike with the foot.",
+      "partOfSpeech": "verb",
+      "example": "He learned to kick the ball far.",
+      "topic": "sports"
+    },
+    {
+      "word": "race",
+      "definition": "A competition of speed.",
+      "partOfSpeech": "noun",
+      "example": "She won first place in the race.",
+      "topic": "sports"
+    },
+    {
+      "word": "swim",
+      "definition": "To move through water using the body.",
+      "partOfSpeech": "verb",
+      "example": "They love to swim in the ocean.",
+      "topic": "sports"
+    },
+    {
+      "word": "bike",
+      "definition": "A vehicle with two wheels that you pedal.",
+      "partOfSpeech": "noun",
+      "example": "He rode his bike to school.",
+      "topic": "general"
+    },
+    {
+      "word": "kite",
+      "definition": "A toy that flies in the wind on a string.",
+      "partOfSpeech": "noun",
+      "example": "The kite soared high in the sky.",
+      "topic": "general"
+    },
+    {
+      "word": "ball",
+      "definition": "A round object used in games and sports.",
+      "partOfSpeech": "noun",
+      "example": "Throw the ball to me!",
+      "topic": "sports"
+    },
+    {
+      "word": "snow",
+      "definition": "Frozen water that falls as white flakes.",
+      "partOfSpeech": "noun",
+      "example": "We played in the snow all day.",
+      "topic": "science"
+    },
+    {
+      "word": "leaf",
+      "definition": "The green part of a plant or tree.",
+      "partOfSpeech": "noun",
+      "example": "A brown leaf fell from the tree.",
+      "topic": "science"
+    },
+    {
+      "word": "rock",
+      "definition": "A solid piece of stone.",
+      "partOfSpeech": "noun",
+      "example": "He skipped a rock across the lake.",
+      "topic": "geography"
+    },
+    {
+      "word": "sand",
+      "definition": "Small grains of worn-down rock on a beach.",
+      "partOfSpeech": "noun",
+      "example": "The sand was hot on our feet.",
+      "topic": "geography"
+    },
+    {
+      "word": "wave",
+      "definition": "A moving ridge of water on the sea.",
+      "partOfSpeech": "noun",
+      "example": "A big wave crashed onto the shore.",
+      "topic": "geography"
+    },
+    {
+      "word": "boat",
+      "definition": "A small vessel for traveling on water.",
+      "partOfSpeech": "noun",
+      "example": "We took the boat out on the river.",
+      "topic": "general"
+    },
+    {
+      "word": "door",
+      "definition": "A barrier used to open and close an entrance.",
+      "partOfSpeech": "noun",
+      "example": "Please close the door behind you.",
+      "topic": "general"
+    },
+    {
+      "word": "wall",
+      "definition": "A solid vertical structure that encloses an area.",
+      "partOfSpeech": "noun",
+      "example": "The wall was painted bright blue.",
+      "topic": "general"
+    },
+    {
+      "word": "roof",
+      "definition": "The top covering of a building.",
+      "partOfSpeech": "noun",
+      "example": "Rain drummed loudly on the roof.",
+      "topic": "general"
+    },
+    {
+      "word": "road",
+      "definition": "A path or way for vehicles to travel on.",
+      "partOfSpeech": "noun",
+      "example": "The road was long and winding.",
+      "topic": "geography"
+    },
+    {
+      "word": "gate",
+      "definition": "A hinged barrier in a fence or wall.",
+      "partOfSpeech": "noun",
+      "example": "She opened the garden gate.",
+      "topic": "general"
+    },
+    {
+      "word": "bell",
+      "definition": "A hollow metal object that rings when struck.",
+      "partOfSpeech": "noun",
+      "example": "The school bell rang at noon.",
+      "topic": "music"
+    },
+    {
+      "word": "flag",
+      "definition": "A piece of cloth with a special design.",
+      "partOfSpeech": "noun",
+      "example": "The flag waved in the breeze.",
+      "topic": "general"
+    },
+    {
+      "word": "coin",
+      "definition": "A flat, round piece of metal used as money.",
+      "partOfSpeech": "noun",
+      "example": "He found a gold coin in the dirt.",
+      "topic": "general"
+    },
+    {
+      "word": "desk",
+      "definition": "A piece of furniture used for writing or working.",
+      "partOfSpeech": "noun",
+      "example": "She sat at her desk to study.",
+      "topic": "general"
+    },
+    {
+      "word": "lamp",
+      "definition": "A device that produces light.",
+      "partOfSpeech": "noun",
+      "example": "Turn on the lamp so we can see.",
+      "topic": "general"
+    },
+    {
+      "word": "farm",
+      "definition": "A place where crops are grown or animals are raised.",
+      "partOfSpeech": "noun",
+      "example": "We visited a farm to see the cows.",
+      "topic": "geography"
+    }
+  ],
+  "medium": [
+    {
+      "word": "champion",
+      "definition": "A person who has won a competition.",
+      "partOfSpeech": "noun",
+      "example": "She became the champion of the tournament.",
+      "topic": "sports"
+    },
+    {
+      "word": "graceful",
+      "definition": "Having elegance and beauty of movement.",
+      "partOfSpeech": "adjective",
+      "example": "The dancer was graceful on stage.",
+      "topic": "general"
+    },
+    {
+      "word": "triumph",
+      "definition": "A great victory or achievement.",
+      "partOfSpeech": "noun",
+      "example": "The team celebrated their triumph.",
+      "topic": "sports"
+    },
+    {
+      "word": "curious",
+      "definition": "Eager to know or learn something.",
+      "partOfSpeech": "adjective",
+      "example": "The curious child explored the garden.",
+      "topic": "general"
+    },
+    {
+      "word": "whisper",
+      "definition": "Speak very softly using one's breath.",
+      "partOfSpeech": "verb",
+      "example": "She began to whisper a secret.",
+      "topic": "general"
+    },
+    {
+      "word": "journal",
+      "definition": "A daily record of news and events.",
+      "partOfSpeech": "noun",
+      "example": "He wrote in his journal every night.",
+      "topic": "general"
+    },
+    {
+      "word": "venture",
+      "definition": "A risky or daring journey or undertaking.",
+      "partOfSpeech": "noun",
+      "example": "The venture into the unknown was exciting.",
+      "topic": "general"
+    },
+    {
+      "word": "frantic",
+      "definition": "Wildly excited or uncontrolled.",
+      "partOfSpeech": "adjective",
+      "example": "She was frantic when she lost her keys.",
+      "topic": "general"
+    },
+    {
+      "word": "dolphin",
+      "definition": "An intelligent marine mammal.",
+      "partOfSpeech": "noun",
+      "example": "The dolphin leaped out of the water.",
+      "topic": "animals"
+    },
+    {
+      "word": "penguin",
+      "definition": "A flightless seabird of the southern hemisphere.",
+      "partOfSpeech": "noun",
+      "example": "The penguin waddled across the ice.",
+      "topic": "animals"
+    },
+    {
+      "word": "leopard",
+      "definition": "A large wild cat with a spotted coat.",
+      "partOfSpeech": "noun",
+      "example": "The leopard stalked its prey.",
+      "topic": "animals"
+    },
+    {
+      "word": "parrot",
+      "definition": "A colorful bird known for mimicking speech.",
+      "partOfSpeech": "noun",
+      "example": "The parrot repeated every word.",
+      "topic": "animals"
+    },
+    {
+      "word": "giraffe",
+      "definition": "A tall African mammal with a very long neck.",
+      "partOfSpeech": "noun",
+      "example": "The giraffe reached the highest leaves.",
+      "topic": "animals"
+    },
+    {
+      "word": "gravity",
+      "definition": "The force that attracts objects toward the earth.",
+      "partOfSpeech": "noun",
+      "example": "Gravity keeps us on the ground.",
+      "topic": "science"
+    },
+    {
+      "word": "crystal",
+      "definition": "A solid whose atoms are arranged in a regular pattern.",
+      "partOfSpeech": "noun",
+      "example": "The crystal sparkled in the light.",
+      "topic": "science"
+    },
+    {
+      "word": "element",
+      "definition": "A substance that cannot be broken down further.",
+      "partOfSpeech": "noun",
+      "example": "Oxygen is a vital element for life.",
+      "topic": "science"
+    },
+    {
+      "word": "nucleus",
+      "definition": "The central part of an atom.",
+      "partOfSpeech": "noun",
+      "example": "Protons are found in the nucleus.",
+      "topic": "science"
+    },
+    {
+      "word": "sustain",
+      "definition": "To strengthen or support over a long period.",
+      "partOfSpeech": "verb",
+      "example": "Plants sustain life on earth.",
+      "topic": "science"
+    },
+    {
+      "word": "volcano",
+      "definition": "A mountain with an opening through which lava erupts.",
+      "partOfSpeech": "noun",
+      "example": "The volcano erupted with great force.",
+      "topic": "geography"
+    },
+    {
+      "word": "glacier",
+      "definition": "A slowly moving mass of ice.",
+      "partOfSpeech": "noun",
+      "example": "The glacier carved out a valley.",
+      "topic": "geography"
+    },
+    {
+      "word": "plateau",
+      "definition": "An area of elevated flat land.",
+      "partOfSpeech": "noun",
+      "example": "The plateau offered a stunning view.",
+      "topic": "geography"
+    },
+    {
+      "word": "country",
+      "definition": "A nation with its own government.",
+      "partOfSpeech": "noun",
+      "example": "Each country has its own culture.",
+      "topic": "geography"
+    },
+    {
+      "word": "waffle",
+      "definition": "A batter cake baked in a waffle iron.",
+      "partOfSpeech": "noun",
+      "example": "She topped her waffle with berries.",
+      "topic": "food"
+    },
+    {
+      "word": "muffin",
+      "definition": "A small dome-shaped baked good.",
+      "partOfSpeech": "noun",
+      "example": "He grabbed a blueberry muffin for breakfast.",
+      "topic": "food"
+    },
+    {
+      "word": "ginger",
+      "definition": "A hot fragrant spice made from a root.",
+      "partOfSpeech": "noun",
+      "example": "Ginger adds warmth to any recipe.",
+      "topic": "food"
+    },
+    {
+      "word": "pastry",
+      "definition": "Dough used as a base for baked goods.",
+      "partOfSpeech": "noun",
+      "example": "The pastry was flaky and golden.",
+      "topic": "food"
+    },
+    {
+      "word": "rhythm",
+      "definition": "A strong regular repeated pattern of sound.",
+      "partOfSpeech": "noun",
+      "example": "The rhythm made everyone dance.",
+      "topic": "music"
+    },
+    {
+      "word": "melody",
+      "definition": "A sequence of notes forming a tune.",
+      "partOfSpeech": "noun",
+      "example": "The melody was simple but beautiful.",
+      "topic": "music"
+    },
+    {
+      "word": "concert",
+      "definition": "A live performance of music.",
+      "partOfSpeech": "noun",
+      "example": "They attended a concert downtown.",
+      "topic": "music"
+    },
+    {
+      "word": "trumpet",
+      "definition": "A brass musical instrument with a bright tone.",
+      "partOfSpeech": "noun",
+      "example": "The trumpet solo was outstanding.",
+      "topic": "music"
+    },
+    {
+      "word": "trophy",
+      "definition": "A prize for winning a competition.",
+      "partOfSpeech": "noun",
+      "example": "The team lifted the trophy in celebration.",
+      "topic": "sports"
+    },
+    {
+      "word": "soccer",
+      "definition": "A game played by kicking a ball into a goal.",
+      "partOfSpeech": "noun",
+      "example": "Soccer is popular worldwide.",
+      "topic": "sports"
+    },
+    {
+      "word": "tennis",
+      "definition": "A sport played with rackets and a ball.",
+      "partOfSpeech": "noun",
+      "example": "She practices tennis every morning.",
+      "topic": "sports"
+    },
+    {
+      "word": "athlete",
+      "definition": "A person skilled in physical exercise.",
+      "partOfSpeech": "noun",
+      "example": "The athlete trained hard every day.",
+      "topic": "sports"
+    },
+    {
+      "word": "adventure",
+      "definition": "An exciting or unusual experience.",
+      "partOfSpeech": "noun",
+      "example": "Our mountain hike was a grand adventure.",
+      "topic": "general"
+    },
+    {
+      "word": "balance",
+      "definition": "A state of equal weight or force.",
+      "partOfSpeech": "noun",
+      "example": "He kept his balance on the tightrope.",
+      "topic": "sports"
+    },
+    {
+      "word": "capture",
+      "definition": "To take into one's possession or control.",
+      "partOfSpeech": "verb",
+      "example": "The photographer tried to capture the sunset.",
+      "topic": "general"
+    },
+    {
+      "word": "dazzle",
+      "definition": "To blind or confuse with brightness.",
+      "partOfSpeech": "verb",
+      "example": "The diamond's sparkle began to dazzle her.",
+      "topic": "general"
+    },
+    {
+      "word": "explore",
+      "definition": "To travel through an unfamiliar area.",
+      "partOfSpeech": "verb",
+      "example": "They want to explore the deep ocean.",
+      "topic": "geography"
+    },
+    {
+      "word": "flower",
+      "definition": "The seed-bearing part of a plant.",
+      "partOfSpeech": "noun",
+      "example": "A beautiful flower bloomed in the garden.",
+      "topic": "science"
+    },
+    {
+      "word": "garden",
+      "definition": "A plot of ground where plants are grown.",
+      "partOfSpeech": "noun",
+      "example": "She grows tomatoes in her garden.",
+      "topic": "science"
+    },
+    {
+      "word": "harvest",
+      "definition": "The process of gathering ripe crops.",
+      "partOfSpeech": "noun",
+      "example": "The farmers were busy during the harvest.",
+      "topic": "food"
+    },
+    {
+      "word": "island",
+      "definition": "A piece of land surrounded by water.",
+      "partOfSpeech": "noun",
+      "example": "We spent our vacation on a tropical island.",
+      "topic": "geography"
+    },
+    {
+      "word": "journey",
+      "definition": "The act of traveling from one place to another.",
+      "partOfSpeech": "noun",
+      "example": "The journey across the desert was difficult.",
+      "topic": "geography"
+    },
+    {
+      "word": "kitchen",
+      "definition": "A room where food is prepared and cooked.",
+      "partOfSpeech": "noun",
+      "example": "The kitchen smelled like fresh bread.",
+      "topic": "food"
+    },
+    {
+      "word": "lantern",
+      "definition": "A portable lamp with a protective case.",
+      "partOfSpeech": "noun",
+      "example": "He carried a lantern into the dark cave.",
+      "topic": "general"
+    },
+    {
+      "word": "mountain",
+      "definition": "A very large, high hill.",
+      "partOfSpeech": "noun",
+      "example": "Snow covered the top of the mountain.",
+      "topic": "geography"
+    },
+    {
+      "word": "nature",
+      "definition": "The physical world and everything in it.",
+      "partOfSpeech": "noun",
+      "example": "He loves to spend time in nature.",
+      "topic": "science"
+    },
+    {
+      "word": "ocean",
+      "definition": "The vast body of salt water covering the earth.",
+      "partOfSpeech": "noun",
+      "example": "Ships sail across the vast ocean.",
+      "topic": "geography"
+    },
+    {
+      "word": "picture",
+      "definition": "A painting, drawing, or photograph.",
+      "partOfSpeech": "noun",
+      "example": "She hung a picture on the wall.",
+      "topic": "general"
+    },
+    {
+      "word": "quiet",
+      "definition": "Making very little or no noise.",
+      "partOfSpeech": "adjective",
+      "example": "The library was very quiet.",
+      "topic": "general"
+    },
+    {
+      "word": "river",
+      "definition": "A large natural stream of water.",
+      "partOfSpeech": "noun",
+      "example": "We went fishing in the river.",
+      "topic": "geography"
+    },
+    {
+      "word": "stream",
+      "definition": "A small, narrow river.",
+      "partOfSpeech": "noun",
+      "example": "A clear stream flowed through the woods.",
+      "topic": "geography"
+    },
+    {
+      "word": "thunder",
+      "definition": "A loud rumbling noise after lightning.",
+      "partOfSpeech": "noun",
+      "example": "The sound of thunder scared the dog.",
+      "topic": "science"
+    }
+  ],
+  "hard": [
+    {
+      "word": "melancholy",
+      "definition": "A feeling of pensive sadness.",
+      "partOfSpeech": "noun",
+      "example": "A sense of melancholy filled the empty room.",
+      "topic": "general"
+    },
+    {
+      "word": "ephemeral",
+      "definition": "Lasting for a very short time.",
+      "partOfSpeech": "adjective",
+      "example": "The ephemeral beauty of cherry blossoms delighted everyone.",
+      "topic": "general"
+    },
+    {
+      "word": "tenacious",
+      "definition": "Holding firmly to a position or opinion.",
+      "partOfSpeech": "adjective",
+      "example": "Her tenacious spirit helped her succeed.",
+      "topic": "general"
+    },
+    {
+      "word": "labyrinth",
+      "definition": "A complicated irregular network of passages.",
+      "partOfSpeech": "noun",
+      "example": "They got lost in the labyrinth of streets.",
+      "topic": "geography"
+    },
+    {
+      "word": "resplendent",
+      "definition": "Attractive and impressive through being richly colorful.",
+      "partOfSpeech": "adjective",
+      "example": "She looked resplendent in her golden gown.",
+      "topic": "general"
+    },
+    {
+      "word": "oblivious",
+      "definition": "Not aware of or concerned about what is happening.",
+      "partOfSpeech": "adjective",
+      "example": "He was oblivious to the noise around him.",
+      "topic": "general"
+    },
+    {
+      "word": "cacophony",
+      "definition": "A harsh discordant mixture of sounds.",
+      "partOfSpeech": "noun",
+      "example": "The cacophony of the city overwhelmed her senses.",
+      "topic": "music"
+    },
+    {
+      "word": "persevere",
+      "definition": "Continue in a course of action despite difficulty.",
+      "partOfSpeech": "verb",
+      "example": "You must persevere through the hardest challenges.",
+      "topic": "general"
+    },
+    {
+      "word": "chameleon",
+      "definition": "A lizard that can change color.",
+      "partOfSpeech": "noun",
+      "example": "The chameleon blended into the leaves.",
+      "topic": "animals"
+    },
+    {
+      "word": "butterfly",
+      "definition": "A flying insect with large colorful wings.",
+      "partOfSpeech": "noun",
+      "example": "The butterfly landed on the flower.",
+      "topic": "animals"
+    },
+    {
+      "word": "crocodile",
+      "definition": "A large predatory semiaquatic reptile.",
+      "partOfSpeech": "noun",
+      "example": "The crocodile lurked beneath the water.",
+      "topic": "animals"
+    },
+    {
+      "word": "rhinoceros",
+      "definition": "A large herbivorous mammal with horns.",
+      "partOfSpeech": "noun",
+      "example": "The rhinoceros charged across the plain.",
+      "topic": "animals"
+    },
+    {
+      "word": "hypothesis",
+      "definition": "A proposed explanation made as a starting point.",
+      "partOfSpeech": "noun",
+      "example": "The scientist tested her hypothesis.",
+      "topic": "science"
+    },
+    {
+      "word": "experiment",
+      "definition": "A scientific procedure to test a hypothesis.",
+      "partOfSpeech": "noun",
+      "example": "The experiment yielded surprising results.",
+      "topic": "science"
+    },
+    {
+      "word": "microscope",
+      "definition": "An instrument used to see very small objects.",
+      "partOfSpeech": "noun",
+      "example": "She examined the cells under a microscope.",
+      "topic": "science"
+    },
+    {
+      "word": "phenomenon",
+      "definition": "A fact or event observed to exist or happen.",
+      "partOfSpeech": "noun",
+      "example": "The aurora borealis is a natural phenomenon.",
+      "topic": "science"
+    },
+    {
+      "word": "archipelago",
+      "definition": "A group of islands.",
+      "partOfSpeech": "noun",
+      "example": "The archipelago stretched across the ocean.",
+      "topic": "geography"
+    },
+    {
+      "word": "peninsula",
+      "definition": "Land surrounded by water on three sides.",
+      "partOfSpeech": "noun",
+      "example": "The peninsula jutted into the sea.",
+      "topic": "geography"
+    },
+    {
+      "word": "continent",
+      "definition": "One of the seven major land masses.",
+      "partOfSpeech": "noun",
+      "example": "Africa is the second largest continent.",
+      "topic": "geography"
+    },
+    {
+      "word": "hemisphere",
+      "definition": "One half of the earth.",
+      "partOfSpeech": "noun",
+      "example": "Australia is in the southern hemisphere.",
+      "topic": "geography"
+    },
+    {
+      "word": "restaurant",
+      "definition": "A place where meals are prepared and served.",
+      "partOfSpeech": "noun",
+      "example": "They dined at a fancy restaurant.",
+      "topic": "food"
+    },
+    {
+      "word": "marmalade",
+      "definition": "A preserve made from citrus fruit.",
+      "partOfSpeech": "noun",
+      "example": "She spread marmalade on her toast.",
+      "topic": "food"
+    },
+    {
+      "word": "cantaloupe",
+      "definition": "A type of melon with orange flesh.",
+      "partOfSpeech": "noun",
+      "example": "The cantaloupe was perfectly ripe.",
+      "topic": "food"
+    },
+    {
+      "word": "cinnamon",
+      "definition": "An aromatic spice from tree bark.",
+      "partOfSpeech": "noun",
+      "example": "Cinnamon adds a warm flavor to desserts.",
+      "topic": "food"
+    },
+    {
+      "word": "xylophone",
+      "definition": "A percussion instrument with wooden bars.",
+      "partOfSpeech": "noun",
+      "example": "She played a tune on the xylophone.",
+      "topic": "music"
+    },
+    {
+      "word": "crescendo",
+      "definition": "A gradual increase in loudness.",
+      "partOfSpeech": "noun",
+      "example": "The music rose to a dramatic crescendo.",
+      "topic": "music"
+    },
+    {
+      "word": "orchestra",
+      "definition": "A large group of musicians playing together.",
+      "partOfSpeech": "noun",
+      "example": "The orchestra performed a symphony.",
+      "topic": "music"
+    },
+    {
+      "word": "rehearsal",
+      "definition": "A practice session for a performance.",
+      "partOfSpeech": "noun",
+      "example": "The band had a rehearsal before the show.",
+      "topic": "music"
+    },
+    {
+      "word": "tournament",
+      "definition": "A series of contests between many competitors.",
+      "partOfSpeech": "noun",
+      "example": "Teams from around the world joined the tournament.",
+      "topic": "sports"
+    },
+    {
+      "word": "gymnasium",
+      "definition": "A room or building for indoor sports.",
+      "partOfSpeech": "noun",
+      "example": "The gymnasium echoed with cheering fans.",
+      "topic": "sports"
+    },
+    {
+      "word": "trampoline",
+      "definition": "A device for bouncing on, used in gymnastics.",
+      "partOfSpeech": "noun",
+      "example": "She practiced flips on the trampoline.",
+      "topic": "sports"
+    },
+    {
+      "word": "badminton",
+      "definition": "A sport played with rackets and a shuttlecock.",
+      "partOfSpeech": "noun",
+      "example": "They played badminton in the backyard.",
+      "topic": "sports"
+    },
+    {
+      "word": "ambiguous",
+      "definition": "Open to more than one interpretation.",
+      "partOfSpeech": "adjective",
+      "example": "The ending of the movie was very ambiguous.",
+      "topic": "general"
+    },
+    {
+      "word": "benevolent",
+      "definition": "Well meaning and kindly.",
+      "partOfSpeech": "adjective",
+      "example": "The benevolent queen helped the poor.",
+      "topic": "general"
+    },
+    {
+      "word": "courageous",
+      "definition": "Not deterred by danger or pain; brave.",
+      "partOfSpeech": "adjective",
+      "example": "The courageous firefighter saved the cat.",
+      "topic": "general"
+    },
+    {
+      "word": "diligent",
+      "definition": "Having or showing care and conscientiousness.",
+      "partOfSpeech": "adjective",
+      "example": "A diligent student always does their homework.",
+      "topic": "general"
+    },
+    {
+      "word": "eloquent",
+      "definition": "Fluent or persuasive in speaking or writing.",
+      "partOfSpeech": "adjective",
+      "example": "The senator gave an eloquent speech.",
+      "topic": "general"
+    },
+    {
+      "word": "formidable",
+      "definition": "Inspiring fear or respect through being large.",
+      "partOfSpeech": "adjective",
+      "example": "The mountain presented a formidable challenge.",
+      "topic": "geography"
+    },
+    {
+      "word": "gregarious",
+      "definition": "Fond of company; sociable.",
+      "partOfSpeech": "adjective",
+      "example": "He is a gregarious person who loves parties.",
+      "topic": "general"
+    },
+    {
+      "word": "hierarchy",
+      "definition": "A system in which members are ranked.",
+      "partOfSpeech": "noun",
+      "example": "There is a strict hierarchy in the army.",
+      "topic": "general"
+    },
+    {
+      "word": "inevitable",
+      "definition": "Certain to happen; unavoidable.",
+      "partOfSpeech": "adjective",
+      "example": "Change is an inevitable part of life.",
+      "topic": "general"
+    },
+    {
+      "word": "juxtapose",
+      "definition": "To place close together for contrast.",
+      "partOfSpeech": "verb",
+      "example": "The artist likes to juxtapose light and dark colors.",
+      "topic": "general"
+    },
+    {
+      "word": "knowledge",
+      "definition": "Facts, information, and skills acquired.",
+      "partOfSpeech": "noun",
+      "example": "He has a vast knowledge of history.",
+      "topic": "general"
+    },
+    {
+      "word": "luminous",
+      "definition": "Full of or shedding light; bright.",
+      "partOfSpeech": "adjective",
+      "example": "The watch has luminous hands for night viewing.",
+      "topic": "science"
+    },
+    {
+      "word": "meticulous",
+      "definition": "Showing great attention to detail.",
+      "partOfSpeech": "adjective",
+      "example": "She is meticulous about keeping her room clean.",
+      "topic": "general"
+    },
+    {
+      "word": "notorious",
+      "definition": "Famous or well known for something bad.",
+      "partOfSpeech": "adjective",
+      "example": "The pirate was notorious for his cruelty.",
+      "topic": "general"
+    },
+    {
+      "word": "omnipresent",
+      "definition": "Widely or constantly encountered; widespread.",
+      "partOfSpeech": "adjective",
+      "example": "Smartphones are omnipresent in modern society.",
+      "topic": "science"
+    },
+    {
+      "word": "precarious",
+      "definition": "Not securely held or in position.",
+      "partOfSpeech": "adjective",
+      "example": "The vase was in a precarious position on the edge.",
+      "topic": "general"
+    },
+    {
+      "word": "quintessential",
+      "definition": "Representing the most perfect example of a quality.",
+      "partOfSpeech": "adjective",
+      "example": "It was the quintessential summer day.",
+      "topic": "general"
+    },
+    {
+      "word": "resilient",
+      "definition": "Able to withstand or recover quickly from difficult conditions.",
+      "partOfSpeech": "adjective",
+      "example": "She is a resilient person who never gives up.",
+      "topic": "general"
+    },
+    {
+      "word": "scrutinized",
+      "definition": "Examine or inspect closely and thoroughly.",
+      "partOfSpeech": "verb",
+      "example": "The judge scrutinized the evidence.",
+      "topic": "general"
+    },
+    {
+      "word": "tranquil",
+      "definition": "Free from disturbance; calm.",
+      "partOfSpeech": "adjective",
+      "example": "The lake was tranquil in the early morning.",
+      "topic": "geography"
+    }
+  ]
+}

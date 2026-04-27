@@ -7,7 +7,7 @@
  * 3) If you want a different renderer (e.g. React component), update GamePlayer accordingly.
  */
 
-export const games = [
+export const defaultGames = [
   {
     id: '2048',
     name: '2048',
@@ -75,3 +75,29 @@ export const games = [
     description: 'Step into history. Test your knowledge of the Philippine national hero.',
   },
 ];
+
+/** Backward-compatible alias — existing code that imports { games } still works. */
+export const games = defaultGames;
+
+/**
+ * Merge Firestore-stored games with the hardcoded defaults.
+ * Firestore entries take precedence when the same id exists in both.
+ * Games with `enabled === false` in Firestore are excluded.
+ */
+export function mergeGamesWithFirestore(firestoreGames = []) {
+  const merged = new Map();
+
+  // Seed with defaults
+  for (const game of defaultGames) {
+    merged.set(game.id, { ...game });
+  }
+
+  // Overlay Firestore entries
+  for (const game of firestoreGames) {
+    if (!game.id) continue;
+    merged.set(game.id, { ...merged.get(game.id), ...game });
+  }
+
+  // Filter out disabled games and return
+  return Array.from(merged.values()).filter((g) => g.enabled !== false);
+}
