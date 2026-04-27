@@ -9,6 +9,8 @@ import ProfilePage from './ProfilePage'
 import StartScreen from './StartScreen'
 import LoginScreen from './LoginScreen'
 import SignupScreen from './SignupScreen'
+import AdminPage from './AdminPage'
+import { isAdmin as checkIsAdmin } from '../services/adminService'
 import {
   claimUsername,
   createSuggestedUsername,
@@ -32,6 +34,7 @@ function SkillForge() {
   const [isCustomizingUsername, setIsCustomizingUsername] = useState(false)
   const [isSavingUsername, setIsSavingUsername] = useState(false)
   const [usernameSetupError, setUsernameSetupError] = useState('')
+  const [isAdminUser, setIsAdminUser] = useState(false)
   const { currentUser, login, signup, logout, signInWithGoogle } = useAuth()
   const canAccessGameViews = Boolean(currentUser)
 
@@ -168,6 +171,7 @@ function SkillForge() {
       setIsCustomizingUsername(false)
       setUsernameChoice('')
       setUsernameSetupError('')
+      setIsAdminUser(false)
       return
     }
 
@@ -176,12 +180,16 @@ function SkillForge() {
 
     Promise.resolve()
       .then(() => ensureUserProfileDocument(currentUser))
-      .then(() => getUserProfile(currentUser.uid))
-      .then((profile) => {
+      .then(() => Promise.all([
+        getUserProfile(currentUser.uid),
+        checkIsAdmin(currentUser.uid),
+      ]))
+      .then(([profile, adminFlag]) => {
         if (!isMounted) {
           return
         }
         setUserProfile(profile)
+        setIsAdminUser(adminFlag)
       })
       .catch((error) => {
         if (!isMounted) {
@@ -249,7 +257,9 @@ function SkillForge() {
                 onLogout={handleLogout}
                 onStats={() => navigate('/profile')}
                 onLeaderboard={() => navigate('/leaderboard')}
+                onAdmin={() => navigate('/admin')}
                 displayName={activePlayerName}
+                isAdmin={isAdminUser}
               />
             ) : (
               <Navigate to="/" replace />
@@ -283,6 +293,16 @@ function SkillForge() {
               <PlayRoute onBack={() => navigate('/library')} playerName={activePlayerName} />
             ) : (
               <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            canAccessGameViews && isAdminUser ? (
+              <AdminPage onBack={() => navigate('/library')} />
+            ) : (
+              <Navigate to={canAccessGameViews ? '/library' : '/'} replace />
             )
           }
         />

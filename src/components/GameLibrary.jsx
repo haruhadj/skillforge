@@ -3,11 +3,14 @@ import { games } from '../games/games'
 import { useAuth } from '../contexts/useAuth'
 import ThemeToggle from './ThemeToggle'
 import { getUserProfile } from '../services/userProfileService'
+import { getActiveAnnouncements } from '../services/adminService'
 
-export default function GameLibrary({ onSelect, onLogout, onStats, onLeaderboard, displayName }) {
+export default function GameLibrary({ onSelect, onLogout, onStats, onLeaderboard, onAdmin, displayName, isAdmin }) {
   const { currentUser } = useAuth()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [avatarURL, setAvatarURL] = useState(null)
+  const [announcements, setAnnouncements] = useState([])
+  const [dismissedAnnouncements, setDismissedAnnouncements] = useState([])
   const dropdownRef = useRef(null)
 
   useEffect(() => {
@@ -29,6 +32,12 @@ export default function GameLibrary({ onSelect, onLogout, onStats, onLeaderboard
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [dropdownOpen])
+
+  useEffect(() => {
+    getActiveAnnouncements()
+      .then(setAnnouncements)
+      .catch(() => {})
+  }, [])
 
   const name = displayName || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
@@ -93,6 +102,18 @@ export default function GameLibrary({ onSelect, onLogout, onStats, onLeaderboard
                         </svg>
                         Leaderboard
                       </button>
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          onClick={() => { setDropdownOpen(false); onAdmin() }}
+                          className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-gray-200 transition-colors hover:bg-amber-50 dark:hover:bg-gray-700/80"
+                        >
+                          <svg className="h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                          </svg>
+                          Admin Panel
+                        </button>
+                      )}
                       <div className="border-t border-slate-200 dark:border-gray-700 my-2"></div>
                       <button
                         type="button"
@@ -113,6 +134,33 @@ export default function GameLibrary({ onSelect, onLogout, onStats, onLeaderboard
           </div>
         </div>
       </header>
+
+      {/* Announcement Banner */}
+      {announcements.filter((a) => !dismissedAnnouncements.includes(a.id)).length > 0 && (
+        <div className="mx-auto max-w-6xl px-6 pt-6">
+          {announcements.filter((a) => !dismissedAnnouncements.includes(a.id)).map((ann) => {
+            const colorMap = {
+              info: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300',
+              warning: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300',
+              success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300',
+            }
+            return (
+              <div key={ann.id} className={`mb-3 flex items-start gap-3 rounded-2xl border px-5 py-4 ${colorMap[ann.type] || colorMap.info} animate-slide-up`}>
+                <svg className="h-5 w-5 mt-0.5 shrink-0 opacity-70" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clipRule="evenodd" />
+                </svg>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm">{ann.title}</p>
+                  {ann.message && <p className="mt-0.5 text-sm opacity-80">{ann.message}</p>}
+                </div>
+                <button type="button" onClick={() => setDismissedAnnouncements((prev) => [...prev, ann.id])} className="rounded-full p-1 opacity-60 hover:opacity-100 transition-opacity shrink-0">
+                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M4.22 4.22a.75.75 0 011.06 0L10 8.94l4.72-4.72a.75.75 0 111.06 1.06L11.06 10l4.72 4.72a.75.75 0 11-1.06 1.06L10 11.06l-4.72 4.72a.75.75 0 01-1.06-1.06L8.94 10 4.22 5.28a.75.75 0 010-1.06z" /></svg>
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* Games Grid */}
       <div className="mx-auto max-w-6xl px-6 py-8">
