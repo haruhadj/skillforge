@@ -1,6 +1,8 @@
 # Multiplayer Games
 
-SkillForge supports real-time multiplayer via a Socket.IO WebSocket server. Currently **Tic Tac Toe** is the only multiplayer game.
+> **Framework: Next.js 16. postMessage handling is in `app/play/[gameId]/PlayGameClient.tsx`. Do NOT edit `src/` files.**
+
+SkillForge supports real-time multiplayer via Socket.IO WebSocket servers. Active multiplayer games: **Chess**, **Tic Tac Toe**, **Chroma Memory**.
 
 ## How Multiplayer Works in This Project
 
@@ -18,8 +20,8 @@ Player A (Browser)                   Player B (Browser)
                     (Express + Socket.IO, port 3001)
 ```
 
-During **development** (`pnpm run dev`), Vite proxies the `/tictactoe-ws/` path to `http://localhost:3001`, so both players can connect through the same Vite dev-server URL.  
-In **production / LAN play**, the socket server must be reachable directly (or via a reverse proxy) at the same origin or at a configured hostname.
+During **development** (`pnpm run dev`), Next.js rewrites/proxies the WebSocket paths, so both players connect through `http://localhost:3000`.  
+In **production / LAN play**, the socket server must be reachable directly (or via the Nginx reverse proxy) at the same origin.
 
 ## Tic Tac Toe — Room-Based Multiplayer
 
@@ -62,7 +64,7 @@ If either player disconnects at any point, the other player receives an `opponen
 The socket server starts automatically when you run:
 
 ```bash
-pnpm run dev          # starts Vite + all backend servers together
+pnpm run dev          # starts next dev + all backend servers together
 ```
 
 To start only the socket server in isolation:
@@ -81,14 +83,9 @@ The server listens on **port 3001** by default. You can override this with the `
 To play across two different machines on the same network:
 
 1. Find the host machine's LAN IP (e.g. `192.168.1.10`).
-2. Start both the Vite dev server and the socket server on the host:
-   ```bash
-   pnpm run dev
-   ```
-3. On the second machine, open `http://192.168.1.10:5173` in a browser.
-4. Both browsers can now create/join rooms since Vite's proxy forwards `/tictactoe-ws/` traffic to the socket server on port 3001.
-
-> **Note**: Vite's dev server is configured with `host: true`, which binds it to all network interfaces, making LAN access work out of the box.
+2. Start the dev server on the host: `pnpm run dev`
+3. On the second machine, open `http://192.168.1.10:3000` in a browser.
+4. Both browsers connect through the same Next.js dev server which proxies WebSocket paths to the socket servers.
 
 ## Adding More Multiplayer Games
 
@@ -96,8 +93,8 @@ See [ADDING_GAMES.md](ADDING_GAMES.md) for the full deployment and registration 
 
 1. Add the server file to `server/games/<game-id>/`.
 2. Register it in `server/start-all.js`.
-3. Add a Vite proxy rule in `vite.config.js` for the socket path.
-4. In the game frontend, connect to the socket server via the proxied path (use a relative URL so it works in both dev and production).
+3. Configure the socket path in `nginx/skillforge.conf` for production proxying.
+4. In the game frontend, connect to the socket server via the proxied path.
 
 ### Score reporting for multiplayer games
 
@@ -106,9 +103,8 @@ Multiplayer games that track per-mode statistics must include a `mode` field in 
 ```js
 postToParent('GAME_STATS', {
   mode: 'multiplayer',  // or 'singleplayer'
-  score: finalScore,    // the numeric score for this match
-  // ... any other fields
+  score: finalScore,
 });
 ```
 
-`GamePlayer.jsx` currently has a hardcoded branch for `chroma-memory` that routes these to `saveModeScoreStats()` for weighted per-mode aggregation. For any **new** multiplayer game that needs the same treatment, add a matching branch in `GamePlayer.jsx`'s `handleMessage` function — see the **Special Cases** section in `scripts/GAME_DATA_COLLECTION_PROMPT.md`.
+`PlayGameClient.tsx` (`app/play/[gameId]/PlayGameClient.tsx`) has a hardcoded branch for `chroma-memory` that routes these to `saveModeScoreStats()` for weighted per-mode aggregation. For any **new** game that needs the same treatment, add a matching `gameId`-specific branch in `PlayGameClient.tsx`'s `handleMessage` function — see **Special Cases** in `scripts/GAME_DATA_COLLECTION_PROMPT.md`.

@@ -10,5 +10,35 @@
   </head>
   <body>
     <div id="root"></div>
+  <script>
+    (function() {
+      var STORAGE_KEY = 'tictactoe-total-games';
+      var _lastStatus = '';
+      function postEvent(event, data) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'GAME_EVENT', event: event, data: data }, '*');
+        }
+      }
+      function onGameEnd() {
+        var total = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) + 1;
+        localStorage.setItem(STORAGE_KEY, String(total));
+        postEvent('GAME_STATS', { totalGames: total });
+      }
+      var observer = new MutationObserver(function() {
+        var els = document.querySelectorAll('p, div, span, h1, h2, h3');
+        for (var i = 0; i < els.length; i++) {
+          var text = els[i].textContent || '';
+          if ((text.includes('wins!') || text.includes('Draw!')) && text !== _lastStatus) {
+            _lastStatus = text;
+            onGameEnd();
+            break;
+          }
+        }
+      });
+      document.addEventListener('DOMContentLoaded', function() {
+        observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+      });
+    })();
+  </script>
   </body>
 </html>

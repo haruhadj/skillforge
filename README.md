@@ -1,280 +1,216 @@
-# SkillForge: A Web-Based Game Library
+# SkillForge — AI Agent Quick-Reference
 
-## Overview
-
-SkillForge is a modern web application developed as part of a Computer Science thesis project. It serves as an interactive game library platform that allows users to access and play various educational and classic games through a unified interface. The application features user authentication, a curated game collection, score tracking and progress persistence, dark/light theme support, and backend servers for multiplayer and API-driven games.
-
-## Features
-
-- **User Authentication**: Secure login and signup functionality powered by Firebase Authentication (Email/Password and Google OAuth)
-- **Anonymous Access**: Play games without creating an account
-- **Game Library**: Browse and select from a collection of 7 games displayed in a responsive grid
-- **Embedded Game Player**: Seamless integration of games using iframe technology with bidirectional messaging
-- **Score Tracking**: Automatic best score saving and retrieval via Firebase Firestore
-- **Progress Persistence**: Games can save and restore full game state across sessions
-- **Statistics Page**: View best scores and last-played dates for all games
-- **Dark/Light Theme**: Toggleable theme with persistence to local storage
-- **Backend Servers**: WebSocket multiplayer support (Tic Tac Toe) and REST API (Spelling Bee)
-- **Responsive Design**: Built with Tailwind CSS for optimal viewing on all devices
-- **Modern Tech Stack**: React 19, Vite 7, Firebase, and Express
-
-## Games Included
-
-| Game | Description | Type |
-|------|-------------|------|
-| **2048** | The addictive number-sliding puzzle game | Static HTML/JS |
-| **Chess** | Classic strategy board game with full gameplay | Static HTML/JS |
-| **Sudoku** | Logic-based number placement puzzle | Static HTML/JS |
-| **Tic Tac Toe** | Classic X and O game with WebSocket multiplayer | React + WebSocket Backend |
-| **Spelling Bee** | Word puzzle game with text-to-speech support | React + REST API Backend |
-| **How Strong Is Your Vocabulary** | Vocabulary strength assessment game | React |
-| **Math Game** | Math challenge game | React |
-
-## Technologies Used
-
-### Frontend
-- **Framework**: React 19.2
-- **Build Tool**: Vite 7.3
-- **Styling**: Tailwind CSS 4.2
-- **Authentication & Database**: Firebase 12.10 (Auth, Firestore, Analytics)
-- **Language**: JavaScript (ES6+)
-- **Package Manager**: pnpm
-
-### Backend
-- **Runtime**: Node.js
-- **API Framework**: Express 5.1
-- **WebSocket**: Socket.IO 4.8
-- **Text-to-Speech**: Google Cloud Text-to-Speech
-- **Other**: CORS, express-rate-limit, node-cache, dotenv
-
-## Installation
-
-### Prerequisites
-
-- Node.js (version 16 or higher)
-- pnpm package manager
-- Firebase project (for authentication and Firestore)
-
-### Setup Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/skillforge.git
-   cd skillforge
-   ```
-
-2. **Install frontend dependencies**
-   ```bash
-   pnpm install
-   ```
-
-3. **Install server dependencies**
-   ```bash
-   cd server
-   pnpm install
-   cd ..
-   ```
-
-4. **Configure Firebase**
-   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-   - Enable Authentication with Email/Password and Google providers
-   - Enable Cloud Firestore
-   - Copy your Firebase config to `src/firebase.js`
-
-5. **Configure environment variables**
-   - Create a `.env` file in the `server/` directory for any required API keys (e.g., Google Cloud TTS credentials for Spelling Bee)
-   - Optional (frontend): set `VITE_CHESS_SOCKET_URL` in the project root `.env` to override chess multiplayer socket host in production
-     - Example: `VITE_CHESS_SOCKET_URL=https://your-domain.com:3004`
-   - Optional (server): set `CHESS_PORT` in `server/.env` if you do not want the default chess socket port `3004`
-
-6. **Start the development server**
-   ```bash
-   pnpm run dev
-   ```
-   This starts both the Vite dev server and all backend game servers concurrently.
-
-7. **Open your browser**
-   - Navigate to `http://localhost:5173` (or the port shown in terminal)
-
-## Usage
-
-1. **Start Screen**: Choose to login, sign up, or play anonymously
-2. **Authentication**: Create an account or login with existing credentials
-3. **Game Library**: Browse available games and select one to play
-4. **Game Player**: Enjoy the selected game in the embedded player
-5. **Statistics**: View your best scores and progress via the "My Stats" page
-6. **Theme**: Toggle between dark and light mode using the theme switch
-7. **Navigation**: Use the back button to return to the library or logout
-
-## Project Structure
-
-```
-skillforge/
-├── public/
-│   └── games/                  # Embedded game files
-│       ├── 2048/               # Static HTML/JS game
-│       ├── chess/              # Static HTML/JS game
-│       ├── sudoku/             # Static HTML/JS game
-│       ├── tictactoe/          # React built game
-│       ├── spelling-bee/       # React built game
-│       ├── how-strong-is-your-vocabulary/  # React built game
-│       └── math-game/          # React built game
-├── server/
-│   ├── start-all.js            # Launches all backend servers
-│   ├── package.json            # Server dependencies
-│   └── games/
-│       ├── tictactoe/
-│       │   └── socket-server.js    # WebSocket multiplayer server
-│       └── spelling-bee/
-│           └── server.js           # REST API server
-├── scripts/
-│   └── GAME_DATA_COLLECTION_PROMPT.md  # Iframe messaging protocol docs
-├── src/
-│   ├── assets/                 # Static assets
-│   ├── components/             # React components
-│   │   ├── GameLibrary.jsx     # Game selection grid
-│   │   ├── GamePlayer.jsx      # Iframe player with messaging
-│   │   ├── LoginScreen.jsx     # Email/password login
-│   │   ├── SignupScreen.jsx    # Account registration
-│   │   ├── SkillForge.jsx      # Main app controller
-│   │   ├── StartScreen.jsx     # Landing page
-│   │   ├── StatsPage.jsx       # User statistics dashboard
-│   │   └── ThemeToggle.jsx     # Dark/light mode switch
-│   ├── contexts/               # React contexts
-│   │   ├── AuthContext.jsx     # Authentication state
-│   │   └── ThemeContext.jsx    # Theme state with localStorage
-│   ├── games/                  # Game registry
-│   │   └── games.js            # Game definitions (all 7 games)
-│   ├── services/
-│   │   └── gameDataService.js  # Firestore score/progress API
-│   ├── App.jsx                 # Root component (providers)
-│   ├── firebase.js             # Firebase configuration
-│   ├── index.css               # Global styles
-│   └── main.jsx                # App entry point
-├── ADDING_GAMES.md             # Guide for adding new games
-├── package.json                # Frontend dependencies and scripts
-├── vite.config.js              # Vite configuration
-├── tailwind.config.js          # Tailwind CSS configuration
-└── README.md                   # This file
-```
-
-## Game–App Communication
-
-Games communicate with the parent SkillForge app via `window.postMessage()`:
-
-- **Score Reporting**: Games post a `GAME_EVENT` message with type `BEST_SCORE` when a game ends. The parent saves the score to Firestore.
-- **Progress Save**: Games post a `GAME_EVENT` with type `GAME_STATS` to persist full game state (history, settings, etc.).
-- **Progress Restore**: Games post `REQUEST_PROGRESS` on load; the parent responds with `RESTORE_PROGRESS` containing previously saved data.
-
-All messages include a guard (`window.parent !== window`) so games function normally when opened standalone outside the iframe.
-
-## Multiplayer Games
-
-SkillForge supports real-time multiplayer via a Socket.IO WebSocket server. See [MULTIPLAYER.md](MULTIPLAYER.md) for the full guide covering architecture, room flow, socket events, LAN play, and how to add more multiplayer games.
-
-### Chess Multiplayer Notes
-
-- Chess socket server defaults to `http://localhost:3004` using path `/chess-ws/`
-- During deployment, ensure the `CHESS_PORT` service is reachable from clients
-- If chess socket host is different from the main app host, set `VITE_CHESS_SOCKET_URL` in frontend env
-
-## Production Deployment (Raspberry Pi + Nginx Proxy Manager)
-
-This project now includes a Docker production stack designed to run behind **Nginx Proxy Manager (NPM)**.
-
-### 1. Files included
-
-- `docker-compose.prod.yml` - runs frontend + backend game services
-- `Dockerfile.frontend` - builds Vite app and serves with Nginx
-- `nginx/skillforge.conf` - routes API + WebSocket paths inside the stack
-- `server/Dockerfile` - runtime image for all backend game services
-
-### 2. Run on Raspberry Pi
-
-```bash
-# from project root
-docker compose -f docker-compose.prod.yml up -d --build
-```
-
-Frontend container is exposed on host port `8080`.
-
-### 3. Configure Nginx Proxy Manager
-
-Create one Proxy Host in NPM:
-
-- Domain: your domain/subdomain (example: `skillforge.yourdomain.com`)
-- Scheme: `http`
-- Forward Hostname/IP: your Raspberry Pi host (or Docker host)
-- Forward Port: `8080`
-- Websockets Support: **ON**
-- Block Common Exploits: ON (recommended)
-- SSL tab: request/attach Let's Encrypt certificate
-
-You do **not** need separate NPM routes for `/api` or websocket paths.
-The frontend container's Nginx already forwards:
-
-- `/api/*` -> Spelling Bee API service
-- `/tictactoe-ws/*` -> TicTacToe socket service
-- `/chess-ws/*` -> Chess socket service
-- `/chroma-memory-ws/*` -> Chroma Memory socket service
-
-### 4. Environment variables (production)
-
-For Spelling Bee API features, set these in your deployment environment before starting Compose:
-
-- `WORDSAPI_KEY`
-- `WORDSAPI_HOST` (optional, defaults to `wordsapiv1.p.rapidapi.com`)
-- `GOOGLE_APPLICATION_CREDENTIALS` (optional, only if using Google TTS)
-
-### 5. Update workflow
-
-```bash
-git pull
-docker compose -f docker-compose.prod.yml up -d --build
-```
-
-## Development
-
-### Available Scripts
-
-- `pnpm run dev` - Start Vite dev server + all backend game servers (via concurrently)
-- `pnpm run dev:client` - Start Vite dev server only
-- `pnpm run dev:servers` - Start backend game servers only
-- `pnpm run build` - Build for production
-- `pnpm run preview` - Preview production build
-- `pnpm run lint` - Run ESLint
-
-### Adding New Games
-
-See [ADDING_GAMES.md](ADDING_GAMES.md) for the full guide. In summary:
-
-**Static HTML/JS Games:**
-1. Copy game folder to `public/games/<game-id>/`
-2. Register in `src/games/games.js`
-
-**React/Vite Games:**
-1. Set `base: './'` in the game's `vite.config.js`
-2. Build and copy `dist/` contents to `public/games/<game-id>/`
-3. Register in `src/games/games.js`
-
-**Games with a Backend:**
-1. Copy built frontend to `public/games/<game-id>/`
-2. Copy server code to `server/games/<game-id>/`
-3. Register the server in `server/start-all.js`
-4. Add Vite proxy rules or configure direct WebSocket connections
-
-## Contributing
-
-This project was developed as part of a Computer Science thesis. For academic or research purposes, please contact the author for collaboration opportunities.
-
-## License
-
-This project is developed for educational purposes as part of a thesis. Please refer to individual game licenses in their respective directories for usage rights.
-
-## Author
-
-Developed by [Your Name], Computer Science 4th Year Student
+> **For AI coding agents:** Read this file first. It gives you the full mental model of the project in one place. Jump to the section you need.
 
 ---
 
-*Note: This README is part of the thesis documentation for SkillForge, demonstrating modern web development practices and game integration techniques.*
+## What This Project Is
+
+SkillForge is a **Next.js 16 + TypeScript** web app (migrated from Vite/React). It is a game-library platform where users log in, browse games, play them in iframes, and track scores/match counts. All user data is stored in **Firebase Firestore**.
+
+---
+
+## Tech Stack (current — do not assume Vite)
+
+| Layer | Technology |
+|---|---|
+| Framework | **Next.js 16** (App Router, `app/` directory) |
+| Language | **TypeScript** (frontend), JavaScript (game bundles) |
+| Styling | Tailwind CSS 4 |
+| Auth & DB | Firebase 12 (Auth + Firestore) |
+| Package manager | pnpm (workspace: root + `server/`) |
+| Backend servers | Node.js / Express / Socket.IO (in `server/`) |
+| Dev command | `pnpm run dev` → runs `next dev` + `node server/start-all.js` concurrently |
+
+---
+
+## Key Files — Where Things Live
+
+```
+app/
+  layout.tsx                    ← root layout, providers
+  page.tsx                      ← landing / login page
+  library/page.tsx              ← game library grid
+  play/[gameId]/
+    page.tsx                    ← route shell
+    PlayGameClient.tsx          ← ⭐ iframe host; handles ALL postMessage events
+  profile/page.tsx              ← user profile + per-game stats display
+  leaderboard/page.tsx          ← global leaderboard
+  admin/page.tsx                ← admin dashboard
+  games/
+    games.ts                    ← ⭐ game registry (single source of truth)
+  services/
+    gameDataService.ts          ← ⭐ all Firestore read/write for scores & stats
+    userProfileService.ts       ← username, avatar
+  contexts/
+    AuthContext.tsx             ← useAuth() hook
+    ThemeContext.tsx            ← dark/light theme
+  lib/
+    firebase.ts                 ← Firebase app init
+  types/
+    index.ts                    ← shared TypeScript types
+
+public/games/                   ← ⭐ all embedded game static files
+  2048/                         ← vanilla JS (readable source)
+  chess/                        ← minified React bundle
+  chroma-memory/                ← minified React bundle
+  color-memory/                 ← minified React bundle
+  geomaster/                    ← minified React bundle
+  how-strong-is-your-vocabulary/← minified React bundle
+  jose-rizal/                   ← minified React bundle
+  math-game/                    ← minified React bundle
+  spelling-bee/                 ← minified React bundle
+  sudoku/                       ← vanilla JS (readable source)
+  tictactoe/                    ← minified React bundle
+
+server/
+  start-all.js                  ← launches all backend game servers
+  games/
+    chess/                      ← Chess Socket.IO server (port 3004)
+    chroma-memory/              ← Chroma Memory Socket.IO server
+    spelling-bee/               ← Spelling Bee REST API server (port 8787)
+
+scripts/
+  GAME_DATA_COLLECTION_PROMPT.md ← detailed postMessage integration guide
+```
+
+> **`src/` is the OLD Vite/React source — it is NOT used. Do not edit files in `src/`.**
+
+---
+
+## Games Included
+
+| Game ID | Name | Bundle type | Sends BEST_SCORE | Sends GAME_STATS | Match count field |
+|---|---|---|---|---|---|
+| `2048` | 2048 | Vanilla JS (readable) | ✅ | ✅ | `totalGames` |
+| `chess` | Chess | Minified React | ❌ | ✅ (injected) | `totalGames` |
+| `geomaster` | GeoMaster | Minified React | ✅ | ✅ | `totalGames` |
+| `sudoku` | Sudoku | Vanilla JS (readable) | ❌ | ✅ (injected) | `totalGames` |
+| `tictactoe` | Tic Tac Toe | Minified React | ❌ | ✅ (injected) | `totalGames` |
+| `spelling-bee` | Spelling Bee | Minified React | ✅ | ✅ | `history.length` |
+| `how-strong-is-your-vocabulary` | Vocabulary | Minified React | ✅ | ✅ | `history.length` |
+| `math-game` | Math Game | Minified React | ✅ | ✅ | `totalGames` |
+| `chroma-memory` | Chroma Memory | Minified React | ❌ | ✅ `{mode, accuracyPercentage}` | `totalMatchCount` (via `saveModeScoreStats`) |
+| `color-memory` | Color Memory | Minified React | ✅ | ✅ | `totalGames` |
+| `jose-rizal` | Jose Rizal | Minified React | ✅ (via `gameScore` msg) | ✅ (written in PlayGameClient) | `totalGames` |
+
+---
+
+## Firestore Data Model
+
+```
+users/{uid}/
+  scores/{gameId}         ← { bestScore: number, updatedAt }
+  gameStats/{gameId}      ← { totalGames?, history?, highScores?, totalMatchCount?, ... }
+  profile                 ← { username, photoURL, ... }
+```
+
+- **`saveBestScore(uid, gameId, score)`** — only writes if score is a new high
+- **`saveGameStats(uid, gameId, data)`** — merges any object into `gameStats/{gameId}`
+- **`saveModeScoreStats(uid, gameId, mode, score)`** — weighted singleplayer/multiplayer aggregation (used by Chroma Memory)
+- **`getAllScores(uid)`** — returns `Record<gameId, {bestScore}>`
+- **`getAllGameStats(uid)`** — returns `Record<gameId, unknown>`
+
+---
+
+## postMessage Protocol (Game ↔ Parent)
+
+All iframe games communicate with `PlayGameClient.tsx` via `postMessage`.
+
+### Game → Parent
+
+```js
+// Guard every outgoing call:
+if (window.parent && window.parent !== window) {
+  window.parent.postMessage({ type: 'GAME_EVENT', event: EVENT, data: DATA }, '*')
+}
+```
+
+| `event` | `data` | Effect in PlayGameClient |
+|---|---|---|
+| `BEST_SCORE` | `{ bestScore: number }` | `saveBestScore()` |
+| `GAME_STATS` | any object | `saveGameStats()` (or `saveModeScoreStats()` for chroma-memory) |
+| `REQUEST_PROGRESS` | — | reads Firestore → sends `RESTORE_PROGRESS` back |
+| `REQUEST_PLAYER_INFO` | — | re-sends `PLAYER_INFO` |
+
+**Special case — Jose Rizal** uses `{ type: 'gameScore', gameId: 'jose-rizal', score }` instead of `GAME_EVENT`. Handled separately in `PlayGameClient.tsx`.
+
+### Parent → Game
+
+| `type` | `data` |
+|---|---|
+| `RESTORE_PROGRESS` | saved stats object from Firestore |
+| `PLAYER_INFO` | `{ name, uid, email }` |
+
+---
+
+## Profile Page — Match Count Logic
+
+`app/profile/page.tsx` resolves match count with this priority chain:
+
+```ts
+const matchCount =
+  stats?.totalMatchCount ||   // chroma-memory
+  stats?.matchCount      ||   // generic
+  stats?.totalGames      ||   // 2048, geomaster, chess, sudoku, tictactoe, math-game, color-memory, jose-rizal
+  historyLength          ||   // spelling-bee, vocabulary (history array length)
+  0
+```
+
+---
+
+## Adding a New Game
+
+See **[ADDING_GAMES.md](ADDING_GAMES.md)** for the full step-by-step guide.
+
+Quick summary:
+1. Copy static files → `public/games/<game-id>/`
+2. Register in `app/games/games.ts`
+3. Add `postMessage` data collection to game source (see `scripts/GAME_DATA_COLLECTION_PROMPT.md`)
+4. If backend needed: add server to `server/games/<game-id>/`, register in `server/start-all.js`
+
+---
+
+## Dev & Build Commands
+
+```bash
+pnpm run dev          # next dev + all backend servers (concurrently)
+pnpm run dev:client   # next dev only
+pnpm run dev:servers  # backend servers only
+pnpm run build        # next build
+pnpm run start        # next start (production)
+pnpm run lint         # eslint
+pnpm run test         # vitest run
+```
+
+---
+
+## Environment Variables
+
+| Variable | Where | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_*` firebase vars | `.env.local` (root) | Firebase config for browser |
+| `NEXT_PUBLIC_CHESS_SOCKET_URL` | `.env.local` | Override chess socket host |
+| `SPELLING_BEE_API_ORIGIN` | `.env` (root) | Spelling Bee API origin for Next.js rewrites |
+| `WORDSAPI_KEY` | `server/.env` | RapidAPI key for Spelling Bee |
+| `CHESS_PORT` | `server/.env` | Chess socket port (default 3004) |
+| `TICTACTOE_PORT` | `server/.env` | Tic Tac Toe socket port (default 3001) |
+
+---
+
+## Docker / Production Deployment
+
+See **[DOCKER_DEPLOY.md](DOCKER_DEPLOY.md)** for Raspberry Pi + Nginx Proxy Manager setup.
+
+- Frontend exposed on port `8080`
+- Next.js rewrites `/api/*` → Spelling Bee API
+- `nginx/skillforge.conf` routes websocket paths inside the Docker stack
+- `docker compose -f docker-compose.prod.yml up -d --build`
+
+---
+
+## Multiplayer
+
+See **[MULTIPLAYER.md](MULTIPLAYER.md)** for Socket.IO room flow, events reference, and LAN setup.
+
+Active multiplayer games: **Chess** (port 3004, `/chess-ws/`), **Tic Tac Toe** (port 3001, `/tictactoe-ws/`), **Chroma Memory** (`/chroma-memory-ws/`).

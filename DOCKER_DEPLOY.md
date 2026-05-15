@@ -1,5 +1,7 @@
 # Docker Deployment Guide
 
+> **Framework: Next.js 16 (standalone output). Frontend container runs on port 3000 internally, exposed on host port 8080.**
+
 ## Raspberry Pi 5 (ARM64) Deployment
 
 ### Prerequisites
@@ -32,15 +34,18 @@
    ```
 
 4. **Access the application:**
-   - Frontend: http://raspberrypi.local:3000
-   - Game servers run on ports 3001, 3002, 3004, 8787
+   - Frontend (via Nginx Proxy Manager): your domain on port 80/443
+   - Direct access (no NPM): `http://raspberrypi.local:8080`
+   - Backend game servers (internal only): ports 3001 (tictactoe), 3004 (chess), 8787 (spelling-bee)
 
 ### Architecture Notes
 
-- **Base images**: All use `node:22-alpine` which supports ARM64
-- **Frontend**: Next.js with standalone output for production
-- **Game servers**: Individual Node.js services
-- **Static games** (Jose Rizal, etc.): Served via Next.js public folder
+- **Base images**: All use `node:22-alpine` (ARM64 compatible)
+- **Frontend**: Next.js standalone output served by the frontend container
+- **Game servers**: Individual Node.js services in the same Docker Compose stack
+- **Static games**: All `public/games/` files served via Next.js public folder
+- **Nginx** (`nginx/skillforge.conf`): routes `/api/*`, `/tictactoe-ws/*`, `/chess-ws/*`, `/chroma-memory-ws/*` internally — NPM only needs one proxy host on port 8080
+- **Environment**: Firebase config must be baked in at build time via `NEXT_PUBLIC_*` vars in `.env`
 
 ### Troubleshooting
 

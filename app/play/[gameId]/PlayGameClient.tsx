@@ -91,6 +91,11 @@ export default function PlayGameClient() {
       // Handle Jose Rizal quiz scores
       if (msg.type === 'gameScore' && msg.gameId === 'jose-rizal') {
         saveBestScore(uid, 'jose-rizal', msg.score)
+        getGameStats(uid, 'jose-rizal').then((existing) => {
+          const prev = existing as Record<string, unknown> | null
+          const totalGames = (Number((prev?.totalGames as number) || 0)) + 1
+          saveGameStats(uid, 'jose-rizal', { ...(prev || {}), totalGames })
+        })
         return
       }
 

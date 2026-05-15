@@ -1,16 +1,16 @@
 # Adding Games to SkillForge
 
-This guide explains how to add external games (including React/Vite games with backends) to SkillForge.
+> **Framework: Next.js 16 (App Router). Do NOT reference `src/`, `vite.config.js`, or `GamePlayer.jsx` — those are the old Vite/React source and are not used.**
 
 ---
 
 ## Quick Reference
 
-| Step | All games | Notes |
-|------|-----------|-------|
-| 1 | Build game (Vite) or copy files (plain HTML) | Set `base: './'` for Vite |
+| Step | All games | Key file |
+|------|-----------|----------|
+| 1 | Build game (if Vite) or copy files (plain HTML) | — |
 | 2 | Copy to `public/games/<game-id>/` | `index.html` must be the entry point |
-| 3 | Register in `src/games/games.js` | One entry, no other file changes needed |
+| 3 | Register in `app/games/games.ts` | One entry, no other file changes needed |
 | 4 | Add postMessage data collection to game source | See `scripts/GAME_DATA_COLLECTION_PROMPT.md` |
 | 5 | (If backend) Wire up server | See Step 5 below |
 
@@ -22,21 +22,21 @@ This guide explains how to add external games (including React/Vite games with b
 
 ---
 
-## Step 1 — Build the external React game
+## Step 1 — Build the external React game (skip for plain HTML games)
 
 In the external game's `vite.config.js`, set `base: './'` so assets use relative paths:
 
 ```js
 export default defineConfig({
   plugins: [react()],
-  base: './',   // ← REQUIRED for subfolder hosting
+  base: './',   // REQUIRED for subfolder hosting
 })
 ```
 
 Then build:
 
 ```powershell
-cd C:\Users\admin\Desktop\project\games\react-apps\<game-name>
+cd C:\path\to\external\game
 pnpm run build
 ```
 
@@ -46,140 +46,111 @@ This creates a `dist/` folder with the production build.
 
 ## Step 2 — Copy the built frontend
 
-Copy the **contents** of `dist/` (not the dist folder itself) into `public/games/<game-id>/`:
+Copy the **contents** of `dist/` (not the folder itself) into `public/games/<game-id>/`:
 
 ```powershell
-# Create the destination folder
 New-Item -ItemType Directory -Force -Path public\games\<game-id>
-
-# Copy the built files
 Copy-Item -Path "C:\path\to\external\game\dist\*" `
           -Destination "public\games\<game-id>" `
           -Recurse -Force
 ```
 
-The result should look like:
+Expected layout:
 
 ```
 public/games/<game-id>/
-  index.html        ← entry point (required)
-  assets/           ← JS/CSS bundles
-  cover.png         ← optional thumbnail for the library
+  index.html        ← required entry point
+  assets/           ← JS/CSS bundles (Vite games)
+  cover.png         ← optional thumbnail shown in library
 ```
 
 ---
 
 ## Step 3 — Register the game
 
-Add an entry to `src/games/games.js`:
+Add an entry to **`app/games/games.ts`** (not `src/games/games.js`):
 
-```js
+```ts
 {
-  id: '<game-id>',
+  id: '<game-id>',           // lowercase-kebab-case, matches folder name
   name: 'Display Name',
   iframePath: '/games/<game-id>/index.html',
+  description: 'One-line description shown in the library.',
 },
 ```
 
-The `id` must be lowercase-kebab-case and match the folder name under `public/games/`. It is also used as the Firestore document ID: `users/{uid}/scores/{gameId}`.
+The `id` is also used as the Firestore document ID: `users/{uid}/scores/{gameId}` and `users/{uid}/gameStats/{gameId}`.
 
 ---
 
-## Step 4 — Add data collection to the game source
+## Step 4 — Add postMessage data collection to the game source
 
-Every game embedded in SkillForge must send score and progress data back to the parent app via `postMessage`. Open `scripts/GAME_DATA_COLLECTION_PROMPT.md` and follow the instructions there. It covers:
+The iframe game must send score/stats data to the parent app (`PlayGameClient.tsx`) via `postMessage`. See `scripts/GAME_DATA_COLLECTION_PROMPT.md` for full details. Summary:
 
-- **Part A** — Reporting the best score (`BEST_SCORE` event, required for all games)
-- **Part B** — Saving/restoring full progress across sessions (`GAME_STATS` / `REQUEST_PROGRESS` / `RESTORE_PROGRESS`)
-- **Part C** — Receiving player identity (`PLAYER_INFO`)
-- Special cases for multiplayer modes and games with backend servers
-- Copy-paste code templates for both React and vanilla JS games
-- A final integration checklist
+- **`BEST_SCORE`** — required for all games, fires on game-end
+- **`GAME_STATS`** — fires on game-end, must include `totalGames` counter for Matches to show on profile
+- **`REQUEST_PROGRESS`** / **`RESTORE_PROGRESS`** — optional cross-device progress sync
 
-For games **without** a backend, this is the last step. The game will appear in the library and data will be saved automatically.
+**The `totalGames` counter pattern (vanilla JS):**
+```js
+var total = parseInt(localStorage.getItem('<game-id>-total-games') || '0', 10) + 1;
+localStorage.setItem('<game-id>-total-games', String(total));
+window.parent.postMessage({ type: 'GAME_EVENT', event: 'GAME_STATS', data: { totalGames: total } }, '*');
+```
+
+For games **without** a backend, this is the last step.
 
 ---
 
 ## Step 5 — Games with a backend server
 
-If the game has server-side code (API, WebSocket, etc.):
-
 ### 5a. Copy server files
 
-Put the game's server code under `server/games/<game-id>/`:
-
 ```
-server/
-  games/
-    <game-id>/
-      server.js       ← or socket-server.js, etc.
+server/games/<game-id>/
+  server.js         ← REST API, or socket-server.js for WebSocket
 ```
 
-Adapt the server file:
-- Read the port from an environment variable (e.g. `process.env.MY_GAME_PORT || 3002`)
-- Remove any static file serving (the main Vite server handles that)
-- Add the port variable to `server/.env.example`
+- Read port from env: `process.env.MY_GAME_PORT || 3002`
+- Remove any static file serving (Next.js handles that)
+- Add the port var to `server/.env.example`
 
-### 5b. Register the server in the launcher
+### 5b. Register in the launcher
 
-Edit `server/start-all.js` and add an entry:
+Edit `server/start-all.js`:
 
 ```js
 const servers = [
-  // ... existing servers ...
-  {
-    name: 'My Game API',
-    script: path.join(__dirname, 'games', '<game-id>', 'server.js'),
-  },
+  // ... existing ...
+  { name: 'My Game', script: path.join(__dirname, 'games', '<game-id>', 'server.js') },
 ]
 ```
 
-### 5c. Configure Vite proxy (if game uses REST API)
+### 5c. REST API proxy (Next.js rewrites)
 
-If the game frontend calls `/api/...` endpoints, add proxy rules in `vite.config.js`:
-
-```js
-server: {
-  proxy: {
-    '/api/my-game-endpoint': 'http://localhost:<port>',
-  },
-},
-```
-
-**Why?** The game runs inside an iframe served from the same origin as the main app. 
-When the game calls `fetch('/api/...')`, the request goes to the Vite dev server. 
-The proxy forwards it to the game's backend.
-
-### 5d. WebSocket games (like Tic Tac Toe)
-
-Games using WebSocket (e.g. socket.io) typically connect directly to a specific port.
-The tictactoe game uses this pattern:
+If the game calls `/api/...` endpoints, add a rewrite in `next.config.js`:
 
 ```js
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL
-  || `http://${window.location.hostname}:3001`
+async rewrites() {
+  return [
+    { source: '/api/my-game/:path*', destination: 'http://localhost:<port>/api/my-game/:path*' },
+  ]
+}
 ```
 
-This means:
-- **No Vite proxy needed** — the frontend connects directly to port 3001
-- The socket server's CORS config must allow the main app's origin
-- The socket server just needs to be running on the correct port
+### 5d. WebSocket games
 
-### 5e. Install server dependencies
+WebSocket games (socket.io) connect directly to the server port — no proxy needed. The socket server's CORS must allow `window.location.origin`. Pattern:
+
+```js
+const socket = io(`http://${window.location.hostname}:3001`, { path: '/my-game-ws/' })
+```
+
+### 5e. Install server dependencies & env vars
 
 ```powershell
-cd server
-pnpm install
-```
-
-### 5f. Add environment variables
-
-Copy `server/.env.example` to `server/.env` and fill in your keys:
-
-```ini
-WORDSAPI_KEY=your_key_here
-TICTACTOE_PORT=3001
-SPELLING_BEE_PORT=8787
+cd server && pnpm install
+cp .env.example .env  # fill in your keys
 ```
 
 ---
@@ -187,25 +158,20 @@ SPELLING_BEE_PORT=8787
 ## Running everything
 
 ```powershell
-# Start Vite dev server + all game backends at once
-pnpm run dev
-
-# Or start them separately
-pnpm run dev:client    # just the Vite frontend
-pnpm run dev:servers   # just the game backends
+pnpm run dev          # next dev + all backend servers
+pnpm run dev:client   # next dev only
+pnpm run dev:servers  # backend servers only
 ```
+
+Dev server: `http://localhost:3000`
 
 ---
 
 ## Updating a game
 
-When you modify a game in the external `react-apps/` folder:
-
-1. Rebuild: `pnpm run build`
+1. Rebuild: `pnpm run build` (in game folder)
 2. Re-copy `dist/*` → `public/games/<game-id>/`
-3. Refresh the browser
-
-If the server code also changed, copy the updated server files to `server/games/<game-id>/`.
+3. Hard-refresh the browser
 
 ---
 
@@ -213,45 +179,32 @@ If the server code also changed, copy the updated server files to `server/games/
 
 | Problem | Cause | Fix |
 |---|---|---|
-| Blank page in iframe | Asset paths are absolute (`/assets/...`) | Set `base: './'` in the game's `vite.config.js` and rebuild |
-| API calls fail (404) | Vite proxy not configured for the game's API routes | Add proxy rules in `vite.config.js` |
-| WebSocket won't connect | CORS blocking the connection | Update socket server CORS to allow the main app's origin |
-| Game shows old version | Stale files in `public/games/` | Delete the folder and re-copy `dist/*` |
-| Missing cover image | No `cover.png` in game folder | Add one, or ignore (image hides automatically) |
-| Score not saving | `BEST_SCORE` message not sent or wrong shape | Check `scripts/GAME_DATA_COLLECTION_PROMPT.md` Part A — `type`, `event`, and `data.bestScore` must be exact |
-| Progress not restored | `REQUEST_PROGRESS` not sent on load, or `RESTORE_PROGRESS` listener missing | Check Part B of the data collection prompt |
-| postMessage silently ignored | Origin mismatch — parent enforces same-origin | Game files must be served from `public/games/`, not a separate dev server |
+| Blank page in iframe | Asset paths are absolute (`/assets/...`) | Set `base: './'` in game's `vite.config.js` and rebuild |
+| API calls fail (404) | Next.js rewrite not configured | Add rewrite in `next.config.js` |
+| WebSocket won't connect | CORS blocking | Update socket server CORS to allow main app's origin |
+| Game shows old version | Stale files in `public/games/` | Delete folder and re-copy `dist/*` |
+| Score not saving | `BEST_SCORE` message wrong shape | Verify `type:'GAME_EVENT'`, `event:'BEST_SCORE'`, `data.bestScore` is a number |
+| Matches always shows `-` | `totalGames` not in `GAME_STATS` payload | Add `totalGames` counter to game's `GAME_STATS` message |
+| Progress not restored | `REQUEST_PROGRESS` not sent on load | Add on mount: `postToParent('REQUEST_PROGRESS', undefined)` |
+| postMessage silently ignored | Origin mismatch | Game files must be in `public/games/`, served from same origin as Next.js |
 
 ---
 
-## Project structure overview
+## Project structure (relevant paths only)
 
 ```
 thesis_proj/
-├── public/
-│   └── games/
-│       ├── 2048/              ← plain HTML/JS game
-│       ├── chess/             ← plain HTML/JS game
-│       ├── sudoku/            ← plain HTML/JS game
-│       ├── tictactoe/         ← React game (built dist)
-│       └── spelling-bee/      ← React game (built dist)
-├── scripts/
-│   └── GAME_DATA_COLLECTION_PROMPT.md  ← AI guide for postMessage integration
+├── app/
+│   ├── games/games.ts              ← ⭐ game registry (edit this to add games)
+│   ├── play/[gameId]/
+│   │   └── PlayGameClient.tsx      ← ⭐ iframe host; all postMessage handling
+│   ├── profile/page.tsx            ← displays per-game best score + match count
+│   └── services/gameDataService.ts ← Firestore score/stats API
+├── public/games/                   ← ⭐ all embedded game static files
 ├── server/
-│   ├── package.json           ← server dependencies
-│   ├── .env.example           ← env vars template
-│   ├── start-all.js           ← launches all game servers
-│   └── games/
-│       ├── tictactoe/
-│       │   └── socket-server.js
-│       └── spelling-bee/
-│           └── server.js
-├── src/
-│   ├── components/
-│   │   └── GamePlayer.jsx     ← iframe host; handles all postMessage events
-│   ├── games/
-│   │   └── games.js           ← game registry (single source of truth)
-│   └── services/
-│       └── gameDataService.js ← Firestore read/write for scores & stats
-└── vite.config.js             ← proxy rules for game APIs
+│   ├── start-all.js                ← registers/launches all backend servers
+│   └── games/                      ← one folder per game with server code
+├── next.config.js                  ← rewrites for API proxying
+└── scripts/
+    └── GAME_DATA_COLLECTION_PROMPT.md
 ```

@@ -9,6 +9,40 @@
   </head>
   <body>
     <div id="root"></div>
+  <script>
+    (function() {
+      var STORAGE_KEY = 'chess-total-games';
+      var _gameEnded = false;
+      function postEvent(event, data) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'GAME_EVENT', event: event, data: data }, '*');
+        }
+      }
+      function onGameEnd() {
+        if (_gameEnded) return;
+        _gameEnded = true;
+        var total = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10) + 1;
+        localStorage.setItem(STORAGE_KEY, String(total));
+        postEvent('GAME_STATS', { totalGames: total });
+      }
+      var RESULT_TEXTS = ['Checkmate','Resignation','Stalemate','Insufficient Material','Draw by Agreement','Victory!','Wins!'];
+      var observer = new MutationObserver(function() {
+        var fixed = document.querySelectorAll('.fixed');
+        for (var i = 0; i < fixed.length; i++) {
+          var el = fixed[i];
+          if (!el.className.includes('z-5')) continue;
+          var text = el.textContent || '';
+          for (var j = 0; j < RESULT_TEXTS.length; j++) {
+            if (text.includes(RESULT_TEXTS[j])) { onGameEnd(); return; }
+          }
+        }
+      });
+      document.addEventListener('DOMContentLoaded', function() {
+        observer.observe(document.body, { childList: true, subtree: true });
+        document.body.addEventListener('click', function() { _gameEnded = false; }, true);
+      });
+    })();
+  </script>
   </body>
 </html>
 

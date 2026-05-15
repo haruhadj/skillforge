@@ -314,6 +314,7 @@ function clickCell(cell) {
                     setCell(y, x, v);
                     Tref[y][x].style.color = col;
                     if (h) hyps.push(Tref[y][x]);
+                    if (!h) _sfCheckWin();
                     //e.stopPropagation();
                 });
             } else {
@@ -406,5 +407,18 @@ function check() {
                 Tref[i][j].style.backgroundColor = "#FBB";
             }
         }
+    }
+}
+
+function _sfCheckWin() {
+    for(var _i=0;_i<9;_i++) {
+        for(var _j=0;_j<9;_j++) {
+            if (T[_i][_j] !== Tsol[_i][_j]) return;
+        }
+    }
+    var _total = parseInt(localStorage.getItem('sudoku-total-games') || '0', 10) + 1;
+    localStorage.setItem('sudoku-total-games', String(_total));
+    if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'GAME_EVENT', event: 'GAME_STATS', data: { totalGames: _total } }, '*');
     }
 }

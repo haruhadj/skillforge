@@ -240,8 +240,9 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {defaultGames.map((game) => {
                 const gameScore = scores[game.id]?.bestScore
-                const stats = gameStats[game.id] as Record<string, number> | undefined
-                const matchCount = stats?.totalMatchCount || stats?.matchCount || 0
+                const stats = gameStats[game.id] as Record<string, unknown> | undefined
+                const historyLength = Array.isArray(stats?.history) ? (stats.history as unknown[]).length : 0
+                const matchCount = (stats?.totalMatchCount as number) || (stats?.matchCount as number) || (stats?.totalGames as number) || historyLength || 0
 
                 return (
                   <div key={game.id} className="glass p-4">

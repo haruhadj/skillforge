@@ -89,6 +89,14 @@ GameManager.prototype.actuate = function () {
   // Clear the state when the game is over (game over only, not win)
   if (this.over) {
     this.storageManager.clearGameState();
+
+    // Increment cumulative match counter and report to parent
+    var totalGames = parseInt(localStorage.getItem('2048-total-games') || '0', 10) + 1;
+    localStorage.setItem('2048-total-games', String(totalGames));
+    this.postGameEvent('GAME_STATS', {
+      totalGames: totalGames,
+      bestScore: this.storageManager.getBestScore()
+    });
   } else {
     this.storageManager.setGameState(this.serialize());
   }

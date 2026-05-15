@@ -1,15 +1,18 @@
 # AI Agent Guide: Integrating a New Game into SkillForge
 
-> **For AI agents and LLMs.** Follow every numbered step in order to fully integrate
-> a game into the SkillForge thesis project. Do not skip steps.
-
----
+> **For AI agents and LLMs.** Read this before touching any file.
+>
+> - Framework: **Next.js 16 (App Router, TypeScript)**. Do NOT edit anything in `src/` — that is dead Vite/React code.
+> - Game iframe host: **`app/play/[gameId]/PlayGameClient.tsx`**
+> - Game registry: **`app/games/games.ts`**
+> - Firestore service: **`app/services/gameDataService.ts`**
+> - Dev server runs on **`http://localhost:3000`** (not 5173)
 
 ## Overview
 
-SkillForge embeds games inside iframes. To fully integrate a new game you must:
+SkillForge embeds games inside iframes. To fully integrate a new game:
 
-1. Register the game in `src/games/games.js`
+1. Register the game in `app/games/games.ts`
 2. Deploy the game's static files to `public/games/<game-id>/`
 3. Add postMessage data collection to the game's source code
 4. (If the game has a backend) wire up the server
@@ -22,41 +25,43 @@ The sections below cover each step in full detail.
 
 The `gameId` is a **lowercase-kebab-case** string that:
 - Matches the folder name under `public/games/<game-id>/`
-- Matches the `id` field in `src/games/games.js`
-- Is used as the Firestore document ID: `users/{uid}/scores/{gameId}`
+- Matches the `id` field in `app/games/games.ts`
+- Is used as the Firestore document ID: `users/{uid}/scores/{gameId}` and `users/{uid}/gameStats/{gameId}`
 
 Example: `"math-game"`, `"spelling-bee"`, `"chroma-memory"`
 
 ---
 
-## STEP 2 — Register the game in `src/games/games.js`
+## STEP 2 — Register the game in `app/games/games.ts`
 
-File: `src/games/games.js`
+File: **`app/games/games.ts`** (TypeScript — NOT `src/games/games.js`)
 
-Add an entry to the `games` array:
+Add an entry to the `defaultGames` array:
 
-```js
+```ts
 {
-  id: '<game-id>',          // kebab-case, matches public/games/<game-id>/
-  name: 'Display Name',     // shown in the game library UI
+  id: '<game-id>',           // kebab-case, matches public/games/<game-id>/
+  name: 'Display Name',      // shown in the game library UI
   iframePath: '/games/<game-id>/index.html',
+  description: 'Short description shown on the library card.',
 },
 ```
 
 **Full example:**
-```js
-// src/games/games.js
-export const games = [
+```ts
+// app/games/games.ts
+export const defaultGames: Game[] = [
   // ... existing games ...
   {
     id: 'my-new-game',
     name: 'My New Game',
     iframePath: '/games/my-new-game/index.html',
+    description: 'A fun new game.',
   },
 ]
 ```
 
-No other changes to `GamePlayer.jsx` or any other parent-app file are needed
+No other changes to `PlayGameClient.tsx` or any other parent-app file are needed
 **unless** the game requires special score aggregation (see Step 5 — Special Cases).
 
 ---
@@ -96,8 +101,7 @@ public/games/<game-id>/
 
 ## STEP 4 — Add postMessage data collection to the game source
 
-The game runs inside an iframe. `GamePlayer.jsx` (the parent) communicates
-bidirectionally via `postMessage`:
+The game runs inside an iframe. `PlayGameClient.tsx` (`app/play/[gameId]/PlayGameClient.tsx`) communicates bidirectionally via `postMessage`:
 
 - **Game → Parent:** report scores and save progress
 - **Parent → Game:** restore saved progress, deliver player identity
@@ -163,14 +167,16 @@ Right after the `BEST_SCORE` call, send the full state:
 ```js
 postToParent('GAME_STATS', {
   // Send whatever the game tracks. Common shapes:
-  history: updatedHistoryArray,         // array of past game results
+  history: updatedHistoryArray,         // array of past game results — history.length used as match count
   bestScore: bestScore,                 // if not already in history
-  totalGames: totalGames,               // running counter
+  totalGames: totalGames,               // ⭐ REQUIRED for Matches to show on Profile page
   // ... any other persistent fields
 });
 ```
 
-Firestore path: `users/{uid}/scores/{gameId}` (merged into the same document).
+> **`totalGames` is required** for the Matches counter to display on the user's profile. The profile page reads: `stats.totalMatchCount || stats.matchCount || stats.totalGames || history.length`.
+
+Firestore path: `users/{uid}/gameStats/{gameId}` (written by `saveGameStats()`).
 
 #### B2. Request saved progress on load
 
@@ -254,17 +260,15 @@ aggregation is needed, the `GAME_STATS` message must include a `mode` field:
 postToParent('GAME_STATS', {
   mode: 'singleplayer',  // or 'multiplayer'
   accuracyPercentage: score, // or score / finalScore / averageScore
-  // ... other fields
 });
 ```
 
-`GamePlayer.jsx` detects the `gameId === 'chroma-memory'` case and routes it to
+`PlayGameClient.tsx` (`app/play/[gameId]/PlayGameClient.tsx`) detects the `gameId === 'chroma-memory'` case and routes it to
 `saveModeScoreStats()` instead of `saveGameStats()`. For any **new** game that
-needs the same per-mode weighted aggregation, you must also add a matching
-`gameId`-specific branch in `GamePlayer.jsx`'s `handleMessage` function:
+needs the same per-mode weighted aggregation, add a matching branch in `PlayGameClient.tsx`:
 
-```js
-// In GamePlayer.jsx — handleMessage — inside the GAME_STATS block:
+```ts
+// In PlayGameClient.tsx — handleMessage — inside the GAME_STATS block:
 if (msg.event === 'GAME_STATS') {
   if (gameId === 'my-new-game') {
     const mode = msg.data?.mode === 'multiplayer' ? 'multiplayer' : 'singleplayer';
@@ -280,14 +284,16 @@ if (msg.event === 'GAME_STATS') {
 
 1. Put server code under `server/games/<game-id>/server.js` (or `socket-server.js`).
 2. Read the port from an env var: `process.env.MY_GAME_PORT || 3002`.
-3. Remove any static-file serving from the server (Vite handles that).
+3. Remove any static-file serving from the server (Next.js handles that).
 4. Register the server in `server/start-all.js`:
    ```js
    { name: 'My Game', script: path.join(__dirname, 'games', '<game-id>', 'server.js') }
    ```
-5. If the frontend calls REST endpoints, add a Vite proxy in `vite.config.js`:
+5. If the frontend calls REST endpoints, add a rewrite in `next.config.js`:
    ```js
-   server: { proxy: { '/api/my-game': 'http://localhost:<port>' } }
+   async rewrites() {
+     return [{ source: '/api/my-game/:path*', destination: 'http://localhost:<port>/api/my-game/:path*' }]
+   }
    ```
 6. If the frontend uses WebSocket (socket.io), the client connects directly to
    the port — no proxy needed. Make sure the socket server's CORS config allows
@@ -422,7 +428,7 @@ function onGameOver(currentScore) {
 
 ## Integration checklist (verify before finishing)
 
-- [ ] `src/games/games.js` has an entry with the correct `id`, `name`, and `iframePath`
+- [ ] `app/games/games.ts` has an entry with the correct `id`, `name`, `iframePath`, and `description`
 - [ ] `public/games/<game-id>/index.html` exists and loads correctly in a browser
 - [ ] (Vite games) `vite.config.js` has `base: './'` and the game was rebuilt
 - [ ] `postToParent` helper is defined in the game source
@@ -431,6 +437,6 @@ function onGameOver(currentScore) {
 - [ ] `REQUEST_PROGRESS` is sent on game load
 - [ ] `RESTORE_PROGRESS` listener merges remote data without duplicating entries
 - [ ] Each history entry has a unique numeric `id` (e.g. `Date.now()`)
-- [ ] (If multiplayer) `mode` field is included in `GAME_STATS`; `GamePlayer.jsx` updated if needed
+- [ ] (If multiplayer) `mode` field is included in `GAME_STATS`; `PlayGameClient.tsx` updated if needed
 - [ ] (If backend) server registered in `server/start-all.js` and ports set in `.env`
 - [ ] Game works correctly when opened standalone (outside the iframe)
