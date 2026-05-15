@@ -5,7 +5,8 @@ WORKDIR /app
 # Install dependencies
 RUN apk add --no-cache libc6-compat
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && pnpm install --frozen-lockfile
+RUN corepack enable && pnpm config set allow-builds sharp && \
+    PNPM_IGNORE_PACKAGE_MANAGER_VERSION=true pnpm install --frozen-lockfile
 
 # Builder stage
 FROM base AS builder
@@ -38,10 +39,6 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-
-# Install sharp for image optimization on ARM64
-RUN apk add --no-cache vips-dev
-RUN npm install sharp
 
 # Copy standalone output
 COPY --from=builder /app/.next/standalone ./

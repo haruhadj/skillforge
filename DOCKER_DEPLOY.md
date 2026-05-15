@@ -37,7 +37,7 @@
 
 ### Architecture Notes
 
-- **Base images**: All use `node:20-alpine` which supports ARM64
+- **Base images**: All use `node:22-alpine` which supports ARM64
 - **Frontend**: Next.js with standalone output for production
 - **Game servers**: Individual Node.js services
 - **Static games** (Jose Rizal, etc.): Served via Next.js public folder

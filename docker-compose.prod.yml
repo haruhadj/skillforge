@@ -24,56 +24,54 @@ services:
 
   tictactoe:
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
     container_name: skillforge-tictactoe
     restart: unless-stopped
-    command: ["node", "games/tictactoe/socket-server.js"]
+    command: ["node", "server/games/tictactoe/socket-server.js"]
     environment:
       - TICTACTOE_PORT=3001
-    expose:
-      - "3001"
+    ports:
+      - "3001:3001"
 
   chess:
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
     container_name: skillforge-chess
     restart: unless-stopped
-    command: ["node", "games/chess/socket-server.js"]
+    command: ["node", "server/games/chess/socket-server.js"]
     environment:
       - CHESS_PORT=3004
-    expose:
-      - "3004"
+    ports:
+      - "3004:3004"
 
   chroma-memory:
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
     container_name: skillforge-chroma-memory
     restart: unless-stopped
-    command: ["node", "games/chroma-memory/socket-server.js"]
+    command: ["node", "server/games/chroma-memory/socket-server.js"]
     environment:
       - CHROMA_MEMORY_PORT=3002
-    expose:
-      - "3002"
+    ports:
+      - "3002:3002"
 
   spelling-bee:
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
     container_name: skillforge-spelling-bee
     restart: unless-stopped
-    command: ["node", "games/spelling-bee/server.js"]
+    command: ["node", "server/games/spelling-bee/server.js"]
     environment:
       - NODE_ENV=production
       - PORT=8787
       - HOST=0.0.0.0
-      - WORDSAPI_KEY=${WORDSAPI_KEY}
-      - WORDSAPI_HOST=${WORDSAPI_HOST:-wordsapiv1.p.rapidapi.com}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/tts-key.json
-    expose:
-      - "8787"
+    ports:
+      - "8787:8787"
     volumes:
       - ./server/tts-key.json:/app/tts-key.json:ro
 
