@@ -116,6 +116,7 @@ export default function PlayGameClient() {
           }
 
           saveModeScoreStats(uid, gameId, normalizedMode, score)
+          saveBestScore(uid, gameId, score)
           return
         }
         saveGameStats(uid, gameId, msg.data)

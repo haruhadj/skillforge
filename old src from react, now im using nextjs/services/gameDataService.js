@@ -80,10 +80,17 @@ export function buildWeightedModeStats(existingStats, mode, score) {
 
 /**
  * Save the user's best score for a game.
- * Overwrites the previous value — Firestore path: users/{uid}/scores/{gameId}
+ * Updates the previous value only when the new score is higher — Firestore path: users/{uid}/scores/{gameId}
  */
 export async function saveBestScore(uid, gameId, bestScore) {
   const ref = doc(db, 'users', uid, 'scores', gameId)
+  const snap = await getDoc(ref)
+  const currentBestScore = snap.exists() ? Number(snap.data().bestScore) : null
+
+  if (currentBestScore != null && !Number.isNaN(currentBestScore) && bestScore <= currentBestScore) {
+    return
+  }
+
   await setDoc(ref, {
     bestScore,
     updatedAt: serverTimestamp(),

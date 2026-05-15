@@ -89,6 +89,13 @@ export function buildWeightedModeStats(
 
 export async function saveBestScore(uid: string, gameId: string, bestScore: number): Promise<void> {
   const ref = doc(db, 'users', uid, 'scores', gameId)
+  const snap = await getDoc(ref)
+  const currentBestScore = snap.exists() ? Number(snap.data().bestScore) : null
+
+  if (currentBestScore != null && !Number.isNaN(currentBestScore) && bestScore <= currentBestScore) {
+    return
+  }
+
   await setDoc(ref, {
     bestScore,
     updatedAt: serverTimestamp(),

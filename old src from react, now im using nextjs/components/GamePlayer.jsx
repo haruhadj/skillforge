@@ -100,6 +100,7 @@ export default function GamePlayer({ gameId, onBack, playerNameOverride }) {
           }
 
           saveModeScoreStats(uid, gameId, normalizedMode, score)
+          saveBestScore(uid, gameId, score)
           return
         }
         saveGameStats(uid, gameId, msg.data)
