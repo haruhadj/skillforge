@@ -188,7 +188,10 @@ app.get('/api/tts', async (req, res) => {
 
 // ── SPA fallback: serve index.html for all non-API routes in production ──
 if (NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/') || req.path === '/api') {
+      return next();
+    }
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
