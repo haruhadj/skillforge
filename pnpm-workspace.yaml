@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - "@firebase/util"
+  - "@swc/core"
+  - esbuild
+  - protobufjs
+  - re2
+  - sharp
+  - unrs-resolver

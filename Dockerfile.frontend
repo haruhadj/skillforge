@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies
 RUN apk add --no-cache libc6-compat
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN corepack enable && \
     PNPM_IGNORE_PACKAGE_MANAGER_VERSION=true pnpm install --frozen-lockfile
 
