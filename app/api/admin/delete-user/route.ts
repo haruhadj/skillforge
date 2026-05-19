@@ -14,21 +14,37 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete user from Firebase Auth
+    let authDeleted = false
     try {
       await getAdminAuth().deleteUser(uid)
+      authDeleted = true
+      console.log(`[Delete User] Auth user ${uid} deleted successfully`)
     } catch (authError) {
-      // If user not found in Auth, continue to clean up Firestore
-      if (authError instanceof Error && !authError.message.includes('not-found')) {
-        throw authError
+      // Log the full error for debugging
+      console.error('[Delete User] Auth deletion error:', authError)
+      
+      // Check if it's a "not found" error - Firebase Admin uses error.code, not message
+      const errorCode = (authError as { code?: string }).code
+      const errorMessage = authError instanceof Error ? authError.message : String(authError)
+      
+      // Continue to Firestore cleanup only if user not found in Auth
+      if (errorCode !== 'auth/user-not-found' && !errorMessage.includes('not-found')) {
+        throw new Error(`Failed to delete auth user: ${errorMessage}`)
       }
+      console.log(`[Delete User] Auth user ${uid} not found, continuing with Firestore cleanup`)
     }
 
     // Delete user's Firestore data
     const adminDb = getAdminDb()
     const batch = adminDb.batch()
 
-    // Delete user profile
+    // Get user profile to find username for cleanup
     const userRef = adminDb.collection('users').doc(uid)
+    const userSnap = await userRef.get()
+    const userData = userSnap.data()
+    const usernameNormalized = userData?.usernameNormalized
+
+    // Delete user profile
     batch.delete(userRef)
 
     // Delete scores subcollection
@@ -40,8 +56,23 @@ export async function POST(request: NextRequest) {
     statsSnap.docs.forEach((d: QueryDocumentSnapshot<DocumentData>) => batch.delete(d.ref))
 
     await batch.commit()
+    console.log(`[Delete User] Firestore data for ${uid} deleted successfully`)
 
-    return NextResponse.json({ success: true })
+    // Delete username entry if exists (do this after batch to avoid transaction conflicts)
+    if (usernameNormalized) {
+      try {
+        await adminDb.collection('usernames').doc(usernameNormalized).delete()
+        console.log(`[Delete User] Username '${usernameNormalized}' deleted from usernames collection`)
+      } catch (usernameError) {
+        console.log(`[Delete User] Username '${usernameNormalized}' not found or already deleted`)
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      authDeleted,
+      firestoreDeleted: true 
+    })
   } catch (error) {
     console.error('Delete user error:', error)
     return NextResponse.json(

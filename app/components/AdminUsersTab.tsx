@@ -77,12 +77,13 @@ export default function AdminUsersTab() {
         body: JSON.stringify({ uid }),
       })
 
+      const data = await response.json()
+      
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || 'Failed to delete user')
       }
 
-      toast.success('User deleted successfully')
+      toast.success(`User deleted (Auth: ${data.authDeleted ? '✓' : '✗'}, Firestore: ${data.firestoreDeleted ? '✓' : '✗'})`)
       setConfirmDelete(null)
       await loadUsers() // Refresh the list
     } catch (err) {

@@ -112,7 +112,9 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
     payload.createdAt = serverTimestamp()
   }
 
+  console.log('[ensureUserProfileDocument] Writing profile for', user.uid, 'Payload:', payload)
   await setDoc(profileRef, payload, { merge: true })
+  console.log('[ensureUserProfileDocument] Profile written successfully')
 
   return {
     ...(existingProfile || {}),
@@ -160,17 +162,36 @@ export async function claimUsername(
   const normalized = normalizeUsername(trimmedUsername)
   const userRef = doc(db, 'users', uid)
   const usernameRef = doc(db, 'usernames', normalized)
+  const now = serverTimestamp()
 
+  // First, update the user profile (outside transaction to avoid race with AuthContext)
+  // Use setDoc with merge to handle case where profile already exists
+  const userPayload = {
+    ...metadata,
+    username: trimmedUsername,
+    usernameNormalized: normalized,
+    profileCompleted: true,
+    updatedAt: now,
+  }
+
+  try {
+    console.log('[claimUsername] Writing user profile:', userPayload)
+    await setDoc(userRef, userPayload, { merge: true })
+  } catch (err) {
+    console.error('[claimUsername] Failed to write user profile:', err)
+    throw err
+  }
+
+  // Then, claim the username in a transaction (username is the critical part)
   return runTransaction(db, async (transaction) => {
-    const [userSnap, usernameSnap] = await Promise.all([
-      transaction.get(userRef),
-      transaction.get(usernameRef),
-    ])
+    const usernameSnap = await transaction.get(usernameRef)
 
     if (usernameSnap.exists() && usernameSnap.data().uid !== uid) {
       throw new Error('Username is already taken')
     }
 
+    // Clean up previous username if user is changing theirs
+    const userSnap = await transaction.get(userRef)
     const previousNormalized = userSnap.exists() ? userSnap.data().usernameNormalized : null
 
     if (previousNormalized && previousNormalized !== normalized) {
@@ -180,21 +201,6 @@ export async function claimUsername(
         transaction.delete(previousUsernameRef)
       }
     }
-
-    const now = serverTimestamp()
-    const userPayload = {
-      ...metadata,
-      username: trimmedUsername,
-      usernameNormalized: normalized,
-      profileCompleted: true,
-      updatedAt: now,
-    }
-
-    if (!userSnap.exists() || !userSnap.data().createdAt) {
-      ;(userPayload as Record<string, unknown>).createdAt = now
-    }
-
-    transaction.set(userRef, userPayload, { merge: true })
 
     const usernamePayload = {
       uid,

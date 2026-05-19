@@ -45,9 +45,10 @@ export default function SignupPage() {
     try {
       setIsSubmitting(true)
       const userCredential = await signup(email, password)
+      console.log('[Signup] Auth user created:', userCredential.user.uid, userCredential.user.email)
       
       // Claim username immediately after signup
-      await claimUsername(
+      const result = await claimUsername(
         userCredential.user.uid,
         username.trim(),
         {
@@ -55,6 +56,7 @@ export default function SignupPage() {
           authProvider: 'password',
         }
       )
+      console.log('[Signup] Username claimed:', result)
 
       toast.success('Account created successfully')
       router.push('/library')

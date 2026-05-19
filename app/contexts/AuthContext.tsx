@@ -13,6 +13,7 @@ import {
 } from 'firebase/auth'
 import { auth } from '@/app/lib/firebase'
 import { AuthContextType } from '@/app/types'
+import { ensureUserProfileDocument } from '@/app/services/userProfileService'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -33,6 +34,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     provider.setCustomParameters({ prompt: 'select_account' })
 
     const result = await signInWithPopup(auth, provider)
+    
+    // Ensure profile exists for Google users (creates if missing)
+    try {
+      await ensureUserProfileDocument(result.user)
+    } catch (err) {
+      console.error('Failed to ensure Google user profile:', err)
+    }
+    
     return {
       method: 'popup',
       result,
@@ -44,8 +53,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user)
+      
+      // Ensure Firestore profile exists (creates if missing - fixes orphaned auth users)
+      if (user) {
+        try {
+          await ensureUserProfileDocument(user)
+        } catch (err) {
+          console.error('Failed to ensure user profile:', err)
+        }
+      }
+      
       setLoading(false)
     })
 
