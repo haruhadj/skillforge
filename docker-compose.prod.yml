@@ -13,7 +13,7 @@ services:
     container_name: skillforge-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "1234:3000"
     environment:
       - NODE_ENV=production
     depends_on:
@@ -30,9 +30,9 @@ services:
     restart: unless-stopped
     command: ["node", "server/games/tictactoe/socket-server.js"]
     environment:
-      - TICTACTOE_PORT=3001
+      - TICTACTOE_PORT=3005
     ports:
-      - "3001:3001"
+      - "3005:3005"
 
   chess:
     build:
