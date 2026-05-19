@@ -190,6 +190,8 @@ export default function LibraryPage() {
               width={52}
               height={52}
               className="rounded-xl shrink-0 drop-shadow-md"
+              priority
+              loading="eager"
             />
             <div className="min-w-0">
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Game Library</h2>

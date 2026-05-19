@@ -48,6 +48,7 @@ export default function HomePage() {
                 height={180}
                 className="rounded-2xl drop-shadow-xl"
                 priority
+                loading="eager"
               />
             </div>
             <p className="text-lg text-slate-600 dark:text-gray-400">Your learning playground.</p>
