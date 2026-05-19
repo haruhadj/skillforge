@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { auth } from '@/app/lib/firebase-admin'
+import { getAdminAuth } from '@/app/lib/firebase-admin'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate password reset link using Firebase Admin
-    const resetLink = await auth.generatePasswordResetLink(email)
+    const resetLink = await getAdminAuth().generatePasswordResetLink(email)
 
     // Send email via Resend
     const { data, error } = await resend.emails.send({

@@ -1,9 +1,9 @@
-import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { getAuth } from 'firebase-admin/auth'
-import { getFirestore } from 'firebase-admin/firestore'
+import { initializeApp, getApps, cert, type App } from 'firebase-admin/app'
+import { getAuth, type Auth } from 'firebase-admin/auth'
+import { getFirestore, type Firestore } from 'firebase-admin/firestore'
 
-// Initialize Firebase Admin SDK
-function getFirebaseAdminApp() {
+// Initialize Firebase Admin SDK (lazy - only called at runtime)
+function getFirebaseAdminApp(): App {
   if (getApps().length > 0) {
     return getApps()[0]
   }
@@ -30,6 +30,11 @@ function getFirebaseAdminApp() {
   throw new Error('Firebase Admin credentials not configured')
 }
 
-const app = getFirebaseAdminApp()
-export const auth = getAuth(app)
-export const db = getFirestore(app)
+// Lazy getters - only initialize when called at runtime
+export function getAdminAuth(): Auth {
+  return getAuth(getFirebaseAdminApp())
+}
+
+export function getAdminDb(): Firestore {
+  return getFirestore(getFirebaseAdminApp())
+}

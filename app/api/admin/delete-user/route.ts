@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, db } from '@/app/lib/firebase-admin'
+import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
 import { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
 
 export async function POST(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // Delete user from Firebase Auth
     try {
-      await auth.deleteUser(uid)
+      await getAdminAuth().deleteUser(uid)
     } catch (authError) {
       // If user not found in Auth, continue to clean up Firestore
       if (authError instanceof Error && !authError.message.includes('not-found')) {
@@ -24,18 +24,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete user's Firestore data
-    const batch = db.batch()
+    const adminDb = getAdminDb()
+    const batch = adminDb.batch()
 
     // Delete user profile
-    const userRef = db.collection('users').doc(uid)
+    const userRef = adminDb.collection('users').doc(uid)
     batch.delete(userRef)
 
     // Delete scores subcollection
-    const scoresSnap = await db.collection('users').doc(uid).collection('scores').get()
+    const scoresSnap = await adminDb.collection('users').doc(uid).collection('scores').get()
     scoresSnap.docs.forEach((d: QueryDocumentSnapshot<DocumentData>) => batch.delete(d.ref))
 
     // Delete gameStats subcollection
-    const statsSnap = await db.collection('users').doc(uid).collection('gameStats').get()
+    const statsSnap = await adminDb.collection('users').doc(uid).collection('gameStats').get()
     statsSnap.docs.forEach((d: QueryDocumentSnapshot<DocumentData>) => batch.delete(d.ref))
 
     await batch.commit()
