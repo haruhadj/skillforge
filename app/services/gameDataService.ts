@@ -186,3 +186,17 @@ export async function getGlobalLeaderboard(): Promise<GlobalLeaderboardEntry[]> 
     .map(([uid, totalMatchCount]) => ({ uid, totalMatchCount }))
     .sort((a, b) => b.totalMatchCount - a.totalMatchCount)
 }
+
+export async function getGamePopularity(): Promise<Record<string, number>> {
+  const snap = await getDocs(collectionGroup(db, 'gameStats'))
+  const byGameId: Record<string, number> = {}
+  snap.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+    const pathParts = docSnap.ref.path.split('/')
+    const gameId = pathParts[3]
+    const data = docSnap.data()
+    const count = Number(data.totalMatchCount) || 0
+    if (!byGameId[gameId]) byGameId[gameId] = 0
+    byGameId[gameId] += count
+  })
+  return byGameId
+}

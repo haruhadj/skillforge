@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
@@ -8,6 +8,7 @@ import ThemeToggle from '@/app/components/ThemeToggle'
 import { getUserProfile } from '@/app/services/userProfileService'
 import { getActiveAnnouncements } from '@/app/services/adminService'
 import { isAdmin } from '@/app/services/adminService'
+import { getGamePopularity } from '@/app/services/gameDataService'
 import { defaultGames, mergeGamesWithFirestore } from '@/app/games/games'
 import { UserProfile, Announcement, Game } from '@/app/types'
 
@@ -22,6 +23,10 @@ export default function LibraryPage() {
   const [isAdminUser, setIsAdminUser] = useState(false)
   const [games, setGames] = useState<Game[]>(defaultGames)
   const [gamesLoading, setGamesLoading] = useState(true)
+  const [sortBy, setSortBy] = useState<'name' | 'recent' | 'popular'>('name')
+  const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>([])
+  const [gamePopularity, setGamePopularity] = useState<Record<string, number>>({})
+  const [popularityLoading, setPopularityLoading] = useState(true)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Protect route - redirect if not logged in
@@ -89,6 +94,46 @@ export default function LibraryPage() {
     loadGameVisibility()
   }, [])
 
+  // Load recently played from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('recentlyPlayed')
+      if (stored) {
+        try {
+          setRecentlyPlayed(JSON.parse(stored))
+        } catch {
+          setRecentlyPlayed([])
+        }
+      }
+    }
+  }, [])
+
+  // Load game popularity from Firestore
+  useEffect(() => {
+    async function loadPopularity() {
+      try {
+        setPopularityLoading(true)
+        const popularity = await getGamePopularity()
+        setGamePopularity(popularity)
+      } catch (err) {
+        console.error('Failed to load game popularity:', err)
+        setGamePopularity({})
+      } finally {
+        setPopularityLoading(false)
+      }
+    }
+    loadPopularity()
+  }, [])
+
+  // Save recently played to localStorage
+  const trackGamePlay = (gameId: string) => {
+    const updated = [gameId, ...recentlyPlayed.filter(id => id !== gameId)].slice(0, 10)
+    setRecentlyPlayed(updated)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('recentlyPlayed', JSON.stringify(updated))
+    }
+  }
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -100,6 +145,33 @@ export default function LibraryPage() {
 
   const name = userProfile?.username || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
+
+  // Sort games based on selected option
+  const sortedGames = useMemo(() => {
+    const enabledGames = games.filter(g => g.enabled !== false)
+    switch (sortBy) {
+      case 'name':
+        return [...enabledGames].sort((a, b) => a.name.localeCompare(b.name))
+      case 'recent':
+        return [...enabledGames].sort((a, b) => {
+          const aIndex = recentlyPlayed.indexOf(a.id)
+          const bIndex = recentlyPlayed.indexOf(b.id)
+          if (aIndex === -1 && bIndex === -1) return 0
+          if (aIndex === -1) return 1
+          if (bIndex === -1) return -1
+          return aIndex - bIndex
+        })
+      case 'popular':
+        return [...enabledGames].sort((a, b) => {
+          const aCount = gamePopularity[a.id] || 0
+          const bCount = gamePopularity[b.id] || 0
+          if (aCount === bCount) return a.name.localeCompare(b.name)
+          return bCount - aCount
+        })
+      default:
+        return enabledGames
+    }
+  }, [games, sortBy, recentlyPlayed, gamePopularity])
 
   if (!currentUser) {
     return null // Will redirect
@@ -227,25 +299,44 @@ export default function LibraryPage() {
 
       {/* Games Grid */}
       <div className="mx-auto max-w-6xl px-6 py-8">
+        {/* Sort Controls */}
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {sortedGames.length} {sortedGames.length === 1 ? 'Game' : 'Games'}
+          </h3>
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-slate-600 dark:text-gray-400">Sort by:</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'name' | 'recent' | 'popular')}
+              className="rounded-lg border border-slate-200 dark:border-gray-600 glass px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            >
+              <option value="name">Name</option>
+              <option value="recent">Recently Played</option>
+              <option value="popular">Popular</option>
+            </select>
+          </div>
+        </div>
+
         {gamesLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-max">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="glass overflow-hidden h-full">
-                <div className="aspect-video w-full bg-slate-200 dark:bg-gray-700 animate-pulse" />
-                <div className="p-5 space-y-3">
-                  <div className="h-6 bg-slate-200 dark:bg-gray-700 rounded animate-pulse" />
-                  <div className="h-4 bg-slate-200 dark:bg-gray-700 rounded animate-pulse w-2/3" />
+                <div className="aspect-[4/3] w-full bg-slate-200 dark:bg-gray-700 animate-pulse" />
+                <div className="p-3 space-y-2">
+                  <div className="h-4 bg-slate-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded animate-pulse w-2/3" />
                 </div>
               </div>
             ))}
           </div>
-        ) : games.filter(g => g.enabled !== false).length === 0 ? (
+        ) : sortedGames.length === 0 ? (
           <div className="glass p-12 text-center">
             <p className="text-slate-600 dark:text-gray-400">No games available at the moment.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
-            {games.filter(g => g.enabled !== false).map((game, idx) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-max">
+            {sortedGames.map((game, idx) => (
             <div
               key={game.id}
               className="group animate-fade-in"
@@ -253,7 +344,7 @@ export default function LibraryPage() {
             >
               <div className="glass overflow-hidden transition-all duration-400 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-black/30 hover:-translate-y-1 h-full flex flex-col card-hover">
                 {/* Image Container */}
-                <div className="aspect-video w-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden relative">
+                <div className="aspect-[4/3] w-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <img
                     className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
@@ -267,15 +358,16 @@ export default function LibraryPage() {
                 </div>
 
                 {/* Content */}
-                <div className="flex flex-1 flex-col justify-between gap-4 p-5">
+                <div className="flex flex-1 flex-col justify-between gap-3 p-3">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white line-clamp-2">{game.name}</h3>
-                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-2">{game.description}</p>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">{game.name}</h3>
+                    <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-1 line-clamp-2">{game.description}</p>
                   </div>
                   
                   <Link
                     href={game.iframePath ? ('/play/' + game.id) : '#'}
-                    className={`w-full rounded-lg px-5 py-3 font-semibold text-center transition-all duration-200 focus:outline-none focus:ring-4 ${
+                    onClick={() => game.iframePath && trackGamePlay(game.id)}
+                    className={`w-full rounded-lg px-3 py-2 text-xs font-semibold text-center transition-all duration-200 focus:outline-none focus:ring-4 ${
                       game.iframePath
                         ? 'btn-primary hover:-translate-y-0.5 active:translate-y-0'
                         : 'cursor-not-allowed bg-slate-200 dark:bg-gray-700 text-slate-400 dark:text-gray-500 pointer-events-none'
