@@ -76,6 +76,18 @@ export const defaultGames: Game[] = [
     iframePath: '/games/jose-rizal/index.html',
     description: 'Step into history. Test your knowledge of the Philippine national hero.',
   },
+  {
+    id: 'elemental-quest',
+    name: 'Elemental Quest',
+    iframePath: '/games/elemental-quest/index.html',
+    description: 'Master the periodic table through speed and knowledge challenges. An interactive chemistry quiz.',
+  },
+  {
+    id: 'math-blaster',
+    name: 'Math Blaster: Cosmic Arithmetic',
+    iframePath: '/games/math-blaster/index.html',
+    description: 'A high-octane space-themed math game where speed and accuracy save the galaxy.',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
