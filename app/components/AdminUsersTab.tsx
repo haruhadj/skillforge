@@ -13,6 +13,8 @@ export default function AdminUsersTab() {
   const [search, setSearch] = useState('')
   const [confirmReset, setConfirmReset] = useState<UserProfile | null>(null)
   const [resetting, setResetting] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<UserProfile | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const loadUsers = async () => {
     try {
@@ -66,6 +68,30 @@ export default function AdminUsersTab() {
     }
   }
 
+  const handleDeleteUser = async (uid: string) => {
+    try {
+      setDeleting(true)
+      const response = await fetch('/api/admin/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to delete user')
+      }
+
+      toast.success('User deleted successfully')
+      setConfirmDelete(null)
+      await loadUsers() // Refresh the list
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete user')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -108,6 +134,35 @@ export default function AdminUsersTab() {
                 type="button"
                 className="flex-1 rounded-xl border border-slate-200 dark:border-gray-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors"
                 onClick={() => setConfirmReset(null)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm delete user modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-3xl border border-red-200 dark:border-red-800 bg-white dark:bg-gray-900 p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Delete User Account</h3>
+            <p className="mt-2 text-sm text-slate-600 dark:text-gray-400">
+              This will permanently delete the user account for <strong>{confirmDelete.username || confirmDelete.email || confirmDelete.uid}</strong>, including all their data, scores, and stats. This cannot be undone.
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                disabled={deleting}
+                className="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-200 dark:focus:ring-red-800 disabled:opacity-60"
+                onClick={() => handleDeleteUser(confirmDelete.uid)}
+              >
+                {deleting ? 'Deleting...' : 'Delete User'}
+              </button>
+              <button
+                type="button"
+                className="flex-1 rounded-xl border border-slate-200 dark:border-gray-600 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors"
+                onClick={() => setConfirmDelete(null)}
               >
                 Cancel
               </button>
@@ -180,6 +235,15 @@ export default function AdminUsersTab() {
                     title="Reset all game data"
                   >
                     Reset Data
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(user)}
+                    disabled={isCurrentUser}
+                    className="rounded-lg px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Delete user account permanently"
+                  >
+                    Delete User
                   </button>
                 </div>
               </div>
