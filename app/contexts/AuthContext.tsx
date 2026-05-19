@@ -14,7 +14,7 @@ import {
 } from 'firebase/auth'
 import { auth } from '@/app/lib/firebase'
 import { AuthContextType } from '@/app/types'
-import { ensureUserProfileDocument, getUserProfile, claimUsername, createSuggestedUsername } from '@/app/services/userProfileService'
+import { ensureUserProfileDocument } from '@/app/services/userProfileService'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -52,23 +52,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signInWithFacebook(): Promise<{ method: string; result: UserCredential }> {
     const provider = new FacebookAuthProvider()
 
-    const result = await signInWithPopup(auth, provider)
+    let result: UserCredential
+    try {
+      result = (await signInWithPopup(auth, provider)) as UserCredential
+    } catch (err: unknown) {
+      if (
+        err instanceof Error &&
+        'code' in err &&
+        (err as { code: string }).code === 'auth/account-exists-with-different-credential'
+      ) {
+        throw new Error('An account with this email already exists. Please log in with Google or your email/password instead.')
+      }
+      throw err
+    }
 
     try {
-      const existing = await getUserProfile(result.user.uid)
       await ensureUserProfileDocument(result.user)
-
-      // Auto-claim username from display name for new Facebook users
-      if (!existing?.username) {
-        const suggested = createSuggestedUsername(
-          result.user.displayName || result.user.uid.slice(0, 8),
-          'fbuser'
-        )
-        await claimUsername(result.user.uid, suggested, {
-          email: result.user.email || null,
-          authProvider: 'facebook',
-        })
-      }
     } catch (err) {
       console.error('Failed to ensure Facebook user profile:', err)
     }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
+import toast from 'react-hot-toast'
 
 export default function HomePage() {
   const router = useRouter()
@@ -36,8 +37,8 @@ export default function HomePage() {
       setIsFacebookLoading(true)
       await signInWithFacebook()
       router.push('/library')
-    } catch {
-      // Error feedback is handled by the parent auth flow
+    } catch (error) {
+      toast.error(`Facebook login failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsFacebookLoading(false)
     }
