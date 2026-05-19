@@ -7,6 +7,7 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
+  FacebookAuthProvider,
   signInWithPopup,
   User as FirebaseUser,
   UserCredential,
@@ -48,6 +49,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function signInWithFacebook(): Promise<{ method: string; result: UserCredential }> {
+    const provider = new FacebookAuthProvider()
+
+    const result = await signInWithPopup(auth, provider)
+
+    try {
+      await ensureUserProfileDocument(result.user)
+    } catch (err) {
+      console.error('Failed to ensure Facebook user profile:', err)
+    }
+
+    return {
+      method: 'popup',
+      result,
+    }
+  }
+
   function logout(): Promise<void> {
     return signOut(auth)
   }
@@ -76,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signup,
     login,
     signInWithGoogle,
+    signInWithFacebook,
     logout,
   }
 

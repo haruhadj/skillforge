@@ -8,7 +8,7 @@ export interface UserProfile {
   usernameNormalized?: string
   photoURL?: string
   photoThumbURL?: string
-  authProvider?: 'google' | 'password' | 'unknown'
+  authProvider?: 'google' | 'password' | 'facebook' | 'unknown'
   profileCompleted?: boolean
   role?: 'admin' | 'user'
   createdAt?: Date
@@ -21,6 +21,7 @@ export interface AuthContextType {
   signup: (email: string, password: string) => Promise<UserCredential>
   login: (email: string, password: string) => Promise<UserCredential>
   signInWithGoogle: () => Promise<{ method: string; result: UserCredential }>
+  signInWithFacebook: () => Promise<{ method: string; result: UserCredential }>
   logout: () => Promise<void>
 }
 

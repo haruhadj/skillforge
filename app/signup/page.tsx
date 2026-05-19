@@ -10,7 +10,8 @@ import ThemeToggle from '@/app/components/ThemeToggle'
 
 export default function SignupPage() {
   const router = useRouter()
-  const { currentUser, signup } = useAuth()
+  const { currentUser, signup, signInWithFacebook } = useAuth()
+  const [isFacebookSubmitting, setIsFacebookSubmitting] = useState(false)
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -64,6 +65,19 @@ export default function SignupPage() {
       toast.error(`Signup failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleFacebookSignup = async () => {
+    try {
+      setIsFacebookSubmitting(true)
+      await signInWithFacebook()
+      toast.success('Account created with Facebook')
+      router.push('/library')
+    } catch (error) {
+      toast.error(`Facebook sign up failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsFacebookSubmitting(false)
     }
   }
 
@@ -139,6 +153,27 @@ export default function SignupPage() {
               {isSubmitting ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200 dark:border-gray-600" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white dark:bg-gray-800 px-3 text-slate-500 dark:text-gray-400">or sign up with</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleFacebookSignup}
+            disabled={isFacebookSubmitting}
+            className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 disabled:opacity-60"
+          >
+            <svg className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            {isFacebookSubmitting ? 'Connecting...' : 'Continue with Facebook'}
+          </button>
 
           <Link
             href="/"

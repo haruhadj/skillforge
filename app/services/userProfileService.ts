@@ -61,7 +61,7 @@ export function createSuggestedUsername(value: string, fallback = 'player'): str
   return 'player'
 }
 
-export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'password' | 'unknown' {
+export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'password' | 'facebook' | 'unknown' {
   const providerIds = user?.providerData?.map((provider) => provider.providerId) || []
 
   if (providerIds.includes('google.com')) {
@@ -70,6 +70,10 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'pass
 
   if (providerIds.includes('password')) {
     return 'password'
+  }
+
+  if (providerIds.includes('facebook.com')) {
+    return 'facebook'
   }
 
   return 'unknown'
@@ -83,7 +87,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 interface EnsureProfilePayload {
   email: string | null
-  authProvider: 'google' | 'password' | 'unknown'
+  authProvider: 'google' | 'password' | 'facebook' | 'unknown'
   updatedAt: ReturnType<typeof serverTimestamp>
   photoURL?: string
   photoThumbURL?: string

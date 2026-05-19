@@ -353,16 +353,24 @@ export default function LeaderboardPage() {
                               <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 rounded-r" />
                             )}
                             <Medal rank={rank} />
-                            <Avatar url={profile?.photoThumbURL} name={name} />
+                            <Link
+                              href={isCurrentUser ? '/profile' : `/profile/${row.uid}`}
+                              className="shrink-0"
+                            >
+                              <Avatar url={profile?.photoThumbURL} name={name} />
+                            </Link>
                             <div className="flex-1 min-w-0 relative">
                               <div
                                 className="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 rounded-r transition-all duration-500"
                                 style={{ width: `${percentage}%` }}
                               />
                               <div className="relative flex items-center gap-2">
-                                <p className="font-medium text-slate-900 dark:text-white truncate">
+                                <Link
+                                  href={isCurrentUser ? '/profile' : `/profile/${row.uid}`}
+                                  className="font-medium text-slate-900 dark:text-white truncate hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                >
                                   {name}
-                                </p>
+                                </Link>
                                 {isCurrentUser && (
                                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
                                     You
