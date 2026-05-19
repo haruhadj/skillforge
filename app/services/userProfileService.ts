@@ -107,9 +107,14 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
     updatedAt: serverTimestamp(),
   }
 
-  if (!existingProfile?.photoURL && user.photoURL) {
-    payload.photoURL = user.photoURL
-    payload.photoThumbURL = user.photoURL
+  const isFacebook = resolveAuthProvider(user) === 'facebook'
+  const incomingPhoto = isFacebook && user.photoURL
+    ? user.photoURL.replace(/(\?|&)type=\w+/, '') + (user.photoURL.includes('?') ? '&type=large' : '?type=large')
+    : user.photoURL
+
+  if (incomingPhoto && (isFacebook || !existingProfile?.photoURL)) {
+    payload.photoURL = incomingPhoto
+    payload.photoThumbURL = incomingPhoto
   }
 
   if (!existingProfile?.createdAt) {
