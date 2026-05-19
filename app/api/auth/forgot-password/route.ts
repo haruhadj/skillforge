@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { getAdminAuth } from '@/app/lib/firebase-admin'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy Resend initialization
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY not configured')
+  }
+  return new Resend(apiKey)
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +33,7 @@ export async function POST(request: NextRequest) {
     const resetLink = await getAdminAuth().generatePasswordResetLink(email)
 
     // Send email via Resend
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: 'SkillForge <noreply@skillforge.haruhadj.duckdns.org>',
       to: email,
       subject: 'Reset your SkillForge password',
