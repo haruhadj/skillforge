@@ -88,6 +88,12 @@ export const defaultGames: Game[] = [
     iframePath: '/games/math-blaster/index.html',
     description: 'A high-octane space-themed math game where speed and accuracy save the galaxy.',
   },
+  {
+    id: 'memory-matrix',
+    name: 'Memory Matrix',
+    iframePath: '/games/memory-matrix/index.html',
+    description: 'Test your spatial recall by repeating increasingly complex patterns on a dynamic grid.',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
