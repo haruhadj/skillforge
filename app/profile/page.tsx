@@ -21,7 +21,7 @@ import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitia
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { currentUser } = useAuth()
+  const { currentUser, logout } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [usernameInput, setUsernameInput] = useState('')
   const [savingUsername, setSavingUsername] = useState(false)
@@ -31,6 +31,8 @@ export default function ProfilePage() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [photoEditor, setPhotoEditor] = useState<ReturnType<typeof createInitialEditorState> | null>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deletingAccount, setDeletingAccount] = useState(false)
 
   // Protect route
   useEffect(() => {
@@ -38,6 +40,38 @@ export default function ProfilePage() {
       router.push('/')
     }
   }, [currentUser, router])
+
+  const handleDeleteAccount = async () => {
+    if (!currentUser) return
+
+    try {
+      setDeletingAccount(true)
+      
+      // Get fresh ID token
+      const token = await currentUser.getIdToken(true)
+      
+      const response = await fetch('/api/user/delete-account', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to delete account')
+      }
+
+      await logout()
+      toast.success('Your account has been deleted')
+      router.push('/')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to delete account')
+      setDeletingAccount(false)
+      setShowDeleteConfirm(false)
+    }
+  }
 
   // Cleanup photo editor on unmount
   useEffect(() => {
@@ -236,6 +270,20 @@ export default function ProfilePage() {
               </p>
             </div>
 
+            {/* Account Deletion */}
+            <div className="glass p-6 border-red-200 dark:border-red-900/30">
+              <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-4">Danger Zone</h3>
+              <p className="text-sm text-slate-600 dark:text-gray-400 mb-4">
+                Deleting your account will permanently remove all your data, including scores, stats, and profile information. This action cannot be undone.
+              </p>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="px-4 py-2 rounded-lg border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium text-sm"
+              >
+                Delete My Account
+              </button>
+            </div>
+
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {defaultGames.map((game) => {
@@ -277,6 +325,55 @@ export default function ProfilePage() {
           onConfirm={handlePhotoUploadConfirm}
           uploading={uploadingPhoto}
         />
+      )}
+
+      {/* Delete Account Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-red-200 dark:border-red-900/50 bg-white dark:bg-gray-900 p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/30">
+                <svg className="h-6 w-6 text-red-600 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.19-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Delete Account?</h3>
+            </div>
+
+            <div className="space-y-3 text-sm text-slate-600 dark:text-gray-400">
+              <p className="font-medium text-red-600 dark:text-red-400">
+                Warning: This action is permanent and cannot be reversed!
+              </p>
+              <p>All of the following will be permanently deleted:</p>
+              <ul className="list-disc list-inside pl-2 space-y-1">
+                <li>Your user profile and username</li>
+                <li>All game scores and statistics</li>
+                <li>Your progress and achievements</li>
+                <li>Your account authentication data</li>
+              </ul>
+              <p className="text-slate-500 dark:text-gray-500 italic">
+                If you change your mind, click Cancel now.
+              </p>
+            </div>
+
+            <div className="mt-6 flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deletingAccount}
+                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors font-medium text-sm disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deletingAccount}
+                className="px-4 py-2 rounded-lg bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-600 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deletingAccount ? 'Deleting...' : 'Yes, Delete My Account'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
