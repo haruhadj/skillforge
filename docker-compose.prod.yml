@@ -16,6 +16,9 @@ services:
       - "1234:3000"
     environment:
       - NODE_ENV=production
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - FIREBASE_ADMIN_CLIENT_EMAIL=${FIREBASE_ADMIN_CLIENT_EMAIL}
+      - FIREBASE_ADMIN_PRIVATE_KEY=${FIREBASE_ADMIN_PRIVATE_KEY}
     depends_on:
       - tictactoe
       - chess
