@@ -7,6 +7,10 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'SkillForge - Your Learning Playground',
   description: 'Master new skills through interactive games and challenges',
+  icons: {
+    icon: '/game logo.jpeg',
+    apple: '/game logo.jpeg',
+  },
 }
 
 export default function RootLayout({

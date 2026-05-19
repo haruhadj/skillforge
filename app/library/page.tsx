@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import { getUserProfile } from '@/app/services/userProfileService'
@@ -182,13 +183,22 @@ export default function LibraryPage() {
       {/* Sticky Header */}
       <header className="sticky top-0 z-40 glass border-b border-slate-200/50 dark:border-gray-700/50 animate-fade-in">
         <div className="mx-auto max-w-6xl px-6 py-4 flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Game Library</h2>
-            {currentUser && (
-              <p className="text-base text-slate-600 dark:text-gray-400 mt-2">
-                Welcome back, <span className="font-semibold">{name}</span>!
-              </p>
-            )}
+          <div className="min-w-0 flex-1 flex items-center gap-4">
+            <Image
+              src="/game logo.jpeg"
+              alt="SkillForge Logo"
+              width={52}
+              height={52}
+              className="rounded-xl shrink-0 drop-shadow-md"
+            />
+            <div className="min-w-0">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Game Library</h2>
+              {currentUser && (
+                <p className="text-base text-slate-600 dark:text-gray-400 mt-2">
+                  Welcome back, <span className="font-semibold">{name}</span>!
+                </p>
+              )}
+            </div>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <ThemeToggle />

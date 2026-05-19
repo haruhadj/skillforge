@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 
@@ -39,9 +40,16 @@ export default function HomePage() {
       <div className="w-full max-w-lg animate-scale-in">
         <div className="glass p-10 sm:p-12">
           <div className="text-center space-y-3">
-            <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 dark:text-white tracking-tight">
-              SkillForge
-            </h1>
+            <div className="flex justify-center">
+              <Image
+                src="/game logo.jpeg"
+                alt="SkillForge Logo"
+                width={180}
+                height={180}
+                className="rounded-2xl drop-shadow-xl"
+                priority
+              />
+            </div>
             <p className="text-lg text-slate-600 dark:text-gray-400">Your learning playground.</p>
           </div>
 
