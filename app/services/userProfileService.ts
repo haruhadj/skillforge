@@ -140,7 +140,7 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
 
 interface ClaimUsernameMetadata {
   email: string | null
-  authProvider: 'google' | 'password' | 'unknown'
+  authProvider: 'google' | 'password' | 'facebook' | 'unknown'
 }
 
 interface ClaimUsernameResult {
