@@ -104,6 +104,8 @@ export default function PlayGameClient() {
       if (msg.event === 'BEST_SCORE') {
         if (gameId === 'chroma-memory') return
         saveBestScore(uid, gameId, msg.data.bestScore)
+        // Also save game stats for leaderboard
+        saveModeScoreStats(uid, gameId, 'singleplayer', msg.data.bestScore)
       }
 
       if (msg.event === 'GAME_STATS') {

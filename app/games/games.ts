@@ -100,6 +100,12 @@ export const defaultGames: Game[] = [
     iframePath: '/games/hangman-master/index.html',
     description: 'A polished Hangman game with difficulty levels, streaks, and a WordNet-powered vocabulary.',
   },
+  {
+    id: 'grammar-police',
+    name: 'Grammar Police',
+    iframePath: '/games/grammar-police/index.html',
+    description: 'Spot grammatical errors in detective-themed sentences. Climb the ranks from Cadet to Commissioner!',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
