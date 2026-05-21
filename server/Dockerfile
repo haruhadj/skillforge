@@ -15,7 +15,6 @@ RUN PNPM_IGNORE_PACKAGE_MANAGER_VERSION=true pnpm install --frozen-lockfile --pr
 COPY server/games ./server/games
 COPY server/wordnet/service.js ./server/wordnet/
 COPY server/start-all.js ./server/
-COPY server/.env* ./server/ 2>/dev/null || true
 
 # Create empty wordnet directory for volume mount
 RUN mkdir -p ./server/wordnet
