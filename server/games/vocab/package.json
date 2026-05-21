@@ -1,0 +1,17 @@
+{
+  "name": "skillforge-vocab-server",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Vocabulary game server powered by WordNet for 'How Strong Is Your Vocab'",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0"
+  }
+}

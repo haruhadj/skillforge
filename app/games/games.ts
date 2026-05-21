@@ -94,6 +94,12 @@ export const defaultGames: Game[] = [
     iframePath: '/games/memory-matrix/index.html',
     description: 'Test your spatial recall by repeating increasingly complex patterns on a dynamic grid.',
   },
+  {
+    id: 'hangman-master',
+    name: 'Hang in There!',
+    iframePath: '/games/hangman-master/index.html',
+    description: 'A polished Hangman game with difficulty levels, streaks, and a WordNet-powered vocabulary.',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */

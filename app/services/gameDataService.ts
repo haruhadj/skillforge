@@ -99,7 +99,23 @@ export async function saveBestScore(uid: string, gameId: string, bestScore: numb
   await setDoc(ref, {
     bestScore,
     updatedAt: serverTimestamp(),
+    bestScoreAchievedAt: serverTimestamp(),
   }, { merge: true })
+}
+
+function convertTimestampToDate(value: unknown): Date | undefined {
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    return value.toDate()
+  }
+  return undefined
+}
+
+function normalizeScoreData(data: DocumentData): ScoreData {
+  return {
+    bestScore: Number(data.bestScore) || 0,
+    updatedAt: convertTimestampToDate(data.updatedAt),
+    bestScoreAchievedAt: convertTimestampToDate(data.bestScoreAchievedAt),
+  }
 }
 
 export async function getAllScores(uid: string): Promise<Record<string, ScoreData>> {
@@ -107,7 +123,7 @@ export async function getAllScores(uid: string): Promise<Record<string, ScoreDat
   const snapshot = await getDocs(ref)
   const scores: Record<string, ScoreData> = {}
   snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
-    scores[docSnap.id] = docSnap.data() as ScoreData
+    scores[docSnap.id] = normalizeScoreData(docSnap.data())
   })
   return scores
 }
@@ -171,20 +187,100 @@ export async function getGameLeaderboard(gameId: string): Promise<LeaderboardEnt
   return rows
 }
 
+function calculateTier(compositeScore: number): GlobalLeaderboardEntry['tier'] {
+  if (compositeScore >= 80) return 'master'
+  if (compositeScore >= 60) return 'platinum'
+  if (compositeScore >= 40) return 'gold'
+  if (compositeScore >= 20) return 'silver'
+  return 'bronze'
+}
+
 export async function getGlobalLeaderboard(): Promise<GlobalLeaderboardEntry[]> {
-  const snap = await getDocs(collectionGroup(db, 'gameStats'))
-  const byUid: Record<string, number> = {}
-  snap.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+  // Fetch all user scores and stats in parallel
+  const [scoresSnap, statsSnap] = await Promise.all([
+    getDocs(collectionGroup(db, 'scores')),
+    getDocs(collectionGroup(db, 'gameStats'))
+  ])
+
+  // Build per-game max scores for normalization (0-100 scale)
+  const maxScoresByGame: Record<string, number> = {}
+  const userScoresByGame: Record<string, Record<string, number>> = {}
+
+  scoresSnap.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+    const gameId = docSnap.id
     const pathParts = docSnap.ref.path.split('/')
     const uid = pathParts[1]
+    const bestScore = Number(docSnap.data().bestScore) || 0
+
+    if (!userScoresByGame[uid]) userScoresByGame[uid] = {}
+    userScoresByGame[uid][gameId] = bestScore
+
+    if (!maxScoresByGame[gameId] || bestScore > maxScoresByGame[gameId]) {
+      maxScoresByGame[gameId] = bestScore
+    }
+  })
+
+  // Build user stats (total matches per game)
+  const userStats: Record<string, { totalMatchCount: number; gamesPlayed: number; gameIds: string[] }> = {}
+  statsSnap.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+    const pathParts = docSnap.ref.path.split('/')
+    const uid = pathParts[1]
+    const gameId = pathParts[3]
     const data = docSnap.data()
     const count = Number(data.totalMatchCount) || 0
-    if (!byUid[uid]) byUid[uid] = 0
-    byUid[uid] += count
+
+    if (!userStats[uid]) {
+      userStats[uid] = { totalMatchCount: 0, gamesPlayed: 0, gameIds: [] }
+    }
+    userStats[uid].totalMatchCount += count
+    userStats[uid].gamesPlayed += 1
+    userStats[uid].gameIds.push(gameId)
   })
-  return Object.entries(byUid)
-    .map(([uid, totalMatchCount]) => ({ uid, totalMatchCount }))
-    .sort((a, b) => b.totalMatchCount - a.totalMatchCount)
+
+  // Calculate composite scores
+  const entries: GlobalLeaderboardEntry[] = Object.entries(userStats).map(([uid, stats]) => {
+    const scores = userScoresByGame[uid] || {}
+    const gamesWithScores = Object.keys(scores)
+
+    // Calculate normalized scores (0-100 per game)
+    let normalizedSum = 0
+    gamesWithScores.forEach((gameId) => {
+      const maxScore = maxScoresByGame[gameId] || 1
+      const normalized = (scores[gameId] / maxScore) * 100
+      normalizedSum += normalized
+    })
+
+    const gamesPlayed = gamesWithScores.length
+    const avgNormalizedScore = gamesPlayed > 0 ? normalizedSum / gamesPlayed : 0
+
+    // Composite score formula:
+    // - 70% weighted on average normalized skill (0-100)
+    // - 20% bonus for game diversity (more games = higher score)
+    // - 10% weighted on total matches played (experience factor)
+    // Max diversity bonus: 20 points at 5+ games
+    const diversityBonus = Math.min(gamesPlayed * 4, 20)
+
+    // Experience factor: logarithmic scale to prevent grinding from dominating
+    // sqrt prevents massive advantage from just playing more
+    const experienceFactor = Math.min(Math.sqrt(stats.totalMatchCount) * 2, 10)
+
+    const compositeScore = Math.min(
+      (avgNormalizedScore * 0.7) + diversityBonus + experienceFactor,
+      100
+    )
+
+    return {
+      uid,
+      totalMatchCount: stats.totalMatchCount,
+      compositeScore: Math.round(compositeScore * 10) / 10,
+      gamesPlayed,
+      avgNormalizedScore: Math.round(avgNormalizedScore * 10) / 10,
+      tier: calculateTier(compositeScore)
+    }
+  })
+
+  // Sort by composite score descending
+  return entries.sort((a, b) => b.compositeScore - a.compositeScore)
 }
 
 export async function getGamePopularity(): Promise<Record<string, number>> {
@@ -199,4 +295,61 @@ export async function getGamePopularity(): Promise<Record<string, number>> {
     byGameId[gameId] += count
   })
   return byGameId
+}
+
+// Calculate global stats for a single user (for profile page)
+export async function getUserGlobalStats(
+  uid: string,
+  userScores: Record<string, { bestScore: number }>,
+  userGameStats: Record<string, { totalMatchCount?: number }>
+): Promise<GlobalLeaderboardEntry | null> {
+  const gameIds = Object.keys(userScores)
+  if (gameIds.length === 0) return null
+
+  // Fetch all scores to get per-game max for normalization
+  const allScoresSnap = await getDocs(collectionGroup(db, 'scores'))
+  const maxScoresByGame: Record<string, number> = {}
+
+  allScoresSnap.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+    const gameId = docSnap.id
+    const bestScore = Number(docSnap.data().bestScore) || 0
+    if (!maxScoresByGame[gameId] || bestScore > maxScoresByGame[gameId]) {
+      maxScoresByGame[gameId] = bestScore
+    }
+  })
+
+  // Calculate normalized scores
+  let normalizedSum = 0
+  gameIds.forEach((gameId) => {
+    const maxScore = maxScoresByGame[gameId] || 1
+    const userScore = userScores[gameId]?.bestScore || 0
+    const normalized = (userScore / maxScore) * 100
+    normalizedSum += normalized
+  })
+
+  const gamesPlayed = gameIds.length
+  const avgNormalizedScore = normalizedSum / gamesPlayed
+
+  // Calculate total matches
+  let totalMatchCount = 0
+  Object.values(userGameStats).forEach((stats) => {
+    totalMatchCount += stats?.totalMatchCount || 0
+  })
+
+  // Composite formula
+  const diversityBonus = Math.min(gamesPlayed * 4, 20)
+  const experienceFactor = Math.min(Math.sqrt(totalMatchCount) * 2, 10)
+  const compositeScore = Math.min(
+    (avgNormalizedScore * 0.7) + diversityBonus + experienceFactor,
+    100
+  )
+
+  return {
+    uid,
+    totalMatchCount,
+    compositeScore: Math.round(compositeScore * 10) / 10,
+    gamesPlayed,
+    avgNormalizedScore: Math.round(avgNormalizedScore * 10) / 10,
+    tier: calculateTier(compositeScore)
+  }
 }

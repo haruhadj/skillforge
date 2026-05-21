@@ -16,7 +16,7 @@ import {
   uploadProfilePhoto,
 } from '@/app/services/userProfileService'
 import { defaultGames } from '@/app/games/games'
-import { UserProfile } from '@/app/types'
+import { UserProfile, GlobalLeaderboardEntry } from '@/app/types'
 import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitialEditorState, AVATAR_EXPORT_SIZE, AVATAR_THUMB_SIZE } from './AvatarEditor'
 
 export default function ProfilePage() {
@@ -25,8 +25,9 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [usernameInput, setUsernameInput] = useState('')
   const [savingUsername, setSavingUsername] = useState(false)
-  const [scores, setScores] = useState<Record<string, { bestScore: number }>>({})
+  const [scores, setScores] = useState<Record<string, { bestScore: number; bestScoreAchievedAt?: Date; updatedAt?: Date }>>({})
   const [gameStats, setGameStats] = useState<Record<string, unknown>>({})
+  const [globalStats, setGlobalStats] = useState<GlobalLeaderboardEntry | null>(null)
   const [loading, setLoading] = useState(true)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [photoEditor, setPhotoEditor] = useState<ReturnType<typeof createInitialEditorState> | null>(null)
@@ -98,11 +99,21 @@ export default function ProfilePage() {
       gameDataService.getAllScores(currentUser.uid),
       gameDataService.getAllGameStats(currentUser.uid),
     ])
-      .then(([loadedProfile, loadedScores, loadedGameStats]) => {
+      .then(async ([loadedProfile, loadedScores, loadedGameStats]) => {
         setProfile(loadedProfile)
         setUsernameInput(loadedProfile?.username || suggested)
         setScores(loadedScores)
         setGameStats(loadedGameStats)
+        
+        // Calculate accurate global stats with proper normalization
+        if (currentUser && Object.keys(loadedScores).length > 0) {
+          const stats = await gameDataService.getUserGlobalStats(
+            currentUser.uid,
+            loadedScores,
+            loadedGameStats as Record<string, { totalMatchCount?: number }>
+          )
+          setGlobalStats(stats)
+        }
       })
       .catch((fetchError: Error) => {
         toast.error(`Failed to load profile: ${fetchError.message}`)
@@ -137,6 +148,7 @@ export default function ProfilePage() {
   const name = profile?.username || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
   const photoURL = profile?.photoThumbURL || profile?.photoURL || currentUser?.photoURL
+
 
   const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -242,6 +254,25 @@ export default function ProfilePage() {
                 <div className="text-center sm:text-left flex-1">
                   <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{name}</h2>
                   <p className="text-slate-600 dark:text-gray-400">{currentUser.email}</p>
+                  {globalStats && (
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
+                        globalStats.tier === 'master' ? 'bg-purple-600 text-white' :
+                        globalStats.tier === 'platinum' ? 'bg-cyan-500 text-white' :
+                        globalStats.tier === 'gold' ? 'bg-yellow-500 text-white' :
+                        globalStats.tier === 'silver' ? 'bg-slate-400 text-white' :
+                        'bg-amber-700 text-white'
+                      }`}>
+                        {globalStats.tier.charAt(0).toUpperCase() + globalStats.tier.slice(1)}
+                      </span>
+                      <span className="text-sm text-slate-600 dark:text-gray-400">
+                        Skill Score: <span className="font-semibold text-indigo-600 dark:text-indigo-400">{globalStats.compositeScore}</span>
+                      </span>
+                      <span className="text-xs text-slate-500 dark:text-gray-500">
+                        ({globalStats.gamesPlayed} games • {globalStats.totalMatchCount.toLocaleString()} matches)
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -292,6 +323,9 @@ export default function ProfilePage() {
                 const historyLength = Array.isArray(stats?.history) ? (stats.history as unknown[]).length : 0
                 const matchCount = (stats?.totalMatchCount as number) || (stats?.matchCount as number) || (stats?.totalGames as number) || historyLength || 0
 
+                const scoreData = scores[game.id]
+                const achievedAt = scoreData?.bestScoreAchievedAt || scoreData?.updatedAt
+
                 return (
                   <div key={game.id} className="glass p-4">
                     <h4 className="font-semibold text-slate-900 dark:text-white">{game.name}</h4>
@@ -302,6 +336,12 @@ export default function ProfilePage() {
                           {gameScore !== undefined ? gameScore.toLocaleString() : '-'}
                         </span>
                       </div>
+                      {achievedAt && (
+                        <p className="text-xs text-slate-400 dark:text-gray-500">
+                          {scoreData?.bestScoreAchievedAt ? 'Best achieved: ' : 'Updated: '}
+                          {achievedAt.toLocaleDateString()}
+                        </p>
+                      )}
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-500 dark:text-gray-400">Matches:</span>
                         <span className="font-medium text-slate-900 dark:text-white">

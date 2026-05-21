@@ -11,10 +11,13 @@ COPY server/package.json server/pnpm-lock.yaml ./
 
 RUN PNPM_IGNORE_PACKAGE_MANAGER_VERSION=true pnpm install --frozen-lockfile --prod
 
+# Copy WordNet database
+COPY server/wordnet/oewn-2025-sqlite-2.3.2.sqlite ./server/wordnet/
+
 # Copy entire project, then overlay server files again to ensure correct package.json
 COPY . .
 COPY server/package.json server/pnpm-lock.yaml ./
 
-EXPOSE 3001 3002 3004 8787
+EXPOSE 3001 3002 3004 8787 8788
 
 CMD ["node", "server/start-all.js"]

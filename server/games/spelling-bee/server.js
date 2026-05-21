@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import path from 'path';
 import { readFileSync } from 'fs';
 import express from 'express';
@@ -16,8 +16,65 @@ app.use(cors());
 const PORT = Number(process.env.PORT) || 8787;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Load hardcoded word bank
+// Load hardcoded word bank (used as fallback)
 const wordBank = JSON.parse(readFileSync(path.join(__dirname, 'data', 'wordBank.json'), 'utf8'));
+
+// ── WordNet integration ───────────────────────────────────────────────────
+// Maps spelling-bee difficulty names to WordNet tagcount-based difficulty keys
+const DIFFICULTY_MAP = {
+  easy:   'light',
+  medium: 'medium',
+  hard:   'hard',
+};
+
+let wordnetGetWords = null;
+try {
+  const wordnetPath = pathToFileURL(path.join(__dirname, '..', '..', 'wordnet', 'service.js')).href;
+  const wordnetService = await import(wordnetPath);
+  wordnetGetWords = wordnetService.getWordsByDifficulty;
+  console.log('[SpellingBee] WordNet service loaded — will use as primary word source.');
+} catch (err) {
+  console.warn('[SpellingBee] WordNet service unavailable, falling back to word bank:', err.message);
+}
+
+/**
+ * Fetch words from WordNet and normalise to spelling-bee word shape.
+ * Returns null if WordNet is unavailable or returns no results.
+ */
+function getWordNetWords(difficulty, limit) {
+  if (!wordnetGetWords) return null;
+  const mappedDiff = DIFFICULTY_MAP[difficulty] || 'medium';
+  try {
+    const rows = wordnetGetWords(mappedDiff, limit * 3); // fetch extra for filtering
+    if (!rows || rows.length === 0) return null;
+
+    // Normalise to spelling-bee shape; skip abbreviations, acronyms, junk
+    const hasVowel = /[aeiou]/i;
+    const alphaOnly = /^[a-z]+$/;
+    const words = rows
+      .filter(r =>
+        r.word &&
+        r.definition &&
+        r.word.length >= 4 &&           // no 3-letter abbreviations
+        alphaOnly.test(r.word) &&        // no digits, underscores, etc.
+        hasVowel.test(r.word)            // must contain a vowel (filters tsh, ldl, etc.)
+      )
+      .map(r => ({
+        word:         r.word,
+        definition:   r.definition,
+        partOfSpeech: r.partOfSpeech || 'noun',
+        example:      '',        // WordNet has no example sentences
+        topic:        (r.topic || 'general').split('.')[0],
+        freq:         r.freq ?? null,
+      }))
+      .slice(0, limit);
+
+    return words.length > 0 ? words : null;
+  } catch (err) {
+    console.error('[SpellingBee] WordNet query failed:', err.message);
+    return null;
+  }
+}
 
 const ttsCache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
 
@@ -130,9 +187,25 @@ app.get('/api/words', async (req, res) => {
     .map(s => s.trim().toLowerCase())
     .filter(s => s.length > 0);
 
+  // ── Try WordNet first ────────────────────────────────────────────────────
+  let wordnetWords = getWordNetWords(difficulty, limit);
+
+  if (wordnetWords) {
+    // Apply filters to WordNet results
+    if (posFilter.length > 0) {
+      wordnetWords = wordnetWords.filter(w => posFilter.includes(w.partOfSpeech));
+    }
+    if (topicFilter.length > 0) {
+      wordnetWords = wordnetWords.filter(w => topicFilter.includes(w.topic));
+    }
+    if (wordnetWords.length > 0) {
+      return res.json({ words: wordnetWords, source: 'wordnet' });
+    }
+  }
+
+  // ── Fall back to static word bank ────────────────────────────────────────
   let pool = wordBank[difficulty] || [];
 
-  // Apply filters
   if (posFilter.length > 0) {
     pool = pool.filter(w => posFilter.includes(w.partOfSpeech));
   }
@@ -151,6 +224,32 @@ app.get('/api/words', async (req, res) => {
 });
 
 // ── Google Cloud Text-to-Speech ──────────────────────────────────────────
+/**
+ * Build SSML for natural spelling-bee speech.
+ * - word:       slow, clear, spoken twice (classic spelling-bee style)
+ * - definition: natural conversational pace
+ * - example:    natural pace, slightly warmer
+ */
+function buildSsml(text, mode) {
+  const esc = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+  if (mode === 'word') {
+    // Say the word slowly, pause, repeat once — classic spelling bee
+    return `<speak><break time="150ms"/><prosody rate="0.90" pitch="+1st">${esc}</prosody><break time="500ms"/><prosody rate="0.90" pitch="+1st">${esc}</prosody></speak>`;
+  }
+  if (mode === 'definition') {
+    return `<speak><prosody rate="0.92" pitch="+0.5st">${esc}</prosody></speak>`;
+  }
+  if (mode === 'example') {
+    return `<speak><prosody rate="0.95">${esc}</prosody></speak>`;
+  }
+  return `<speak>${esc}</speak>`;
+}
+
 app.get('/api/tts', async (req, res) => {
   const client = getTtsClient();
   if (!client) {
@@ -162,21 +261,27 @@ app.get('/api/tts', async (req, res) => {
     return res.status(400).json({ error: 'Missing or too-long `text` parameter (max 500 chars).' });
   }
 
-  const cached = ttsCache.get(text);
+  const mode = ['word', 'definition', 'example'].includes(req.query.mode)
+    ? req.query.mode
+    : 'word';
+
+  const cacheKey = `${mode}:${text}`;
+  const cached = ttsCache.get(cacheKey);
   if (cached) {
     res.set('Content-Type', 'audio/mp3');
     return res.send(cached);
   }
 
   try {
+    const ssml = buildSsml(text, mode);
     const [response] = await client.synthesizeSpeech({
-      input: { text },
-      voice: { languageCode: 'en-US', name: 'en-US-Chirp-HD-F' },
+      input: { ssml },
+      voice: { languageCode: 'en-US', name: 'en-US-Neural2-F' },
       audioConfig: { audioEncoding: 'MP3' },
     });
 
     const audioBuffer = Buffer.from(response.audioContent);
-    ttsCache.set(text, audioBuffer);
+    ttsCache.set(cacheKey, audioBuffer);
     res.set('Content-Type', 'audio/mp3');
     res.send(audioBuffer);
   } catch (err) {
@@ -201,7 +306,8 @@ const HOST = process.env.HOST || '0.0.0.0';
 app.listen(PORT, HOST, () => {
   // eslint-disable-next-line no-console
   console.log(`[${NODE_ENV}] Spelling Bee API listening on http://${HOST}:${PORT}`);
-  console.log(`[WordBank] Loaded ${wordBank.easy.length} easy, ${wordBank.medium.length} medium, ${wordBank.hard.length} hard words.`);
+  console.log(`[WordBank] Fallback: ${wordBank.easy.length} easy, ${wordBank.medium.length} medium, ${wordBank.hard.length} hard words.`);
+  console.log(`[WordNet]  Primary source: ${wordnetGetWords ? 'active' : 'unavailable (using word bank)'}`);
 });
 
 function clampInt(v, min, max) {

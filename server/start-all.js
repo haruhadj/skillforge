@@ -25,6 +25,10 @@ const servers = [
     name: 'Spelling Bee API',
     script: path.join(__dirname, 'games', 'spelling-bee', 'server.js'),
   },
+  {
+    name: 'Vocab API',
+    script: path.join(__dirname, 'games', 'vocab', 'server.js'),
+  },
 ]
 
 console.log(`\n  Starting ${servers.length} game server(s)…\n`)

@@ -105,11 +105,15 @@ export default function StatsPage({ onBack }) {
                           {data.bestScore.toLocaleString()}
                         </span>
                       </div>
-                      {data.updatedAt && (
+                      {data.bestScoreAchievedAt ? (
+                        <p className="text-xs text-slate-500 dark:text-gray-500 font-350">
+                          Best achieved: {data.bestScoreAchievedAt.toDate().toLocaleDateString()}
+                        </p>
+                      ) : data.updatedAt ? (
                         <p className="text-xs text-slate-500 dark:text-gray-500 font-350">
                           Last updated: {data.updatedAt.toDate().toLocaleDateString()}
                         </p>
-                      )}
+                      ) : null}
                     </div>
                   ) : stats?.accuracyPercentage != null ? (
                     <div className="mt-4 space-y-3">

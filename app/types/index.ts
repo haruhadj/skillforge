@@ -63,6 +63,7 @@ export interface GameStats {
 export interface ScoreData {
   bestScore: number
   updatedAt: Date
+  bestScoreAchievedAt?: Date
 }
 
 export interface LeaderboardEntry {
@@ -74,6 +75,10 @@ export interface LeaderboardEntry {
 export interface GlobalLeaderboardEntry {
   uid: string
   totalMatchCount: number
+  compositeScore: number
+  gamesPlayed: number
+  avgNormalizedScore: number
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'master'
 }
 
 // Announcement types

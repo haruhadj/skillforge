@@ -9,7 +9,8 @@
     "chess": "node games/chess/socket-server.js",
     "tictactoe": "node games/tictactoe/socket-server.js",
     "chroma-memory": "node games/chroma-memory/socket-server.js",
-    "spelling-bee": "node games/spelling-bee/server.js"
+    "spelling-bee": "node games/spelling-bee/server.js",
+    "vocab": "node games/vocab/server.js"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^6.4.0",

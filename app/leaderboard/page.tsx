@@ -38,6 +38,22 @@ function Medal({ rank }: { rank: number }) {
   )
 }
 
+function TierBadge({ tier }: { tier: GlobalLeaderboardEntry['tier'] }) {
+  const tierConfig = {
+    bronze: { bg: 'bg-amber-700', text: 'text-white', label: 'Bronze' },
+    silver: { bg: 'bg-slate-400', text: 'text-white', label: 'Silver' },
+    gold: { bg: 'bg-yellow-500', text: 'text-white', label: 'Gold' },
+    platinum: { bg: 'bg-cyan-500', text: 'text-white', label: 'Platinum' },
+    master: { bg: 'bg-purple-600', text: 'text-white', label: 'Master' },
+  }
+  const config = tierConfig[tier]
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${config.bg} ${config.text}`}>
+      {config.label}
+    </span>
+  )
+}
+
 function Avatar({ url, name, size = 'md' }: { url?: string; name?: string; size?: 'sm' | 'md' | 'lg' }) {
   const initials = (name || '?').slice(0, 2).toUpperCase()
   const sizeClasses = {
@@ -96,10 +112,18 @@ function Podium({ top3, profiles, viewMode, currentUser }: {
           const row = top3[idx]
           const profile = profiles[row.uid]
           const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
-          const value = viewMode === 'global'
-            ? (row as GlobalLeaderboardEntry).totalMatchCount ?? 0
-            : (row as LeaderboardEntry).bestScore ?? 0
           const isCurrentUser = row.uid === currentUser?.uid
+
+          // Show composite score for global, best score for game mode
+          const mainValue = viewMode === 'global'
+            ? (row as GlobalLeaderboardEntry).compositeScore ?? 0
+            : (row as LeaderboardEntry).bestScore ?? 0
+          const subValue = viewMode === 'global'
+            ? `${(row as GlobalLeaderboardEntry).gamesPlayed ?? 0} games`
+            : null
+          const tier = viewMode === 'global'
+            ? (row as GlobalLeaderboardEntry).tier
+            : null
 
           return (
             <div
@@ -113,9 +137,17 @@ function Podium({ top3, profiles, viewMode, currentUser }: {
                   {name}
                   {isCurrentUser && <span className="block text-xs text-indigo-600 dark:text-indigo-400">(You)</span>}
                 </p>
+                {tier && (
+                  <div className="mt-1">
+                    <TierBadge tier={tier} />
+                  </div>
+                )}
               </div>
-              <div className={`w-24 rounded-t-lg ${heights[i]} ${bgGradients[i]} ${borderColors[i]} border-2 flex items-end justify-center pb-2`}>
-                <span className="font-bold text-slate-700 dark:text-white text-sm">{value.toLocaleString()}</span>
+              <div className={`w-24 rounded-t-lg ${heights[i]} ${bgGradients[i]} ${borderColors[i]} border-2 flex flex-col items-center justify-end pb-2`}>
+                <span className="font-bold text-slate-700 dark:text-white text-sm">{mainValue.toLocaleString()}</span>
+                {subValue && (
+                  <span className="text-xs text-slate-500 dark:text-slate-400">{subValue}</span>
+                )}
               </div>
             </div>
           )
@@ -178,7 +210,7 @@ export default function LeaderboardPage() {
     return () => { cancelled = true }
   }, [selectedGameId, viewMode])
 
-  const metricLabel = viewMode === 'global' ? 'Total Matches' : 'Best Score'
+  const metricLabel = viewMode === 'global' ? 'Skill Score' : 'Best Score'
 
   if (!currentUser) {
     return null
@@ -315,7 +347,12 @@ export default function LeaderboardPage() {
                     <h2 className="font-semibold text-slate-900 dark:text-white">
                       {viewMode === 'global' ? 'Global Rankings' : activeGame?.name}
                     </h2>
-                    <span className="text-sm text-slate-500 dark:text-gray-400">{metricLabel}</span>
+                    <div className="flex items-center gap-4 text-sm">
+                      {viewMode === 'global' && (
+                        <span className="text-slate-400 dark:text-gray-500">Tier • Games • Matches</span>
+                      )}
+                      <span className="text-slate-500 dark:text-gray-400 font-medium">{metricLabel}</span>
+                    </div>
                   </div>
 
                   <div className="divide-y divide-slate-200 dark:divide-gray-700">
@@ -330,16 +367,23 @@ export default function LeaderboardPage() {
                         const rank = index + 1
                         const profile = profiles[row.uid]
                         const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
-                        const value = viewMode === 'global'
-                          ? (row as GlobalLeaderboardEntry).totalMatchCount ?? 0
-                          : (row as LeaderboardEntry).bestScore ?? 0
                         const isCurrentUser = row.uid === currentUser?.uid
+                        const isTop3 = rank <= 3
+
+                        // Global mode: composite score, game mode: best score
+                        const mainValue = viewMode === 'global'
+                          ? (row as GlobalLeaderboardEntry).compositeScore ?? 0
+                          : (row as LeaderboardEntry).bestScore ?? 0
                         const maxValue = rows[0] ? (viewMode === 'global'
-                          ? (rows[0] as GlobalLeaderboardEntry).totalMatchCount ?? 0
+                          ? (rows[0] as GlobalLeaderboardEntry).compositeScore ?? 0
                           : (rows[0] as LeaderboardEntry).bestScore ?? 0
                         ) : 1
-                        const percentage = maxValue > 0 ? (value / maxValue) * 100 : 0
-                        const isTop3 = rank <= 3
+                        const percentage = maxValue > 0 ? (mainValue / maxValue) * 100 : 0
+
+                        // Global stats
+                        const tier = viewMode === 'global' ? (row as GlobalLeaderboardEntry).tier : null
+                        const gamesPlayed = viewMode === 'global' ? (row as GlobalLeaderboardEntry).gamesPlayed ?? 0 : null
+                        const totalMatches = viewMode === 'global' ? (row as GlobalLeaderboardEntry).totalMatchCount ?? 0 : null
 
                         return (
                           <div
@@ -377,6 +421,14 @@ export default function LeaderboardPage() {
                                   </span>
                                 )}
                               </div>
+                              {viewMode === 'global' && tier && (
+                                <div className="relative flex items-center gap-2 mt-1">
+                                  <TierBadge tier={tier} />
+                                  <span className="text-xs text-slate-500 dark:text-gray-400">
+                                    {gamesPlayed} games • {totalMatches?.toLocaleString()} matches
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <span className={`font-semibold ${isTop3 ? 'text-lg' : ''} ${
                               rank === 1 ? 'text-yellow-600 dark:text-yellow-400' :
@@ -384,7 +436,7 @@ export default function LeaderboardPage() {
                               rank === 3 ? 'text-amber-600 dark:text-amber-400' :
                               'text-slate-900 dark:text-white'
                             }`}>
-                              {value.toLocaleString()}
+                              {mainValue.toLocaleString()}
                             </span>
                           </div>
                         )

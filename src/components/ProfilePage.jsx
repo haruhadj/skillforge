@@ -668,11 +668,15 @@ export default function ProfilePage({ onBack }) {
                             {data.bestScore.toLocaleString()}
                           </span>
                         </div>
-                        {data.updatedAt && (
+                        {data.bestScoreAchievedAt ? (
+                          <p className="text-xs text-slate-400 dark:text-gray-500">
+                            Best achieved: {data.bestScoreAchievedAt.toDate().toLocaleDateString()}
+                          </p>
+                        ) : data.updatedAt ? (
                           <p className="text-xs text-slate-400 dark:text-gray-500">
                             Last updated: {data.updatedAt.toDate().toLocaleDateString()}
                           </p>
-                        )}
+                        ) : null}
                       </div>
                     ) : stats?.combinedAverageScore != null ? (
                       <div className="mt-3 space-y-2">
