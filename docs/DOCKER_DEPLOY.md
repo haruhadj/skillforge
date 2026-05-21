@@ -41,7 +41,7 @@
 4. **Access the application:**
    - Frontend (via Nginx Proxy Manager): your domain on port 80/443
    - Direct access (no NPM): `http://raspberrypi.local:1234`
-   - Backend game servers (internal only): ports 3001 (tictactoe), 3004 (chess), 8787 (spelling-bee)
+   - Backend game servers (internal only): ports 3001 (tictactoe), 3004 (chess), 8787 (spelling-bee), 8788 (vocab/hangman WordNet API)
 
 ### Architecture Notes
 
@@ -50,10 +50,12 @@
 - **Game servers**: Individual Node.js services in the same Docker Compose stack
 - **Static games**: All `public/games/` files served via Next.js public folder
 - **Nginx** (`nginx/skillforge.conf`): routes `/api/*`, `/tictactoe-ws/*`, `/chess-ws/*`, `/chroma-memory-ws/*` internally — NPM only needs one proxy host on port 8080
+- **WordNet Database**: SQLite database (`server/wordnet/oewn-2025-sqlite-2.3.2.sqlite`) embedded in server image for vocab/hangman games
 - **Environment**: 
   - Firebase client config (build-time): `NEXT_PUBLIC_*` vars
   - Firebase Admin SDK (runtime): `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY`
   - Resend email (runtime): `RESEND_API_KEY`
+  - Vocab API (runtime): `VOCAB_PORT`, `VOCAB_HOST`, `VOCAB_API_ORIGIN`
 
 ### Troubleshooting
 

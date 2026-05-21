@@ -24,6 +24,7 @@ services:
       - chess
       - chroma-memory
       - spelling-bee
+      - vocab
 
   tictactoe:
     build:
@@ -73,10 +74,27 @@ services:
       - PORT=8787
       - HOST=0.0.0.0
       - GOOGLE_APPLICATION_CREDENTIALS=/app/tts-key.json
+      - VOCAB_API_ORIGIN=http://vocab:8788
     ports:
       - "8787:8787"
     volumes:
       - ./server/tts-key.json:/app/tts-key.json:ro
+    depends_on:
+      - vocab
+
+  vocab:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: skillforge-vocab
+    restart: unless-stopped
+    command: ["node", "server/games/vocab/server.js"]
+    environment:
+      - NODE_ENV=production
+      - VOCAB_PORT=8788
+      - VOCAB_HOST=0.0.0.0
+    ports:
+      - "8788:8788"
 
 networks:
   default:

@@ -18,6 +18,9 @@ COPY server/wordnet/oewn-2025-sqlite-2.3.2.sqlite ./server/wordnet/
 COPY . .
 COPY server/package.json server/pnpm-lock.yaml ./
 
-EXPOSE 3001 3002 3004 8787 8788
+# Re-copy WordNet database to ensure it's in the correct location after COPY . .
+COPY server/wordnet/oewn-2025-sqlite-2.3.2.sqlite ./server/wordnet/
+
+EXPOSE 3001 3002 3004 3005 8787 8788
 
 CMD ["node", "server/start-all.js"]
