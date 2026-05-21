@@ -79,6 +79,35 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'pass
   return 'unknown'
 }
 
+async function generateUniqueUsername(user: FirebaseUser): Promise<string | null> {
+  const baseName = createSuggestedUsername(
+    user.displayName || user.email?.split('@')[0] || '',
+    'player'
+  )
+
+  // Try the base name first
+  if (await isUsernameAvailable(baseName)) {
+    return baseName
+  }
+
+  // If taken, append random numbers (up to 10 attempts)
+  for (let i = 0; i < 10; i++) {
+    const suffix = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
+    const candidate = `${baseName.slice(0, 17)}_${suffix}`.slice(0, 20)
+    if (await isUsernameAvailable(candidate)) {
+      return candidate
+    }
+  }
+
+  // Fallback to userId-based username
+  const fallback = `user_${user.uid.slice(0, 10)}`
+  if (await isUsernameAvailable(fallback)) {
+    return fallback
+  }
+
+  return null
+}
+
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   const profileRef = doc(db, 'users', uid)
   const profileSnap = await getDoc(profileRef)
@@ -92,6 +121,9 @@ interface EnsureProfilePayload {
   photoURL?: string
   photoThumbURL?: string
   createdAt?: ReturnType<typeof serverTimestamp>
+  username?: string
+  usernameNormalized?: string
+  profileCompleted?: boolean
 }
 
 export async function ensureUserProfileDocument(user: FirebaseUser | null): Promise<FirestoreUserProfile | null> {
@@ -108,6 +140,8 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
   }
 
   const isFacebook = resolveAuthProvider(user) === 'facebook'
+  const isGoogle = resolveAuthProvider(user) === 'google'
+  const isOAuth = isFacebook || isGoogle
   const incomingPhoto = isFacebook && user.photoURL
     ? user.photoURL.replace(/(\?|&)type=\w+/, '') + (user.photoURL.includes('?') ? '&type=large' : '?type=large')
     : user.photoURL
@@ -119,6 +153,27 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
 
   if (!existingProfile?.createdAt) {
     payload.createdAt = serverTimestamp()
+  }
+
+  // Auto-generate username for OAuth users if they don't have one
+  if (!existingProfile?.username && isOAuth) {
+    const generatedUsername = await generateUniqueUsername(user)
+    if (generatedUsername) {
+      const normalized = normalizeUsername(generatedUsername)
+      payload.username = generatedUsername
+      payload.usernameNormalized = normalized
+      payload.profileCompleted = true
+
+      // Claim the username in the usernames collection
+      const usernameRef = doc(db, 'usernames', normalized)
+      await setDoc(usernameRef, {
+        uid: user.uid,
+        username: generatedUsername,
+        usernameNormalized: normalized,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    }
   }
 
   console.log('[ensureUserProfileDocument] Writing profile for', user.uid, 'Payload:', payload)
