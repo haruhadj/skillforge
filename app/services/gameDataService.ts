@@ -113,7 +113,7 @@ function convertTimestampToDate(value: unknown): Date | undefined {
 function normalizeScoreData(data: DocumentData): ScoreData {
   return {
     bestScore: Number(data.bestScore) || 0,
-    updatedAt: convertTimestampToDate(data.updatedAt),
+    updatedAt: convertTimestampToDate(data.updatedAt) ?? new Date(),
     bestScoreAchievedAt: convertTimestampToDate(data.bestScoreAchievedAt),
   }
 }

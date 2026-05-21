@@ -79,6 +79,7 @@ services:
       - "8787:8787"
     volumes:
       - ./server/tts-key.json:/app/tts-key.json:ro
+      - ./server/wordnet/oewn-2025-sqlite-2.3.2.sqlite:/app/server/wordnet/oewn-2025-sqlite-2.3.2.sqlite:ro
     depends_on:
       - vocab
 
@@ -95,6 +96,8 @@ services:
       - VOCAB_HOST=0.0.0.0
     ports:
       - "8788:8788"
+    volumes:
+      - ./server/wordnet/oewn-2025-sqlite-2.3.2.sqlite:/app/server/wordnet/oewn-2025-sqlite-2.3.2.sqlite:ro
 
 networks:
   default:
