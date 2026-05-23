@@ -182,21 +182,21 @@ export default function LibraryPage() {
     <div className="min-h-screen gradient-bg transition-colors duration-500">
       {/* Sticky Header */}
       <header className="sticky top-0 z-40 glass border-b border-slate-200/50 dark:border-gray-700/50 animate-fade-in">
-        <div className="mx-auto max-w-6xl px-6 py-4 flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1 flex items-center gap-4">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1 flex items-center gap-3">
             <Image
               src="/game logo.jpeg"
               alt="SkillForge Logo"
-              width={52}
-              height={52}
-              className="rounded-xl shrink-0 drop-shadow-md"
+              width={40}
+              height={40}
+              className="rounded-xl shrink-0 drop-shadow-md sm:w-[52px] sm:h-[52px]"
               priority
               loading="eager"
             />
             <div className="min-w-0">
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Game Library</h2>
+              <h2 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Game Library</h2>
               {currentUser && (
-                <p className="text-base text-slate-600 dark:text-gray-400 mt-2">
+                <p className="hidden sm:block text-sm text-slate-600 dark:text-gray-400 mt-0.5">
                   Welcome back, <span className="font-semibold">{name}</span>!
                 </p>
               )}
@@ -210,7 +210,7 @@ export default function LibraryPage() {
               <button
                 type="button"
                 onClick={() => setDropdownOpen((prev) => !prev)}
-                className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-500 dark:to-indigo-600 text-sm font-semibold text-white ring-2 ring-indigo-200 dark:ring-indigo-800 transition-all duration-300 hover:ring-indigo-400 dark:hover:ring-indigo-600 hover:shadow-lg focus:outline-none focus:ring-indigo-400 dark:focus:ring-indigo-600"
+                className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-500 dark:to-indigo-600 text-sm font-semibold text-white ring-2 ring-indigo-200 dark:ring-indigo-800 transition-all duration-300 hover:ring-indigo-400 dark:hover:ring-indigo-600 hover:shadow-lg focus:outline-none focus:ring-indigo-400 dark:focus:ring-indigo-600"
                 aria-haspopup="true"
                 aria-expanded={dropdownOpen}
               >

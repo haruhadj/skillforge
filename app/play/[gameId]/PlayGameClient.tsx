@@ -167,9 +167,9 @@ export default function PlayGameClient() {
 
   return (
     <div className="fixed inset-0 flex flex-col gradient-bg transition-colors duration-500">
-      <header className="flex items-center justify-between gap-4 border-b border-slate-200/50 dark:border-gray-700/50 glass px-6 py-4 shadow-sm">
+      <header className="flex items-center justify-between gap-2 sm:gap-4 border-b border-slate-200/50 dark:border-gray-700/50 glass px-3 sm:px-6 py-2.5 sm:py-4 shadow-sm">
         <button
-          className="btn-secondary px-4 py-2.5 text-sm hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2"
+          className="btn-secondary px-3 sm:px-4 py-2 sm:py-2.5 text-sm hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2 shrink-0"
           onClick={() => router.push('/library')}
         >
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -177,7 +177,7 @@ export default function PlayGameClient() {
           </svg>
           Back
         </button>
-        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">{game?.name ?? 'Game'}</h2>
+        <h2 className="text-sm sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight truncate min-w-0 text-center">{game?.name ?? 'Game'}</h2>
         <ThemeToggle />
       </header>
 
