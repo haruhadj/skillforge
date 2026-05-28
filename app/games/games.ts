@@ -130,6 +130,12 @@ export const defaultGames: Game[] = [
     iframePath: '/games/quordle/index.html',
     description: 'Can you solve 4 words at once? A challenging Wordle variant with 2x2 multi-board gameplay, streak multipliers, and coin economy. Powered by WordNet.',
   },
+  {
+    id: 'geoguessr-clone',
+    name: 'GeoGuessr Clone',
+    iframePath: '/games/geoguessr-clone/index.html',
+    description: 'A self-hosted GeoGuessr clone featuring Google Street View panoramas and an interactive 2D guessing map. Guess your location from street view clues.',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
