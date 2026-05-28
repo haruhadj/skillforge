@@ -263,6 +263,167 @@ export function getStats() {
   };
 }
 
+/**
+ * Get synonyms for a word (words in the same synset)
+ * @param {string} word - The word to find synonyms for
+ * @param {number} limit - Maximum number of synonyms to return
+ * @returns {Array} Array of synonym word objects
+ */
+export function getSynonyms(word, limit = 5) {
+  const sql = `
+    SELECT DISTINCT w2.word, sy.definition, p.pos as partOfSpeech, se.tagcount as freq
+    FROM words w1
+    JOIN senses se1 ON w1.wordid = se1.wordid
+    JOIN synsets sy ON se1.synsetid = sy.synsetid
+    JOIN senses se2 ON sy.synsetid = se2.synsetid
+    JOIN words w2 ON se2.wordid = w2.wordid
+    JOIN poses p ON sy.posid = p.posid
+    WHERE w1.word = ?
+      AND w2.word != w1.word
+      AND length(w2.word) BETWEEN 3 AND 20
+      AND w2.word NOT LIKE '% %'
+      AND w2.word NOT LIKE '%-%'
+    ORDER BY se.tagcount DESC
+    LIMIT ?
+  `;
+  
+  return queryAll(sql, [word.toLowerCase(), limit]);
+}
+
+/**
+ * Get antonyms for a word (words in synsets connected by antonym relation)
+ * @param {string} word - The word to find antonyms for
+ * @param {number} limit - Maximum number of antonyms to return
+ * @returns {Array} Array of antonym word objects
+ */
+export function getAntonyms(word, limit = 5) {
+  // relationid 30 is antonym in the semrelations table
+  const sql = `
+    SELECT DISTINCT w2.word, sy2.definition, p.pos as partOfSpeech, se2.tagcount as freq
+    FROM words w1
+    JOIN senses se1 ON w1.wordid = se1.wordid
+    JOIN synsets sy1 ON se1.synsetid = sy1.synsetid
+    JOIN semrelations sr ON (sr.synset1id = sy1.synsetid OR sr.synset2id = sy1.synsetid)
+    JOIN synsets sy2 ON (sy2.synsetid = CASE 
+      WHEN sr.synset1id = sy1.synsetid THEN sr.synset2id 
+      ELSE sr.synset1id 
+    END)
+    JOIN senses se2 ON sy2.synsetid = se2.synsetid
+    JOIN words w2 ON se2.wordid = w2.wordid
+    JOIN poses p ON sy2.posid = p.posid
+    WHERE w1.word = ?
+      AND w2.word != w1.word
+      AND sr.relationid = 30
+      AND length(w2.word) BETWEEN 3 AND 20
+      AND w2.word NOT LIKE '% %'
+      AND w2.word NOT LIKE '%-%'
+    ORDER BY se2.tagcount DESC
+    LIMIT ?
+  `;
+  
+  return queryAll(sql, [word.toLowerCase(), limit]);
+}
+
+/**
+ * Generate word pairs for Synonym Showdown game
+ * Creates pairs of words that are either synonyms or different (antonyms or unrelated)
+ * @param {string} difficulty - 'light', 'medium', 'hard', 'devilish'
+ * @param {number} count - Number of pairs to generate
+ * @returns {Array} Array of word pair objects
+ */
+export function generateWordPairs(difficulty, count = 20) {
+  const range = DIFFICULTY_RANGES[difficulty] || DIFFICULTY_RANGES.medium;
+  const maxFreq = range.max === Infinity ? 999999 : range.max;
+  
+  const pairs = [];
+  const usedWords = new Set();
+  
+  // Get base words
+  const baseWords = queryAll(`
+    SELECT DISTINCT w.word, sy.definition, p.pos as partOfSpeech, se.tagcount as freq
+    FROM words w
+    JOIN senses se ON w.wordid = se.wordid
+    JOIN synsets sy ON se.synsetid = sy.synsetid
+    JOIN poses p ON sy.posid = p.posid
+    WHERE se.tagcount BETWEEN ? AND ?
+      AND length(w.word) BETWEEN 4 AND 12
+      AND w.word NOT LIKE '% %'
+      AND w.word NOT LIKE '%-%'
+      AND w.word = lower(w.word)
+      AND sy.definition IS NOT NULL
+      AND length(sy.definition) > 10
+      AND length(sy.definition) < 200
+    ORDER BY RANDOM()
+    LIMIT ?
+  `, [range.min, maxFreq, count * 2]);
+  
+  for (const baseWord of baseWords) {
+    if (pairs.length >= count) break;
+    if (usedWords.has(baseWord.word)) continue;
+    
+    // Try to find a synonym first
+    const synonyms = getSynonyms(baseWord.word, 3);
+    const validSynonyms = synonyms.filter(s => !usedWords.has(s.word) && s.word !== baseWord.word);
+    
+    if (validSynonyms.length > 0 && Math.random() < 0.5) {
+      // Create a synonym pair
+      const synonym = validSynonyms[0];
+      pairs.push({
+        id: `${baseWord.word}_${synonym.word}_${Date.now()}`,
+        word1: baseWord.word,
+        word2: synonym.word,
+        relation: 'same',
+        description: `Both mean: ${baseWord.definition}`,
+        difficulty: difficulty === 'light' ? 'easy' : difficulty === 'medium' ? 'medium' : 'hard',
+        partOfSpeech: baseWord.partOfSpeech || 'noun'
+      });
+      usedWords.add(baseWord.word);
+      usedWords.add(synonym.word);
+    } else {
+      // Try to find an antonym
+      const antonyms = getAntonyms(baseWord.word, 3);
+      const validAntonyms = antonyms.filter(a => !usedWords.has(a.word) && a.word !== baseWord.word);
+      
+      if (validAntonyms.length > 0) {
+        // Create an antonym pair (different)
+        const antonym = validAntonyms[0];
+        pairs.push({
+          id: `${baseWord.word}_${antonym.word}_${Date.now()}`,
+          word1: baseWord.word,
+          word2: antonym.word,
+          relation: 'different',
+          description: `Opposites: ${baseWord.word} means "${baseWord.definition}" while ${antonym.word} means "${antonym.definition}"`,
+          difficulty: difficulty === 'light' ? 'easy' : difficulty === 'medium' ? 'medium' : 'hard',
+          partOfSpeech: baseWord.partOfSpeech || 'noun'
+        });
+        usedWords.add(baseWord.word);
+        usedWords.add(antonym.word);
+      } else {
+        // Create a random different pair with another word from the list
+        const otherWords = baseWords.filter(w => 
+          w.word !== baseWord.word && !usedWords.has(w.word)
+        );
+        if (otherWords.length > 0) {
+          const other = otherWords[Math.floor(Math.random() * otherWords.length)];
+          pairs.push({
+            id: `${baseWord.word}_${other.word}_${Date.now()}`,
+            word1: baseWord.word,
+            word2: other.word,
+            relation: 'different',
+            description: `Different meanings: ${baseWord.word} = "${baseWord.definition}" vs ${other.word} = "${other.definition}"`,
+            difficulty: difficulty === 'light' ? 'easy' : difficulty === 'medium' ? 'medium' : 'hard',
+            partOfSpeech: baseWord.partOfSpeech || 'noun'
+          });
+          usedWords.add(baseWord.word);
+          usedWords.add(other.word);
+        }
+      }
+    }
+  }
+  
+  return pairs;
+}
+
 export default {
   getWordNetDB,
   closeWordNetDB,
@@ -272,5 +433,8 @@ export default {
   getDistractors,
   generateQuizQuestions,
   getDifficultyConfig,
-  getStats
+  getStats,
+  getSynonyms,
+  getAntonyms,
+  generateWordPairs
 };

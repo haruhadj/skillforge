@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { User as FirebaseUser } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
@@ -88,7 +89,7 @@ function Podium({ top3, profiles, viewMode, currentUser }: {
   top3: (LeaderboardEntry | GlobalLeaderboardEntry)[]
   profiles: Record<string, UserProfile>
   viewMode: 'global' | 'game'
-  currentUser: any
+  currentUser: FirebaseUser | null
 }) {
   const podiumOrder = [1, 0, 2] // 2nd, 1st, 3rd for visual layout
   const heights = ['h-32', 'h-40', 'h-28']
@@ -390,7 +391,7 @@ export default function LeaderboardPage() {
                             key={row.uid}
                             className={`group relative flex items-center gap-4 p-4 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-gray-800/50 ${
                               isCurrentUser ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : index % 2 === 0 ? 'bg-white/30 dark:bg-gray-800/30' : ''
-                            } ${isTop3 ? 'opacity-50' : ''} animate-slide-up`}
+                            } animate-slide-up`}
                             style={{ animationDelay: `${index * 50}ms` }}
                           >
                             {isCurrentUser && (

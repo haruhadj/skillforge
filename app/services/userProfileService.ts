@@ -5,6 +5,7 @@ import {
   runTransaction,
   serverTimestamp,
   setDoc,
+  updateDoc,
   Timestamp,
 } from 'firebase/firestore'
 import { User as FirebaseUser } from 'firebase/auth'
@@ -176,9 +177,7 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
     }
   }
 
-  console.log('[ensureUserProfileDocument] Writing profile for', user.uid, 'Payload:', payload)
   await setDoc(profileRef, payload, { merge: true })
-  console.log('[ensureUserProfileDocument] Profile written successfully')
 
   return {
     ...(existingProfile || {}),
@@ -239,7 +238,6 @@ export async function claimUsername(
   }
 
   try {
-    console.log('[claimUsername] Writing user profile:', userPayload)
     await setDoc(userRef, userPayload, { merge: true })
   } catch (err) {
     console.error('[claimUsername] Failed to write user profile:', err)
@@ -348,4 +346,22 @@ export async function uploadProfilePhoto(uid: string, upload: File | ProfilePhot
   )
 
   return { photoURL, photoThumbURL: resolvedThumbURL }
+}
+
+const MAX_RECENTLY_PLAYED = 10
+
+export async function getRecentlyPlayed(uid: string): Promise<string[]> {
+  if (!uid) return []
+  const snap = await getDoc(doc(db, 'users', uid))
+  if (!snap.exists()) return []
+  const data = snap.data()
+  return Array.isArray(data.recentlyPlayed) ? (data.recentlyPlayed as string[]) : []
+}
+
+export async function saveRecentlyPlayed(uid: string, gameIds: string[]): Promise<void> {
+  if (!uid) return
+  await updateDoc(doc(db, 'users', uid), {
+    recentlyPlayed: gameIds.slice(0, MAX_RECENTLY_PLAYED),
+    updatedAt: serverTimestamp(),
+  })
 }

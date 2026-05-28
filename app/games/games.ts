@@ -106,6 +106,30 @@ export const defaultGames: Game[] = [
     iframePath: '/games/grammar-police/index.html',
     description: 'Spot grammatical errors in detective-themed sentences. Climb the ranks from Cadet to Commissioner!',
   },
+  {
+    id: 'vocabulary-wordle',
+    name: 'Vocabulary Wordle',
+    iframePath: '/games/vocabulary-wordle/index.html',
+    description: 'Guess the 5-letter word in 6 tries. Powered by the WordNet dictionary with difficulty levels and vocabulary hints.',
+  },
+  {
+    id: 'synonym-showdown',
+    name: 'Synonym Showdown',
+    iframePath: '/games/synonym-showdown/index.html',
+    description: 'Rapid-fire synonym matching! Tap "same" or "different" for two words. Speed rounds, combo streaks, and leaderboard rankings.',
+  },
+  {
+    id: 'fill-in-the-blank-relay',
+    name: 'Fill-in-the-Blank Relay',
+    iframePath: '/games/fill-in-the-blank-relay/index.html',
+    description: 'Educational word game with sentence completion challenges. Progressive difficulty, dynamic relay timers, and combo streaks. Powered by WordNet vocabulary.',
+  },
+  {
+    id: 'quordle',
+    name: 'Quordle',
+    iframePath: '/games/quordle/index.html',
+    description: 'Can you solve 4 words at once? A challenging Wordle variant with 2x2 multi-board gameplay, streak multipliers, and coin economy. Powered by WordNet.',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */

@@ -1,6 +1,7 @@
 import { db } from '@/app/lib/firebase'
 import {
   collection,
+  collectionGroup,
   deleteDoc,
   doc,
   getDoc,
@@ -72,20 +73,16 @@ export async function deleteGame(gameId: string): Promise<void> {
 }
 
 export async function getPlatformStats(): Promise<PlatformStats> {
-  const usersSnap = await getDocs(collection(db, 'users'))
-  const totalUsers = usersSnap.size
+  const [usersSnap, allStatsSnap] = await Promise.all([
+    getDocs(collection(db, 'users')),
+    getDocs(collectionGroup(db, 'gameStats')),
+  ])
 
+  const totalUsers = usersSnap.size
   let totalMatches = 0
-  for (const userDoc of usersSnap.docs) {
-    try {
-      const statsSnap = await getDocs(collection(db, 'users', userDoc.id, 'gameStats'))
-      statsSnap.forEach((d) => {
-        totalMatches += Number(d.data().totalMatchCount) || 0
-      })
-    } catch {
-      // Skip users whose subcollections we can't read
-    }
-  }
+  allStatsSnap.forEach((d) => {
+    totalMatches += Number(d.data().totalMatchCount) || 0
+  })
 
   return {
     totalUsers,

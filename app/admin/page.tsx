@@ -9,6 +9,7 @@ import ThemeToggle from '@/app/components/ThemeToggle'
 import AdminDashboardTab from '@/app/components/AdminDashboardTab'
 import AdminUsersTab from '@/app/components/AdminUsersTab'
 import AdminGamesTab from '@/app/components/AdminGamesTab'
+import AdminAnnouncementsTab from '@/app/components/AdminAnnouncementsTab'
 
 const TABS = [
   {
@@ -78,7 +79,7 @@ export default function AdminPage() {
       case 'dashboard': return <AdminDashboardTab />
       case 'games': return <AdminGamesTab />
       case 'users': return <AdminUsersTab />
-      case 'announcements': return <div className="glass p-8 text-center text-slate-600 dark:text-gray-400">Announcements coming soon</div>
+      case 'announcements': return <AdminAnnouncementsTab />
       default: return <AdminDashboardTab />
     }
   }

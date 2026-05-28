@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
-import { getUserProfile } from '@/app/services/userProfileService'
+import { getUserProfile, getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
 import { getActiveAnnouncements } from '@/app/services/adminService'
 import { isAdmin } from '@/app/services/adminService'
 import { getGamePopularity } from '@/app/services/gameDataService'
@@ -95,19 +95,38 @@ export default function LibraryPage() {
     loadGameVisibility()
   }, [])
 
-  // Load recently played from localStorage
+  // Load recently played — Firestore for authenticated users, localStorage as fallback
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('recentlyPlayed')
-      if (stored) {
-        try {
-          setRecentlyPlayed(JSON.parse(stored))
-        } catch {
-          setRecentlyPlayed([])
+    if (!currentUser?.uid) {
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('recentlyPlayed')
+        if (stored) {
+          try {
+            setRecentlyPlayed(JSON.parse(stored))
+          } catch {
+            setRecentlyPlayed([])
+          }
         }
       }
+      return
     }
-  }, [])
+    getRecentlyPlayed(currentUser.uid)
+      .then((ids) => {
+        if (ids.length > 0) {
+          setRecentlyPlayed(ids)
+        } else if (typeof window !== 'undefined') {
+          const stored = localStorage.getItem('recentlyPlayed')
+          if (stored) {
+            try {
+              setRecentlyPlayed(JSON.parse(stored))
+            } catch {
+              setRecentlyPlayed([])
+            }
+          }
+        }
+      })
+      .catch(() => {})
+  }, [currentUser?.uid])
 
   // Load game popularity from Firestore
   useEffect(() => {
@@ -126,12 +145,15 @@ export default function LibraryPage() {
     loadPopularity()
   }, [])
 
-  // Save recently played to localStorage
+  // Save recently played — Firestore for authenticated users, localStorage as fallback
   const trackGamePlay = (gameId: string) => {
     const updated = [gameId, ...recentlyPlayed.filter(id => id !== gameId)].slice(0, 10)
     setRecentlyPlayed(updated)
     if (typeof window !== 'undefined') {
       localStorage.setItem('recentlyPlayed', JSON.stringify(updated))
+    }
+    if (currentUser?.uid) {
+      saveRecentlyPlayed(currentUser.uid, updated).catch(() => {})
     }
   }
 
@@ -194,7 +216,7 @@ export default function LibraryPage() {
               loading="eager"
             />
             <div className="min-w-0">
-              <h2 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Game Library</h2>
+              <h2 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">SkillForge Library</h2>
               {currentUser && (
                 <p className="hidden sm:block text-sm text-slate-600 dark:text-gray-400 mt-0.5">
                   Welcome back, <span className="font-semibold">{name}</span>!

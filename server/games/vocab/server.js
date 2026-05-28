@@ -29,7 +29,8 @@ const {
   getWordData, 
   getStats, 
   getDifficultyConfig,
-  isValidWord 
+  isValidWord,
+  generateWordPairs
 } = await import(wordnetPath);
 
 const app = express();
@@ -217,6 +218,42 @@ app.get('/api/vocab/validate/:word', (req, res) => {
   }
 });
 
+// Get word pairs for Synonym Showdown game
+app.get('/api/vocab/wordpairs', (req, res) => {
+  try {
+    // Validate difficulty
+    const validDifficulties = ['light', 'medium', 'hard', 'devilish'];
+    const difficulty = validDifficulties.includes(req.query.difficulty)
+      ? req.query.difficulty
+      : 'medium';
+    
+    // Validate count (5-50)
+    const count = Math.min(50, Math.max(5, parseInt(req.query.count || '20', 10)));
+    
+    const pairs = generateWordPairs(difficulty, count);
+    
+    if (pairs.length === 0) {
+      return res.status(500).json({
+        success: false,
+        error: 'No word pairs available'
+      });
+    }
+    
+    res.json({
+      success: true,
+      difficulty,
+      count: pairs.length,
+      pairs
+    });
+  } catch (err) {
+    console.error('[Vocab] Word pairs error:', err.message);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to generate word pairs'
+    });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 
@@ -228,7 +265,8 @@ app.use((req, res) => {
       'GET /api/vocab/difficulties',
       'GET /api/vocab/words?difficulty=&count=',
       'GET /api/vocab/word/:word',
-      'GET /api/vocab/validate/:word'
+      'GET /api/vocab/validate/:word',
+      'GET /api/vocab/wordpairs?difficulty=&count='
     ]
   });
 });

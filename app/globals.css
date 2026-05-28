@@ -90,3 +90,11 @@ button, a, input, select, textarea {
 .animate-scale-in {
   animation: scale-in 0.5s ease-out;
 }
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
