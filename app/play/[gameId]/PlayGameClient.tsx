@@ -52,8 +52,20 @@ export default function PlayGameClient() {
       window.location.origin,
     )
 
+    // Send Google Maps API key to GeoGuessr clone
+    if (gameId === 'geoguessr-clone') {
+      const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
+      iframeWindow.postMessage(
+        {
+          type: 'GOOGLE_MAPS_API_KEY',
+          data: { apiKey: googleMapsApiKey },
+        },
+        window.location.origin,
+      )
+    }
+
     return true
-  }, [playerEmail, playerName, playerUid])
+  }, [playerEmail, playerName, playerUid, gameId])
 
   const iframeSrc = useMemo(() => {
     if (!baseIframeSrc) return null
@@ -85,6 +97,19 @@ export default function PlayGameClient() {
 
       if (msg.type === 'REQUEST_PLAYER_INFO') {
         postPlayerInfoToIframe()
+        return
+      }
+
+      // Handle API key request from GeoGuessr clone
+      if (msg.type === 'REQUEST_GOOGLE_MAPS_API_KEY' && gameId === 'geoguessr-clone') {
+        const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
+        iframeWindow.postMessage(
+          {
+            type: 'GOOGLE_MAPS_API_KEY',
+            data: { apiKey: googleMapsApiKey },
+          },
+          allowedOrigin,
+        )
         return
       }
 
