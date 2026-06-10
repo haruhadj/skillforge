@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Send email via Resend
     const { data, error } = await getResend().emails.send({
-      from: 'SkillForge <noreply@skillforge.haruhadj.duckdns.org>',
+      from: 'SkillForge <noreply@olacqr.dpdns.org>',
       to: email,
       subject: 'Reset your SkillForge password',
       html: `
