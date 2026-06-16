@@ -1,14 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { defaultGames } from '@/app/games/games'
 import { Game } from '@/app/types'
 
-// Service functions (inline for now, can be moved to adminService)
+// ==========================================
+// Service functions (Ideally move these to @/app/services/admin)
+// ==========================================
 async function getGameVisibility(): Promise<Record<string, boolean>> {
   const { db } = await import('@/app/lib/firebase')
   const { collection, getDocs } = await import('firebase/firestore')
+
   const snap = await getDocs(collection(db, 'gameVisibility'))
   const visibility: Record<string, boolean> = {}
   snap.forEach((doc) => {
@@ -20,57 +23,63 @@ async function getGameVisibility(): Promise<Record<string, boolean>> {
 async function setGameVisibility(gameId: string, enabled: boolean): Promise<void> {
   const { db } = await import('@/app/lib/firebase')
   const { doc, setDoc, serverTimestamp } = await import('firebase/firestore')
+
   await setDoc(doc(db, 'gameVisibility', gameId), {
     enabled,
     updatedAt: serverTimestamp(),
   })
 }
 
+// ==========================================
+// Component
+// ==========================================
 export default function AdminGamesTab() {
-  const [games, setGames] = useState<Game[]>(defaultGames)
+  const [games] = useState<Game[]>(defaultGames)
   const [visibility, setVisibility] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState<string | null>(null)
 
+  // Fetch initial visibility on mount
   useEffect(() => {
+    let isMounted = true
+
+    const loadVisibility = async () => {
+      try {
+        const vis = await getGameVisibility()
+        if (isMounted) setVisibility(vis)
+      } catch (err) {
+        console.error('Failed to load game visibility:', err)
+        toast.error('Failed to load game visibility settings')
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
     loadVisibility()
+    return () => { isMounted = false }
   }, [])
 
-  const loadVisibility = async () => {
-    try {
-      setLoading(true)
-      const vis = await getGameVisibility()
-      setVisibility(vis)
-    } catch (err) {
-      console.error('Failed to load game visibility:', err)
-      toast.error('Failed to load game visibility settings')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleToggle = async (gameId: string, currentEnabled: boolean) => {
+  // Optimistic toggle handler
+  const handleToggle = useCallback(async (gameId: string, currentEnabled: boolean) => {
     const newEnabled = !currentEnabled
-    try {
-      setSaving(gameId)
-      await setGameVisibility(gameId, newEnabled)
-      setVisibility((prev) => ({ ...prev, [gameId]: newEnabled }))
-      toast.success(`${newEnabled ? 'Enabled' : 'Disabled'} ${games.find(g => g.id === gameId)?.name}`)
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to update')
-    } finally {
-      setSaving(null)
-    }
-  }
+    const gameName = games.find(g => g.id === gameId)?.name || 'Game'
 
-  const isEnabled = (gameId: string) => {
-    // If not in visibility map, default to true (enabled)
-    return visibility[gameId] !== false
-  }
+    // 1. Optimistically update UI state immediately
+    setVisibility((prev) => ({ ...prev, [gameId]: newEnabled }))
+
+    try {
+      // 2. Make network request in background
+      await setGameVisibility(gameId, newEnabled)
+      toast.success(`${newEnabled ? 'Enabled' : 'Disabled'} ${gameName}`)
+    } catch (err) {
+      // 3. Rollback state if db write fails
+      setVisibility((prev) => ({ ...prev, [gameId]: currentEnabled }))
+      toast.error(err instanceof Error ? err.message : 'Failed to update changes')
+    }
+  }, [games])
 
   if (loading) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3" aria-hidden="true">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-20 rounded-xl glass animate-pulse" />
         ))}
@@ -89,45 +98,58 @@ export default function AdminGamesTab() {
 
       <div className="grid gap-4">
         {games.map((game) => {
-          const enabled = isEnabled(game.id)
-          const isSaving = saving === game.id
+          const enabled = visibility[game.id] !== false
 
           return (
             <div
               key={game.id}
-              className={`glass p-4 flex items-center gap-4 transition-all ${enabled ? '' : 'opacity-60'}`}
-            >
-              {/* Game Cover Preview */}
-              <div className="h-16 w-16 rounded-lg bg-slate-100 dark:bg-gray-700 overflow-hidden shrink-0 flex items-center justify-center">
-                <img
-                  src={`/games/${game.id}/cover.png`}
-                  alt={game.name}
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = 'none'
-                  }}
-                />
-              </div>
-
-              {/* Game Info */}
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-slate-900 dark:text-white truncate">{game.name}</h3>
-                <p className="text-sm text-slate-500 dark:text-gray-400 truncate">{game.description}</p>
-                <p className="text-xs text-slate-400 dark:text-gray-500 mt-0.5">ID: {game.id}</p>
-              </div>
-
-              {/* Toggle Switch */}
-              <button
-                onClick={() => handleToggle(game.id, enabled)}
-                disabled={isSaving}
-                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 ${
-                  enabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-gray-600'
+              className={`glass p-4 flex items-center justify-between gap-4 transition-all duration-200 rounded-xl border border-white/5 ${enabled ? 'opacity-100 bg-white/[0.02]' : 'opacity-40 bg-black/20'
                 }`}
+            >
+              {/* Left Side: Image & Text Group */}
+              <div className="flex items-center gap-4 min-w-0">
+                {/* Game Cover Preview */}
+                <div className="h-14 w-14 rounded-lg bg-slate-800 overflow-hidden shrink-0 flex items-center justify-center border border-white/10 shadow-md">
+                  <img
+                    src={`/games/${game.id}/cover.png`}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                    }}
+                  />
+                </div>
+
+                {/* Game Info */}
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-base text-slate-100 truncate">
+                    {game.name}
+                  </h3>
+                  {game.description && (
+                    <p className="text-sm text-slate-400 truncate hidden xs:block mt-0.5">
+                      {game.description}
+                    </p>
+                  )}
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">
+                    ID: {game.id}
+                  </p>
+                </div>
+              </div>
+
+              {/* Right Side: Toggle Switch */}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={enabled}
+                aria-label={`Toggle visibility for ${game.name}`}
+                onClick={() => handleToggle(game.id, enabled)}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 shrink-0 shadow-inner ${enabled ? 'bg-indigo-600' : 'bg-slate-700'
+                  }`}
               >
                 <span
-                  className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                    enabled ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-200 ${enabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
