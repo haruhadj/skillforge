@@ -18,6 +18,28 @@ import {
 import { defaultGames } from '@/app/games/games'
 import { UserProfile, GlobalLeaderboardEntry } from '@/app/types'
 import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitialEditorState, AVATAR_EXPORT_SIZE, AVATAR_THUMB_SIZE } from './AvatarEditor'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+
+const TIER_CONFIG = {
+  master: 'bg-violet-600 text-white',
+  platinum: 'bg-cyan-500 text-white',
+  gold: 'bg-yellow-500 text-white',
+  silver: 'bg-slate-400 text-white',
+  bronze: 'bg-amber-700 text-white',
+}
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -36,113 +58,113 @@ export default function ProfilePage() {
   const [deletingAccount, setDeletingAccount] = useState(false)
   const [statSort, setStatSort] = useState<'name' | 'score' | 'matches' | 'played'>('played')
 
-  // Protect route
   useEffect(() => {
-    if (!currentUser && typeof window !== 'undefined') {
-      router.push('/')
-    }
+    if (!currentUser && typeof window !== 'undefined') router.push('/')
   }, [currentUser, router])
 
-  const handleDeleteAccount = async () => {
-    if (!currentUser) return
-
-    try {
-      setDeletingAccount(true)
-      
-      // Get fresh ID token
-      const token = await currentUser.getIdToken(true)
-      
-      const response = await fetch('/api/user/delete-account', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to delete account')
-      }
-
-      await logout()
-      toast.success('Your account has been deleted')
-      router.push('/')
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to delete account')
-      setDeletingAccount(false)
-      setShowDeleteConfirm(false)
-    }
-  }
-
-  // Cleanup photo editor on unmount
   useEffect(() => {
-    return () => {
-      if (photoEditor?.imageUrl) {
-        URL.revokeObjectURL(photoEditor.imageUrl)
-      }
-    }
+    return () => { if (photoEditor?.imageUrl) URL.revokeObjectURL(photoEditor.imageUrl) }
   }, [photoEditor?.imageUrl])
 
   useEffect(() => {
-    if (!currentUser) {
-      return
-    }
-
+    if (!currentUser) return
     setLoading(true)
-
-    const suggested = createSuggestedUsername(
-      currentUser.displayName || currentUser.email?.split('@')[0] || '',
-    )
-
+    const suggested = createSuggestedUsername(currentUser.displayName || currentUser.email?.split('@')[0] || '')
     Promise.all([
       getUserProfile(currentUser.uid),
       gameDataService.getAllScores(currentUser.uid),
       gameDataService.getAllGameStats(currentUser.uid),
-    ])
-      .then(async ([loadedProfile, loadedScores, loadedGameStats]) => {
-        setProfile(loadedProfile)
-        setUsernameInput(loadedProfile?.username || suggested)
-        setScores(loadedScores)
-        setGameStats(loadedGameStats)
-        
-        // Calculate accurate global stats with proper normalization
-        if (currentUser && Object.keys(loadedScores).length > 0) {
-          const stats = await gameDataService.getUserGlobalStats(
-            currentUser.uid,
-            loadedScores,
-            loadedGameStats as Record<string, { totalMatchCount?: number }>
-          )
-          setGlobalStats(stats)
-        }
-      })
-      .catch((fetchError: Error) => {
-        toast.error(`Failed to load profile: ${fetchError.message}`)
-      })
-      .finally(() => setLoading(false))
+    ]).then(async ([loadedProfile, loadedScores, loadedGameStats]) => {
+      setProfile(loadedProfile)
+      setUsernameInput(loadedProfile?.username || suggested)
+      setScores(loadedScores)
+      setGameStats(loadedGameStats)
+      if (currentUser && Object.keys(loadedScores).length > 0) {
+        const stats = await gameDataService.getUserGlobalStats(
+          currentUser.uid, loadedScores,
+          loadedGameStats as Record<string, { totalMatchCount?: number }>
+        )
+        setGlobalStats(stats)
+      }
+    }).catch((e: Error) => toast.error(`Failed to load profile: ${e.message}`))
+    .finally(() => setLoading(false))
   }, [currentUser])
 
   const handleUsernameSave = async () => {
     if (!currentUser) return
-
     const trimmed = usernameInput.trim()
     if (!isValidUsername(trimmed)) {
-      toast.error('Username must be 3-20 characters and use letters, numbers, or underscores only')
+      toast.error('Username must be 3-20 characters, letters/numbers/underscores only')
       return
     }
-
     try {
       setSavingUsername(true)
       const result = await claimUsername(currentUser.uid, trimmed, {
         email: currentUser.email,
         authProvider: resolveAuthProvider(currentUser),
       })
-      setProfile((prev) => prev ? { ...prev, username: result.username, usernameNormalized: result.usernameNormalized } : null)
+      setProfile((p) => p ? { ...p, username: result.username, usernameNormalized: result.usernameNormalized } : null)
       toast.success('Username updated')
-    } catch (error) {
-      toast.error(`Failed to update username: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } catch (e) {
+      toast.error(`Failed: ${e instanceof Error ? e.message : 'Unknown error'}`)
     } finally {
       setSavingUsername(false)
+    }
+  }
+
+  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file || !currentUser) return
+    try {
+      const { imageUrl, width, height } = await readImageDimensions(file)
+      setPhotoEditor(createInitialEditorState(file, imageUrl, width, height))
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to load image')
+    }
+  }
+
+  const closePhotoEditor = () => {
+    if (photoEditor?.imageUrl) URL.revokeObjectURL(photoEditor.imageUrl)
+    setPhotoEditor(null)
+  }
+
+  const handlePhotoUploadConfirm = async () => {
+    if (!photoEditor || !currentUser) return
+    try {
+      setUploadingPhoto(true)
+      const [mainFile, thumbFile] = await Promise.all([
+        buildResizedAvatarBlob(photoEditor, AVATAR_EXPORT_SIZE),
+        buildResizedAvatarBlob(photoEditor, AVATAR_THUMB_SIZE),
+      ])
+      const uploaded = await uploadProfilePhoto(currentUser.uid, { mainFile, thumbFile })
+      setProfile((p) => p ? { ...p, photoURL: uploaded.photoURL, photoThumbURL: uploaded.photoThumbURL } : null)
+      closePhotoEditor()
+      toast.success('Profile picture updated')
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to upload photo')
+    } finally {
+      setUploadingPhoto(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!currentUser) return
+    try {
+      setDeletingAccount(true)
+      const token = await currentUser.getIdToken(true)
+      const res = await fetch('/api/user/delete-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed') }
+      await logout()
+      toast.success('Account deleted')
+      router.push('/')
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to delete account')
+      setDeletingAccount(false)
+      setShowDeleteConfirm(false)
     }
   }
 
@@ -150,127 +172,73 @@ export default function ProfilePage() {
   const initials = name.slice(0, 2).toUpperCase()
   const photoURL = profile?.photoThumbURL || profile?.photoURL || currentUser?.photoURL
 
-
-  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    event.target.value = ''
-
-    if (!file || !currentUser) return
-
-    try {
-      const { imageUrl, width, height } = await readImageDimensions(file)
-      setPhotoEditor(createInitialEditorState(file, imageUrl, width, height))
-    } catch (photoError) {
-      toast.error(photoError instanceof Error ? photoError.message : 'Failed to load image')
-    }
-  }
-
-  const closePhotoEditor = () => {
-    if (photoEditor?.imageUrl) {
-      URL.revokeObjectURL(photoEditor.imageUrl)
-    }
-    setPhotoEditor(null)
-  }
-
-  const handlePhotoUploadConfirm = async () => {
-    if (!photoEditor || !currentUser) return
-
-    try {
-      setUploadingPhoto(true)
-      const [mainFile, thumbFile] = await Promise.all([
-        buildResizedAvatarBlob(photoEditor, AVATAR_EXPORT_SIZE),
-        buildResizedAvatarBlob(photoEditor, AVATAR_THUMB_SIZE),
-      ])
-      const uploadedPhoto = await uploadProfilePhoto(currentUser.uid, { mainFile, thumbFile })
-
-      setProfile((prev) => prev ? {
-        ...prev,
-        photoURL: uploadedPhoto.photoURL,
-        photoThumbURL: uploadedPhoto.photoThumbURL,
-      } : null)
-      closePhotoEditor()
-      toast.success('Profile picture updated')
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to upload photo')
-    } finally {
-      setUploadingPhoto(false)
-    }
-  }
-
-  if (!currentUser) {
-    return null
-  }
+  if (!currentUser) return null
 
   return (
-    <div className="min-h-screen gradient-bg transition-colors duration-500">
-      <header className="sticky top-0 z-10 glass border-b border-slate-200/50 dark:border-gray-700/50">
-        <div className="mx-auto max-w-4xl px-6 py-4 flex items-center gap-3">
-          <Link
-            href="/library"
-            className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
-            </svg>
-            Back
-          </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white flex-1 text-center tracking-tight">My Profile</h1>
+    <div className="min-h-screen gradient-bg">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 h-14 flex items-center gap-3">
+          <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground -ml-2">
+            <Link href="/library">
+              <svg className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
+              </svg>
+              Back
+            </Link>
+          </Button>
+          <h1 className="text-lg font-bold flex-1 text-center">My Profile</h1>
           <ThemeToggle />
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-6 py-8">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-8 space-y-5">
         {loading ? (
-          <div className="glass p-8 text-center">
-            <div className="animate-spin h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full mx-auto"></div>
-            <p className="mt-4 text-slate-600 dark:text-gray-400">Loading profile...</p>
+          <div className="surface p-8">
+            <div className="flex items-center gap-6">
+              <Skeleton className="h-20 w-20 rounded-full" />
+              <div className="space-y-2 flex-1">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-4 w-56" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Profile Card */}
-            <div className="glass p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row items-center gap-6">
+          <>
+            {/* Profile card */}
+            <div className="surface p-6 sm:p-8">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                {/* Avatar */}
                 <button
                   onClick={() => photoInputRef.current?.click()}
-                  className="relative h-24 w-24 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 flex items-center justify-center text-white text-2xl font-bold overflow-hidden group cursor-pointer hover:ring-4 hover:ring-indigo-200 dark:hover:ring-indigo-800 transition-all"
+                  className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden group cursor-pointer shrink-0 ring-2 ring-border hover:ring-primary/50 transition-all"
                 >
                   {photoURL ? (
                     <img src={photoURL} alt={name} className="h-full w-full object-cover" />
                   ) : (
-                    initials
+                    <div className="h-full w-full bg-primary flex items-center justify-center text-primary-foreground text-2xl font-bold">{initials}</div>
                   )}
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <svg className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                   </div>
                 </button>
-                <input
-                  ref={photoInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  onChange={handlePhotoChange}
-                  className="hidden"
-                />
-                <div className="text-center sm:text-left flex-1">
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{name}</h2>
-                  <p className="text-slate-600 dark:text-gray-400">{currentUser.email}</p>
+                <input ref={photoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handlePhotoChange} className="hidden" />
+
+                <div className="text-center sm:text-left flex-1 min-w-0">
+                  <h2 className="text-xl font-bold">{name}</h2>
+                  <p className="text-sm text-muted-foreground">{currentUser.email}</p>
                   {globalStats && (
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
-                        globalStats.tier === 'master' ? 'bg-purple-600 text-white' :
-                        globalStats.tier === 'platinum' ? 'bg-cyan-500 text-white' :
-                        globalStats.tier === 'gold' ? 'bg-yellow-500 text-white' :
-                        globalStats.tier === 'silver' ? 'bg-slate-400 text-white' :
-                        'bg-amber-700 text-white'
-                      }`}>
+                    <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${TIER_CONFIG[globalStats.tier]}`}>
                         {globalStats.tier.charAt(0).toUpperCase() + globalStats.tier.slice(1)}
                       </span>
-                      <span className="text-sm text-slate-600 dark:text-gray-400">
-                        Skill Score: <span className="font-semibold text-indigo-600 dark:text-indigo-400">{globalStats.compositeScore}</span>
+                      <span className="text-sm text-muted-foreground">
+                        Skill Score: <span className="font-semibold text-primary">{globalStats.compositeScore}</span>
                       </span>
-                      <span className="text-xs text-slate-500 dark:text-gray-500">
-                        ({globalStats.gamesPlayed} games • {globalStats.totalMatchCount.toLocaleString()} matches)
+                      <span className="text-xs text-muted-foreground">
+                        {globalStats.gamesPlayed} games · {globalStats.totalMatchCount.toLocaleString()} matches
                       </span>
                     </div>
                   )}
@@ -278,129 +246,120 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Username Editor */}
-            <div className="glass p-6">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Username</h3>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
+            {/* Username */}
+            <div className="surface p-6">
+              <h3 className="text-base font-semibold mb-4">Username</h3>
+              <div className="flex gap-3">
+                <Input
                   type="text"
                   value={usernameInput}
                   onChange={(e) => setUsernameInput(e.target.value)}
-                  className="flex-1 rounded-lg border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 px-4 py-2.5 text-slate-900 dark:text-gray-100 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200/50"
                   placeholder="Enter username"
+                  className="flex-1 h-10"
                 />
-                <button
-                  onClick={handleUsernameSave}
-                  disabled={savingUsername}
-                  className="btn-primary px-6"
-                >
-                  {savingUsername ? 'Saving...' : 'Save'}
-                </button>
+                <Button onClick={handleUsernameSave} disabled={savingUsername} className="h-10 px-5">
+                  {savingUsername ? 'Saving…' : 'Save'}
+                </Button>
               </div>
-              <p className="mt-2 text-xs text-slate-500 dark:text-gray-400">
-                3-20 characters, letters, numbers, and underscores only
-              </p>
+              <p className="text-xs text-muted-foreground mt-2">3–20 characters, letters, numbers, underscores only</p>
             </div>
 
-            {/* Account Deletion */}
-            <div className="glass p-6 border-red-200 dark:border-red-900/30">
-              <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-4">Danger Zone</h3>
-              <p className="text-sm text-slate-600 dark:text-gray-400 mb-4">
-                Deleting your account will permanently remove all your data, including scores, stats, and profile information. This action cannot be undone.
-              </p>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="px-4 py-2 rounded-lg border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium text-sm"
-              >
-                Delete My Account
-              </button>
-            </div>
+            {/* Game stats */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-base font-semibold">Game Stats</h3>
+                <div className="flex gap-1.5 ml-auto">
+                  {(['played', 'score', 'matches', 'name'] as const).map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => setStatSort(opt)}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                        statSort === opt ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      {opt === 'played' ? 'Played' : opt === 'score' ? 'Score' : opt === 'matches' ? 'Matches' : 'A–Z'}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            {/* Stats Grid */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-              <span className="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wide shrink-0">Sort by</span>
-              {(['played', 'score', 'matches', 'name'] as const).map((opt) => (
-                <button
-                  key={opt}
-                  onClick={() => setStatSort(opt)}
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-                    statSort === opt
-                      ? 'bg-indigo-600 text-white shadow'
-                      : 'bg-slate-100 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {opt === 'played' ? 'Played first' : opt === 'score' ? 'Best Score' : opt === 'matches' ? 'Matches' : 'Name'}
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {[...defaultGames].sort((a, b) => {
-                const aScore = scores[a.id]?.bestScore ?? -1
-                const bScore = scores[b.id]?.bestScore ?? -1
-                const aStats = gameStats[a.id] as Record<string, unknown> | undefined
-                const bStats = gameStats[b.id] as Record<string, unknown> | undefined
-                const aMatches = (aStats?.totalMatchCount as number) || (aStats?.matchCount as number) || (aStats?.totalGames as number) || (Array.isArray(aStats?.history) ? (aStats.history as unknown[]).length : 0) || 0
-                const bMatches = (bStats?.totalMatchCount as number) || (bStats?.matchCount as number) || (bStats?.totalGames as number) || (Array.isArray(bStats?.history) ? (bStats.history as unknown[]).length : 0) || 0
-                const aPlayed = aScore >= 0 || aMatches > 0
-                const bPlayed = bScore >= 0 || bMatches > 0
-                if (statSort === 'score') return bScore - aScore
-                if (statSort === 'matches') return bMatches - aMatches
-                if (statSort === 'name') return a.name.localeCompare(b.name)
-                // 'played': played games first, then alphabetical within each group
-                if (aPlayed !== bPlayed) return aPlayed ? -1 : 1
-                return a.name.localeCompare(b.name)
-              }).map((game) => {
-                const gameScore = scores[game.id]?.bestScore
-                const stats = gameStats[game.id] as Record<string, unknown> | undefined
-                const historyLength = Array.isArray(stats?.history) ? (stats.history as unknown[]).length : 0
-                const matchCount = (stats?.totalMatchCount as number) || (stats?.matchCount as number) || (stats?.totalGames as number) || historyLength || 0
-                const hasPlayed = gameScore !== undefined || matchCount > 0
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {[...defaultGames].sort((a, b) => {
+                  const aScore = scores[a.id]?.bestScore ?? -1
+                  const bScore = scores[b.id]?.bestScore ?? -1
+                  const aStats = gameStats[a.id] as Record<string, unknown> | undefined
+                  const bStats = gameStats[b.id] as Record<string, unknown> | undefined
+                  const aMatches = (aStats?.totalMatchCount as number) || (aStats?.matchCount as number) || (aStats?.totalGames as number) || (Array.isArray(aStats?.history) ? (aStats.history as unknown[]).length : 0) || 0
+                  const bMatches = (bStats?.totalMatchCount as number) || (bStats?.matchCount as number) || (bStats?.totalGames as number) || (Array.isArray(bStats?.history) ? (bStats.history as unknown[]).length : 0) || 0
+                  if (statSort === 'score') return bScore - aScore
+                  if (statSort === 'matches') return bMatches - aMatches
+                  if (statSort === 'name') return a.name.localeCompare(b.name)
+                  const aPlayed = aScore >= 0 || aMatches > 0
+                  const bPlayed = bScore >= 0 || bMatches > 0
+                  if (aPlayed !== bPlayed) return aPlayed ? -1 : 1
+                  return a.name.localeCompare(b.name)
+                }).map((game) => {
+                  const gameScore = scores[game.id]?.bestScore
+                  const stats = gameStats[game.id] as Record<string, unknown> | undefined
+                  const histLen = Array.isArray(stats?.history) ? (stats.history as unknown[]).length : 0
+                  const matchCount = (stats?.totalMatchCount as number) || (stats?.matchCount as number) || (stats?.totalGames as number) || histLen || 0
+                  const hasPlayed = gameScore !== undefined || matchCount > 0
+                  const achievedAt = scores[game.id]?.bestScoreAchievedAt || scores[game.id]?.updatedAt
 
-                const scoreData = scores[game.id]
-                const achievedAt = scoreData?.bestScoreAchievedAt || scoreData?.updatedAt
-
-                return (
-                  <div key={game.id} className={`glass overflow-hidden rounded-2xl transition-opacity ${hasPlayed ? '' : 'opacity-40'}`}>
-                    <div className="relative h-24 sm:h-32 w-full bg-slate-200 dark:bg-gray-700">
-                      <img
-                        src={`/games/${game.id}/cover.png`}
-                        alt={game.name}
-                        className="h-full w-full object-cover"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-                      />
-                      {!hasPlayed && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                          <span className="text-xs font-medium text-white/80">Not played</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2.5 sm:p-4">
-                      <h4 className="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm leading-tight truncate">{game.name}</h4>
-                      <div className="mt-2 grid grid-cols-2 gap-1.5 sm:gap-3">
-                        <div className="bg-slate-100 dark:bg-gray-700/60 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2">
-                          <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-gray-400">Score</p>
-                          <p className={`mt-0.5 text-sm sm:text-lg font-bold leading-tight ${hasPlayed ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-gray-600'}`}>
-                            {gameScore !== undefined ? gameScore.toLocaleString() : '—'}
-                          </p>
-                          {achievedAt && (
-                            <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-0.5">
-                              {achievedAt.toLocaleDateString()}
+                  return (
+                    <div key={game.id} className={`surface overflow-hidden transition-opacity ${hasPlayed ? '' : 'opacity-40'}`}>
+                      <div className="relative aspect-video bg-muted">
+                        <img
+                          src={`/games/${game.id}/cover.png`}
+                          alt={game.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                        />
+                        {!hasPlayed && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                            <span className="text-xs text-white/80 font-medium">Not played</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h4 className="text-xs font-semibold truncate mb-2">{game.name}</h4>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          <div className="bg-muted rounded-lg px-2.5 py-2">
+                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Score</p>
+                            <p className={`text-sm font-bold mt-0.5 ${hasPlayed ? 'text-primary' : 'text-muted-foreground'}`}>
+                              {gameScore !== undefined ? gameScore.toLocaleString() : '—'}
                             </p>
-                          )}
-                        </div>
-                        <div className="bg-slate-100 dark:bg-gray-700/60 rounded-lg sm:rounded-xl px-2 sm:px-3 py-1.5 sm:py-2">
-                          <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-gray-400">Matches</p>
-                          <p className={`mt-0.5 text-sm sm:text-lg font-bold leading-tight ${matchCount > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-gray-600'}`}>
-                            {matchCount > 0 ? matchCount.toLocaleString() : '—'}
-                          </p>
+                            {achievedAt && (
+                              <p className="text-[9px] text-muted-foreground">{achievedAt.toLocaleDateString()}</p>
+                            )}
+                          </div>
+                          <div className="bg-muted rounded-lg px-2.5 py-2">
+                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Matches</p>
+                            <p className={`text-sm font-bold mt-0.5 ${matchCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                              {matchCount > 0 ? matchCount.toLocaleString() : '—'}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
-          </div>
+
+            <Separator />
+
+            {/* Danger zone */}
+            <div className="surface p-6 border-destructive/20">
+              <h3 className="text-base font-semibold text-destructive mb-2">Danger Zone</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Permanently delete your account and all associated data. This cannot be undone.
+              </p>
+              <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/5" onClick={() => setShowDeleteConfirm(true)}>
+                Delete My Account
+              </Button>
+            </div>
+          </>
         )}
       </main>
 
@@ -414,54 +373,25 @@ export default function ProfilePage() {
         />
       )}
 
-      {/* Delete Account Confirmation Dialog */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-red-200 dark:border-red-900/50 bg-white dark:bg-gray-900 p-6 shadow-2xl">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/30">
-                <svg className="h-6 w-6 text-red-600 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.19-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Delete Account?</h3>
-            </div>
-
-            <div className="space-y-3 text-sm text-slate-600 dark:text-gray-400">
-              <p className="font-medium text-red-600 dark:text-red-400">
-                Warning: This action is permanent and cannot be reversed!
-              </p>
-              <p>All of the following will be permanently deleted:</p>
-              <ul className="list-disc list-inside pl-2 space-y-1">
-                <li>Your user profile and username</li>
-                <li>All game scores and statistics</li>
-                <li>Your progress and achievements</li>
-                <li>Your account authentication data</li>
-              </ul>
-              <p className="text-slate-500 dark:text-gray-500 italic">
-                If you change your mind, click Cancel now.
-              </p>
-            </div>
-
-            <div className="mt-6 flex gap-3 justify-end">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                disabled={deletingAccount}
-                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors font-medium text-sm disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                disabled={deletingAccount}
-                className="px-4 py-2 rounded-lg bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-600 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {deletingAccount ? 'Deleting...' : 'Yes, Delete My Account'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete account dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={(open) => !deletingAccount && setShowDeleteConfirm(open)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">Delete Account?</DialogTitle>
+            <DialogDescription>
+              This action is permanent and cannot be reversed. All your data will be deleted including scores, stats, and profile information.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={deletingAccount}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteAccount} disabled={deletingAccount}>
+              {deletingAccount ? 'Deleting…' : 'Yes, Delete My Account'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

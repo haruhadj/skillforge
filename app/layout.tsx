@@ -4,6 +4,10 @@ import { ThemeProvider } from '@/app/contexts/ThemeContext'
 import { AuthProvider } from '@/app/contexts/AuthContext'
 import Footer from '@/app/components/Footer'
 import './globals.css'
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: 'SkillForge - Your Learning Playground',
@@ -20,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body className="flex flex-col min-h-screen">
         <ThemeProvider>
           <AuthProvider>

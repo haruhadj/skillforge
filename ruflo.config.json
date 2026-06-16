@@ -1,0 +1,10 @@
+{
+  "routing": {
+    "strategy": "cost-adjusted-bandit",
+    "tier_fallback": true
+  },
+  "limits": {
+    "max_concurrent_agents": 3,
+    "session_timeout_minutes": 30
+  }
+}

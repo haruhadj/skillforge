@@ -6,6 +6,9 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -14,11 +17,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (currentUser) {
-      router.push('/library')
-    }
+    if (currentUser) router.push('/library')
   }, [currentUser, router])
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -36,60 +36,67 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 gradient-bg transition-colors duration-500">
-      <div className="absolute top-5 right-5 animate-fade-in">
+    <div className="min-h-screen gradient-bg flex items-center justify-center p-6">
+      <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <div className="w-full max-w-md animate-scale-in">
-        <div className="glass p-10 sm:p-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Login</h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-gray-400">Welcome back to SkillForge</p>
-          
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700 dark:text-gray-300">Email Address</span>
-              <input
-                className="mt-2 w-full rounded-lg border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 px-4 py-3 text-slate-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200/50 dark:focus:ring-indigo-800/50 transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-gray-500"
+
+      <div className="w-full max-w-sm animate-scale-in">
+        <div className="mb-8 text-center">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6">
+            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
+            </svg>
+            Back
+          </Link>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
+          <p className="text-muted-foreground mt-2 text-sm">Sign in to your SkillForge account</p>
+        </div>
+
+        <div className="surface p-8 shadow-xl dark:shadow-black/30">
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
+                className="h-11"
               />
-            </label>
+            </div>
 
-            <label className="block">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-700 dark:text-gray-300">Password</span>
-                <Link href="/forgot-password" className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+                <Label htmlFor="password">Password</Label>
+                <Link href="/forgot-password" className="text-xs text-primary hover:underline underline-offset-2">
                   Forgot password?
                 </Link>
               </div>
-              <input
-                className="mt-2 w-full rounded-lg border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700/50 px-4 py-3 text-slate-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200/50 dark:focus:ring-indigo-800/50 transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-gray-500"
+              <Input
+                id="password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
+                className="h-11"
               />
-            </label>
+            </div>
 
-            <button
-              className="btn-primary w-full hover:-translate-y-0.5 active:translate-y-0"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Logging in...' : 'Login'}
-            </button>
+            <Button type="submit" className="w-full h-11 font-semibold" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing in…' : 'Sign in'}
+            </Button>
           </form>
 
-          <Link
-            href="/"
-            className="btn-secondary w-full mt-4 block text-center hover:-translate-y-0.5 active:translate-y-0"
-          >
-            Back
-          </Link>
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-primary font-medium hover:underline underline-offset-2">
+              Create one
+            </Link>
+          </p>
         </div>
       </div>
     </div>

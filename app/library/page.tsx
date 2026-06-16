@@ -11,11 +11,36 @@ import { getActiveAnnouncements } from '@/app/services/adminService'
 import { isAdmin } from '@/app/services/adminService'
 import { defaultGames, mergeGamesWithFirestore } from '@/app/games/games'
 import { UserProfile, Announcement, Game } from '@/app/types'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+const SORT_OPTIONS = [
+  { value: 'name', label: 'Name' },
+  { value: 'recent', label: 'Recently Played' },
+  { value: 'popular', label: 'Most Popular' },
+] as const
 
 export default function LibraryPage() {
   const router = useRouter()
   const { currentUser, logout } = useAuth()
-  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [avatarURL, setAvatarURL] = useState<string | null>(null)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [dismissedAnnouncements, setDismissedAnnouncements] = useState<string[]>([])
@@ -26,51 +51,28 @@ export default function LibraryPage() {
   const [sortBy, setSortBy] = useState<'name' | 'recent' | 'popular'>('name')
   const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>([])
   const [gamePopularity, setGamePopularity] = useState<Record<string, number>>({})
-  const [popularityLoading, setPopularityLoading] = useState(true)
-  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Protect route - redirect if not logged in
   useEffect(() => {
-    if (!currentUser && typeof window !== 'undefined') {
-      router.push('/')
-    }
+    if (!currentUser && typeof window !== 'undefined') router.push('/')
   }, [currentUser, router])
 
   useEffect(() => {
     if (!currentUser?.uid) return
-    getUserProfile(currentUser.uid)
-      .then((profile) => {
-        setUserProfile(profile)
-        setAvatarURL(profile?.photoThumbURL || profile?.photoURL || null)
-      })
-      .catch(() => {})
+    getUserProfile(currentUser.uid).then((profile) => {
+      setUserProfile(profile)
+      setAvatarURL(profile?.photoThumbURL || profile?.photoURL || null)
+    }).catch(() => {})
   }, [currentUser?.uid])
 
   useEffect(() => {
     if (!currentUser?.uid) return
-    isAdmin(currentUser.uid)
-      .then(setIsAdminUser)
-      .catch(() => setIsAdminUser(false))
+    isAdmin(currentUser.uid).then(setIsAdminUser).catch(() => setIsAdminUser(false))
   }, [currentUser?.uid])
 
   useEffect(() => {
-    if (!dropdownOpen) return
-    function handleOutsideClick(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleOutsideClick)
-    return () => document.removeEventListener('mousedown', handleOutsideClick)
-  }, [dropdownOpen])
-
-  useEffect(() => {
-    getActiveAnnouncements()
-      .then(setAnnouncements)
-      .catch(() => {})
+    getActiveAnnouncements().then(setAnnouncements).catch(() => {})
   }, [])
 
-  // Load game visibility settings
   useEffect(() => {
     async function loadGameVisibility() {
       try {
@@ -79,13 +81,9 @@ export default function LibraryPage() {
         const { collection, getDocs } = await import('firebase/firestore')
         const snap = await getDocs(collection(db, 'gameVisibility'))
         const visibility: { id: string; enabled: boolean }[] = []
-        snap.forEach((doc) => {
-          visibility.push({ id: doc.id, enabled: doc.data().enabled !== false })
-        })
-        const merged = mergeGamesWithFirestore(visibility)
-        setGames(merged)
-      } catch (err) {
-        console.error('Failed to load game visibility:', err)
+        snap.forEach((doc) => visibility.push({ id: doc.id, enabled: doc.data().enabled !== false }))
+        setGames(mergeGamesWithFirestore(visibility))
+      } catch {
         setGames(defaultGames)
       } finally {
         setGamesLoading(false)
@@ -94,329 +92,258 @@ export default function LibraryPage() {
     loadGameVisibility()
   }, [])
 
-  // Load recently played — Firestore for authenticated users, localStorage as fallback
   useEffect(() => {
     if (!currentUser?.uid) {
       if (typeof window !== 'undefined') {
         const stored = localStorage.getItem('recentlyPlayed')
-        if (stored) {
-          try {
-            setRecentlyPlayed(JSON.parse(stored))
-          } catch {
-            setRecentlyPlayed([])
-          }
-        }
+        if (stored) { try { setRecentlyPlayed(JSON.parse(stored)) } catch { setRecentlyPlayed([]) } }
       }
       return
     }
-    getRecentlyPlayed(currentUser.uid)
-      .then((ids) => {
-        if (ids.length > 0) {
-          setRecentlyPlayed(ids)
-        } else if (typeof window !== 'undefined') {
-          const stored = localStorage.getItem('recentlyPlayed')
-          if (stored) {
-            try {
-              setRecentlyPlayed(JSON.parse(stored))
-            } catch {
-              setRecentlyPlayed([])
-            }
-          }
-        }
-      })
-      .catch(() => {})
+    getRecentlyPlayed(currentUser.uid).then((ids) => {
+      if (ids.length > 0) {
+        setRecentlyPlayed(ids)
+      } else if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('recentlyPlayed')
+        if (stored) { try { setRecentlyPlayed(JSON.parse(stored)) } catch { setRecentlyPlayed([]) } }
+      }
+    }).catch(() => {})
   }, [currentUser?.uid])
 
-  // Load game popularity from Firestore
   useEffect(() => {
-    async function loadPopularity() {
-      try {
-        setPopularityLoading(true)
-        const res = await fetch('/api/leaderboard?mode=popularity')
-        const payload = await res.json().catch(() => ({}))
-        if (!res.ok) throw new Error(payload.error || 'Failed to load game popularity')
-        setGamePopularity(payload.popularity ?? {})
-      } catch (err) {
-        console.error('Failed to load game popularity:', err)
-        setGamePopularity({})
-      } finally {
-        setPopularityLoading(false)
-      }
-    }
-    loadPopularity()
+    fetch('/api/leaderboard?mode=popularity')
+      .then((r) => r.json().catch(() => ({})))
+      .then((payload) => setGamePopularity(payload.popularity ?? {}))
+      .catch(() => setGamePopularity({}))
   }, [])
 
-  // Save recently played — Firestore for authenticated users, localStorage as fallback
   const trackGamePlay = (gameId: string) => {
-    const updated = [gameId, ...recentlyPlayed.filter(id => id !== gameId)].slice(0, 10)
+    const updated = [gameId, ...recentlyPlayed.filter((id) => id !== gameId)].slice(0, 10)
     setRecentlyPlayed(updated)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('recentlyPlayed', JSON.stringify(updated))
-    }
-    if (currentUser?.uid) {
-      saveRecentlyPlayed(currentUser.uid, updated).catch(() => {})
-    }
+    if (typeof window !== 'undefined') localStorage.setItem('recentlyPlayed', JSON.stringify(updated))
+    if (currentUser?.uid) saveRecentlyPlayed(currentUser.uid, updated).catch(() => {})
   }
 
   const handleLogout = async () => {
-    try {
-      await logout()
-      router.push('/')
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
+    try { await logout(); router.push('/') } catch { /* noop */ }
   }
 
   const name = userProfile?.username || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
 
-  // Sort games based on selected option
   const sortedGames = useMemo(() => {
-    const enabledGames = games.filter(g => g.enabled !== false)
-    switch (sortBy) {
-      case 'name':
-        return [...enabledGames].sort((a, b) => a.name.localeCompare(b.name))
-      case 'recent':
-        return [...enabledGames].sort((a, b) => {
-          const aIndex = recentlyPlayed.indexOf(a.id)
-          const bIndex = recentlyPlayed.indexOf(b.id)
-          if (aIndex === -1 && bIndex === -1) return 0
-          if (aIndex === -1) return 1
-          if (bIndex === -1) return -1
-          return aIndex - bIndex
-        })
-      case 'popular':
-        return [...enabledGames].sort((a, b) => {
-          const aCount = gamePopularity[a.id] || 0
-          const bCount = gamePopularity[b.id] || 0
-          if (aCount === bCount) return a.name.localeCompare(b.name)
-          return bCount - aCount
-        })
-      default:
-        return enabledGames
-    }
+    const enabled = games.filter((g) => g.enabled !== false)
+    if (sortBy === 'recent') return [...enabled].sort((a, b) => {
+      const ai = recentlyPlayed.indexOf(a.id), bi = recentlyPlayed.indexOf(b.id)
+      if (ai === -1 && bi === -1) return 0
+      if (ai === -1) return 1; if (bi === -1) return -1
+      return ai - bi
+    })
+    if (sortBy === 'popular') return [...enabled].sort((a, b) => {
+      const ac = gamePopularity[a.id] || 0, bc = gamePopularity[b.id] || 0
+      return ac === bc ? a.name.localeCompare(b.name) : bc - ac
+    })
+    return [...enabled].sort((a, b) => a.name.localeCompare(b.name))
   }, [games, sortBy, recentlyPlayed, gamePopularity])
 
-  if (!currentUser) {
-    return null // Will redirect
-  }
+  const visibleAnnouncements = announcements.filter((a) => !dismissedAnnouncements.includes(a.id))
+
+  if (!currentUser) return null
 
   return (
-    <div className="min-h-screen gradient-bg transition-colors duration-500">
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-40 glass border-b border-slate-200/50 dark:border-gray-700/50 animate-fade-in">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
-          <div className="min-w-0 flex-1 flex items-center gap-3">
+    <div className="min-h-screen gradient-bg">
+      {/* Top navigation */}
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 animate-fade-in">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+          {/* Logo + title */}
+          <div className="flex items-center gap-3 min-w-0">
             <Image
               src="/game logo.jpeg"
-              alt="SkillForge Logo"
-              width={40}
-              height={40}
-              className="rounded-xl shrink-0 drop-shadow-md sm:w-[52px] sm:h-[52px]"
+              alt="SkillForge"
+              width={36}
+              height={36}
+              className="rounded-xl shrink-0"
               priority
-              loading="eager"
             />
-            <div className="min-w-0">
-              <h2 className="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">SkillForge Library</h2>
-              {currentUser && (
-                <p className="hidden sm:block text-sm text-slate-600 dark:text-gray-400 mt-0.5">
-                  Welcome back, <span className="font-semibold">{name}</span>!
-                </p>
-              )}
+            <div className="min-w-0 hidden sm:block">
+              <p className="font-bold text-base leading-none">SkillForge</p>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">Welcome, {name}</p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
+
+          {/* Nav links — desktop */}
+          <nav className="hidden md:flex items-center gap-1">
+            <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground">
+              <Link href="/library">Library</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground">
+              <Link href="/leaderboard">Leaderboard</Link>
+            </Button>
+          </nav>
+
+          {/* Right side */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <ThemeToggle />
-
-            {/* Avatar Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setDropdownOpen((prev) => !prev)}
-                className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-500 dark:to-indigo-600 text-sm font-semibold text-white ring-2 ring-indigo-200 dark:ring-indigo-800 transition-all duration-300 hover:ring-indigo-400 dark:hover:ring-indigo-600 hover:shadow-lg focus:outline-none focus:ring-indigo-400 dark:focus:ring-indigo-600"
-                aria-haspopup="true"
-                aria-expanded={dropdownOpen}
-              >
-                {avatarURL ? (
-                  <img src={avatarURL} alt={name} className="h-full w-full object-cover" />
-                ) : (
-                  initials
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 p-0 ring-2 ring-border hover:ring-primary/50 transition-all">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={avatarURL ?? undefined} alt={name} />
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">{initials}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel className="font-normal">
+                  <p className="font-semibold truncate">{name}</p>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{currentUser?.email}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile" className="cursor-pointer">My Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/leaderboard" className="cursor-pointer">Leaderboard</Link>
+                </DropdownMenuItem>
+                {isAdminUser && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="cursor-pointer">Admin Panel</Link>
+                  </DropdownMenuItem>
                 )}
-              </button>
-
-              {dropdownOpen && (
-                <div className="absolute right-0 z-50 mt-3 w-48 origin-top-right animate-scale-in">
-                  <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 shadow-xl rounded-lg py-2">
-                    <div className="border-b border-slate-200 dark:border-gray-700 px-4 py-3">
-                      <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">{name}</p>
-                      <p className="truncate text-xs text-slate-500 dark:text-gray-400 mt-1">{currentUser?.email}</p>
-                    </div>
-                    <div className="py-2">
-                      <Link
-                        href="/profile"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-gray-200 transition-colors hover:bg-indigo-50 dark:hover:bg-gray-700/80"
-                      >
-                        <svg className="h-5 w-5 flex-shrink-0 text-indigo-600 dark:text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z" />
-                        </svg>
-                        My Profile
-                      </Link>
-                      <Link
-                        href="/leaderboard"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-gray-200 transition-colors hover:bg-violet-50 dark:hover:bg-gray-700/80"
-                      >
-                        <svg className="h-5 w-5 flex-shrink-0 text-violet-600 dark:text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.496m0 0L12 12m0 0V3.75" />
-                        </svg>
-                        Leaderboard
-                      </Link>
-                      {isAdminUser && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-gray-200 transition-colors hover:bg-amber-50 dark:hover:bg-gray-700/80"
-                        >
-                          <svg className="h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-                          </svg>
-                          Admin Panel
-                        </Link>
-                      )}
-                      <div className="border-t border-slate-200 dark:border-gray-700 my-2"></div>
-                      <button
-                        type="button"
-                        onClick={() => { setDropdownOpen(false); handleLogout() }}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20"
-                      >
-                        <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd" />
-                          <path fillRule="evenodd" d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-1.16a.75.75 0 111.12-1.002l2.5 2.77a.75.75 0 010 1.001l-2.5 2.77a.75.75 0 11-1.12-1.001l1.048-1.16H6.75A.75.75 0 016 10z" clipRule="evenodd" />
-                        </svg>
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive cursor-pointer">
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
 
-      {/* Announcement Banner */}
-      {announcements.filter((a) => !dismissedAnnouncements.includes(a.id)).length > 0 && (
-        <div className="mx-auto max-w-6xl px-6 pt-6">
-          {announcements.filter((a) => !dismissedAnnouncements.includes(a.id)).map((ann) => {
-            const colorMap: Record<string, string> = {
-              info: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300',
-              warning: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300',
-              success: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300',
+      {/* Announcements */}
+      {visibleAnnouncements.length > 0 && (
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-4 space-y-2">
+          {visibleAnnouncements.map((ann) => {
+            const styles = {
+              info: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/50 text-blue-800 dark:text-blue-300',
+              warning: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300',
+              success: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300',
             }
             return (
-              <div key={ann.id} className={`mb-3 flex items-start gap-3 rounded-2xl border px-5 py-4 ${colorMap[ann.type] || colorMap.info} animate-fade-in`}>
-                <svg className="h-5 w-5 mt-0.5 shrink-0 opacity-70" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clipRule="evenodd" />
-                </svg>
+              <div key={ann.id} className={`flex items-start gap-3 rounded-xl border px-4 py-3 text-sm animate-slide-up ${styles[ann.type] || styles.info}`}>
+                <span className="mt-0.5 shrink-0 opacity-70">📣</span>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm">{ann.title}</p>
-                  {ann.message && <p className="mt-0.5 text-sm opacity-80">{ann.message}</p>}
+                  <span className="font-semibold">{ann.title}</span>
+                  {ann.message && <span className="opacity-80"> — {ann.message}</span>}
                 </div>
-                <button type="button" onClick={() => setDismissedAnnouncements((prev) => [...prev, ann.id])} className="rounded-full p-1 opacity-60 hover:opacity-100 transition-opacity shrink-0">
-                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M4.22 4.22a.75.75 0 011.06 0L10 8.94l4.72-4.72a.75.75 0 111.06 1.06L11.06 10l4.72 4.72a.75.75 0 11-1.06 1.06L10 11.06l-4.72 4.72a.75.75 0 01-1.06-1.06L8.94 10 4.22 5.28a.75.75 0 010-1.06z" /></svg>
-                </button>
+                <button type="button" onClick={() => setDismissedAnnouncements((p) => [...p, ann.id])} className="shrink-0 opacity-50 hover:opacity-100 transition-opacity text-lg leading-none">×</button>
               </div>
             )
           })}
         </div>
       )}
 
-      {/* Games Grid */}
-      <div className="mx-auto max-w-6xl px-6 py-8">
-        {/* Sort Controls */}
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-            {sortedGames.length} {sortedGames.length === 1 ? 'Game' : 'Games'}
-          </h3>
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-slate-600 dark:text-gray-400">Sort by:</label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'name' | 'recent' | 'popular')}
-              className="rounded-lg border border-slate-200 dark:border-gray-600 glass px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-gray-200 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-            >
-              <option value="name">Name</option>
-              <option value="recent">Recently Played</option>
-              <option value="popular">Popular</option>
-            </select>
+      {/* Main content */}
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+        {/* Section header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Game Library</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {gamesLoading ? 'Loading…' : `${sortedGames.length} ${sortedGames.length === 1 ? 'game' : 'games'} available`}
+            </p>
           </div>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+            <SelectTrigger className="w-44 h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORT_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
+        {/* Games grid */}
         {gamesLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-max">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="glass overflow-hidden h-full">
-                <div className="aspect-[4/3] w-full bg-slate-200 dark:bg-gray-700 animate-pulse" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="surface overflow-hidden">
+                <Skeleton className="aspect-[4/3] w-full" />
                 <div className="p-3 space-y-2">
-                  <div className="h-4 bg-slate-200 dark:bg-gray-700 rounded animate-pulse" />
-                  <div className="h-3 bg-slate-200 dark:bg-gray-700 rounded animate-pulse w-2/3" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-8 w-full mt-1" />
                 </div>
               </div>
             ))}
           </div>
         ) : sortedGames.length === 0 ? (
-          <div className="glass p-12 text-center">
-            <p className="text-slate-600 dark:text-gray-400">No games available at the moment.</p>
+          <div className="surface p-16 text-center">
+            <p className="text-4xl mb-3">🎮</p>
+            <p className="text-muted-foreground">No games available at the moment.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-max">
-            {sortedGames.map((game, idx) => (
-            <div
-              key={game.id}
-              className="group animate-fade-in"
-              style={{ animationDelay: `${Math.min(idx * 50, 300)}ms` }}
-            >
-              <div className="glass overflow-hidden transition-all duration-400 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-black/30 hover:-translate-y-1 h-full flex flex-col card-hover">
-                {/* Image Container */}
-                <div className="aspect-[4/3] w-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <img
-                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
-                    src={`/games/${game.id}/cover.png`}
-                    alt={`${game.name} cover`}
-                    loading="lazy"
-                    onError={(event) => {
-                      (event.currentTarget as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
-                </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {sortedGames.map((game, idx) => {
+              const isRecent = recentlyPlayed.includes(game.id)
+              const popularity = gamePopularity[game.id] || 0
+              return (
+                <div
+                  key={game.id}
+                  className="group animate-slide-up"
+                  style={{ animationDelay: `${Math.min(idx * 40, 280)}ms` }}
+                >
+                  <div className="surface overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30">
+                    {/* Cover */}
+                    <div className="aspect-[4/3] relative overflow-hidden bg-muted">
+                      <img
+                        className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                        src={`/games/${game.id}/cover.png`}
+                        alt={game.name}
+                        loading="lazy"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
+                      {/* Badges overlay */}
+                      <div className="absolute top-2 left-2 flex gap-1">
+                        {isRecent && (
+                          <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-background/80 backdrop-blur-sm">Recent</Badge>
+                        )}
+                        {popularity >= 10 && (
+                          <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-background/80 backdrop-blur-sm">🔥</Badge>
+                        )}
+                      </div>
+                    </div>
 
-                {/* Content */}
-                <div className="flex flex-1 flex-col justify-between gap-3 p-3">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">{game.name}</h3>
-                    <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-1 line-clamp-2">{game.description}</p>
+                    {/* Info */}
+                    <div className="flex flex-1 flex-col justify-between gap-2.5 p-3">
+                      <div>
+                        <h3 className="text-sm font-semibold leading-tight line-clamp-1">{game.name}</h3>
+                        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{game.description}</p>
+                      </div>
+                      {game.iframePath ? (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="w-full h-8 text-xs font-semibold"
+                          onClick={() => trackGamePlay(game.id)}
+                        >
+                          <Link href={`/play/${game.id}`}>Play Now</Link>
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="secondary" className="w-full h-8 text-xs" disabled>
+                          Coming Soon
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                  
-                  <Link
-                    href={game.iframePath ? ('/play/' + game.id) : '#'}
-                    onClick={() => game.iframePath && trackGamePlay(game.id)}
-                    className={`w-full rounded-lg px-3 py-2 text-xs font-semibold text-center transition-all duration-200 focus:outline-none focus:ring-4 ${
-                      game.iframePath
-                        ? 'btn-primary hover:-translate-y-0.5 active:translate-y-0'
-                        : 'cursor-not-allowed bg-slate-200 dark:bg-gray-700 text-slate-400 dark:text-gray-500 pointer-events-none'
-                    }`}
-                  >
-                    {game.iframePath ? 'Play Now' : 'Coming Soon'}
-                  </Link>
                 </div>
-              </div>
-            </div>
-          ))}
+              )
+            })}
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }
