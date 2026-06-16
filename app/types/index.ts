@@ -66,6 +66,19 @@ export interface ScoreData {
   bestScoreAchievedAt?: Date
 }
 
+export interface RecentActivityItem {
+  gameId: string
+  lastMode: 'singleplayer' | 'multiplayer' | null
+  lastScore: number | null
+  updatedAt: Date
+}
+
+export interface GlobalActivityItem extends RecentActivityItem {
+  userId: string
+  username: string
+  userPhotoURL?: string
+}
+
 export interface LeaderboardEntry {
   uid: string
   bestScore: number

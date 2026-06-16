@@ -9,8 +9,11 @@ import {
   serverTimestamp,
   QueryDocumentSnapshot,
   DocumentData,
+  query,
+  orderBy,
+  limit,
 } from 'firebase/firestore'
-import { GameStats, ScoreData, GlobalLeaderboardEntry } from '@/app/types'
+import { GameStats, ScoreData, GlobalLeaderboardEntry, RecentActivityItem, GlobalActivityItem } from '@/app/types'
 import {
   type GameMode,
   buildWeightedModeStats,
@@ -164,4 +167,50 @@ export async function getUserGlobalStats(
     avgNormalizedScore: Math.round(avgNormalizedScore * 10) / 10,
     tier: calculateTier(compositeScore)
   }
+}
+
+export async function getRecentActivity(
+  uid: string,
+  limitCount = 20
+): Promise<RecentActivityItem[]> {
+  const ref = collection(db, 'users', uid, 'gameStats')
+  const q = query(ref, orderBy('updatedAt', 'desc'), limit(limitCount))
+  const snapshot = await getDocs(q)
+  const items: RecentActivityItem[] = []
+  snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+    const data = docSnap.data()
+    const updatedAt = convertTimestampToDate(data.updatedAt)
+    if (!updatedAt) return
+    items.push({
+      gameId: docSnap.id,
+      lastMode: (data.lastMode as 'singleplayer' | 'multiplayer') ?? null,
+      lastScore: typeof data.lastScore === 'number' ? data.lastScore : null,
+      updatedAt,
+    })
+  })
+  return items
+}
+
+export async function getGlobalRecentActivity(
+  limitCount = 50
+): Promise<Array<RecentActivityItem & { userId: string }>> {
+  const ref = collectionGroup(db, 'gameStats')
+  const q = query(ref, orderBy('updatedAt', 'desc'), limit(limitCount))
+  const snapshot = await getDocs(q)
+  const items: Array<RecentActivityItem & { userId: string }> = []
+  snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+    const data = docSnap.data()
+    const updatedAt = convertTimestampToDate(data.updatedAt)
+    if (!updatedAt) return
+    const userId = docSnap.ref.parent.parent?.id
+    if (!userId) return
+    items.push({
+      userId,
+      gameId: docSnap.id,
+      lastMode: (data.lastMode as 'singleplayer' | 'multiplayer') ?? null,
+      lastScore: typeof data.lastScore === 'number' ? data.lastScore : null,
+      updatedAt,
+    })
+  })
+  return items
 }

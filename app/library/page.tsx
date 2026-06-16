@@ -179,6 +179,9 @@ export default function LibraryPage() {
             <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground">
               <Link href="/leaderboard">Leaderboard</Link>
             </Button>
+            <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground">
+              <Link href="/activity">Activity</Link>
+            </Button>
           </nav>
 
           {/* Right side */}
@@ -204,6 +207,9 @@ export default function LibraryPage() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/leaderboard" className="cursor-pointer">Leaderboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/activity" className="cursor-pointer">Activity</Link>
                 </DropdownMenuItem>
                 {isAdminUser && (
                   <DropdownMenuItem asChild>
