@@ -1,45 +1,91 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { saveBestScore, saveModeScoreStats } from '@/app/services/gameDataService'
+import { FieldValue } from 'firebase-admin/firestore'
+import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
+import { defaultGames } from '@/app/games/games'
+import { SUPPORTED_MODES, type GameMode, buildWeightedModeStats } from '@/app/services/scoring'
+import { GameStats } from '@/app/types'
 
+/**
+ * Server-authoritative score submission.
+ *
+ * Security model: the caller must present a Firebase ID token (Authorization:
+ * Bearer <token>). The owning `uid` is derived from the verified token — never from
+ * the request body — so a client cannot write to another user's records. Writes use
+ * the Admin SDK (which bypasses Firestore rules), gated by that token verification.
+ *
+ * The canonical path for in-app games is the host postMessage bridge
+ * (`PlayGameClient` -> client SDK). This REST endpoint is the supported entry point
+ * for games that report scores over HTTP rather than postMessage; such a game must
+ * send the player's ID token in the Authorization header.
+ */
 export async function POST(request: NextRequest) {
   try {
+    // 1. Authenticate via Firebase ID token.
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const token = authHeader.split('Bearer ')[1]
+
+    let uid: string
+    try {
+      const decoded = await getAdminAuth().verifyIdToken(token)
+      uid = decoded.uid
+    } catch {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    }
+
+    // 2. Validate the payload (uid is intentionally ignored if present).
     const body = await request.json()
-    const { uid, gameId, score, mode = 'singleplayer' } = body
+    const { gameId, score, mode = 'singleplayer' } = body
 
-    // Validate required fields
-    if (!uid || !gameId || score === undefined) {
-      return NextResponse.json(
-        { error: 'Missing required fields: uid, gameId, score' },
-        { status: 400 }
-      )
+    if (!gameId || typeof gameId !== 'string' || !defaultGames.some((g) => g.id === gameId)) {
+      return NextResponse.json({ error: 'Unknown or missing gameId' }, { status: 400 })
     }
 
-    // Validate score is a number
     const numScore = Number(score)
-    if (isNaN(numScore)) {
+    if (!Number.isFinite(numScore)) {
+      return NextResponse.json({ error: 'Score must be a finite number' }, { status: 400 })
+    }
+
+    if (!SUPPORTED_MODES.includes(mode as GameMode)) {
       return NextResponse.json(
-        { error: 'Score must be a valid number' },
-        { status: 400 }
+        { error: `mode must be one of: ${SUPPORTED_MODES.join(', ')}` },
+        { status: 400 },
       )
     }
 
-    // Save best score (only if higher than existing)
-    await saveBestScore(uid, gameId, numScore)
+    const adminDb = getAdminDb()
 
-    // Save game stats for leaderboard
-    await saveModeScoreStats(uid, gameId, mode, numScore)
+    // 3. Best score — only overwrite when strictly higher.
+    const scoreRef = adminDb.collection('users').doc(uid).collection('scores').doc(gameId)
+    const scoreSnap = await scoreRef.get()
+    const currentBest = scoreSnap.exists ? Number(scoreSnap.data()?.bestScore) : null
+    if (currentBest == null || Number.isNaN(currentBest) || numScore > currentBest) {
+      await scoreRef.set(
+        {
+          bestScore: numScore,
+          updatedAt: FieldValue.serverTimestamp(),
+          bestScoreAchievedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      )
+    }
 
-    return NextResponse.json({ 
-      success: true, 
-      score: numScore,
-      gameId,
-      uid 
-    })
+    // 4. Weighted per-mode stats for the leaderboard.
+    const statsRef = adminDb.collection('users').doc(uid).collection('gameStats').doc(gameId)
+    const statsSnap = await statsRef.get()
+    const existingStats = statsSnap.exists ? (statsSnap.data() as Partial<GameStats>) : null
+    const mergedStats = buildWeightedModeStats(existingStats, mode as GameMode, numScore)
+
+    await statsRef.set(
+      { ...mergedStats, updatedAt: FieldValue.serverTimestamp() },
+      { merge: true },
+    )
+
+    return NextResponse.json({ success: true, gameId, score: numScore, uid })
   } catch (error) {
     console.error('Score submission error:', error)
-    return NextResponse.json(
-      { error: 'Failed to save score' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to save score' }, { status: 500 })
   }
 }

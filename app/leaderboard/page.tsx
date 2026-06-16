@@ -5,7 +5,6 @@ import { User as FirebaseUser } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { getGameLeaderboard, getGlobalLeaderboard } from '@/app/services/gameDataService'
 import { getUserProfile } from '@/app/services/userProfileService'
 import { defaultGames } from '@/app/games/games'
 import ThemeToggle from '@/app/components/ThemeToggle'
@@ -188,14 +187,17 @@ export default function LeaderboardPage() {
     setRows([])
     setProfiles({})
 
-    const fetch = viewMode === 'global'
-      ? getGlobalLeaderboard()
-      : getGameLeaderboard(selectedGameId)
+    const url = viewMode === 'global'
+      ? '/api/leaderboard?mode=global'
+      : `/api/leaderboard?mode=game&gameId=${encodeURIComponent(selectedGameId)}`
 
-    fetch
-      .then(async (data) => {
+    fetch(url)
+      .then(async (res) => {
+        const payload = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(payload.error || 'Failed to load leaderboard')
         if (cancelled) return
-        const top = data.slice(0, TOP_COUNT)
+        const entries = (payload.entries ?? []) as (LeaderboardEntry | GlobalLeaderboardEntry)[]
+        const top = entries.slice(0, TOP_COUNT)
         setRows(top)
         const uids = top.map((r) => r.uid)
         const profileMap = await fetchProfiles(uids)

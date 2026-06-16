@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-06-16T06:50:21.791Z",
+  "mode": "headless",
+  "workerType": "audit",
+  "model": "haiku",
+  "durationMs": 25819,
+  "executionId": "audit_1781592595972_xn3ttf",
+  "success": true,
+  "findings": {
+    "vulnerabilities": [
+      {
+        "severity": "medium",
+        "file": "next.config.js",
+        "line": 7,
+        "description": "API origin endpoints configured via environment variables without validation. If SPELLING_BEE_API_ORIGIN or VOCAB_API_ORIGIN are not properly set, requests could be redirected to unintended servers. Missing fallback validation or URL sanitization."
+      },
+      {
+        "severity": "medium",
+        "file": ".claude/helpers/memory.js",
+        "line": 20,
+        "description": "No input validation on key/value parameters before writing to filesystem. Keys could potentially contain path traversal sequences or special characters that could be exploited."
+      },
+      {
+        "severity": "low",
+        "file": "public/games/2048/js/local_storage_manager.js",
+        "line": 1,
+        "description": "Game state stored in localStorage without encryption. While client-side only, sensitive game data is exposed in plaintext. Not a direct vulnerability but a privacy/integrity concern."
+      },
+      {
+        "severity": "low",
+        "file": ".claude/helpers/session.js",
+        "line": 60,
+        "description": "Session files stored with predictable locations (.claude-flow/sessions/). If file permissions are not restrictive, session data could be accessed by other users on shared systems."
+      }
+    ],
+    "riskScore": 28,
+    "recommendations": [
+      "✅ **GOOD PRACTICE**: github-safe.js uses execFileSync() instead of shell interpolation, preventing command injection",
+      "✅ **GOOD PRACTICE**: Atomic file writes in session.js prevent corruption from concurrent access",
+      "✅ **NO HARDCODED SECRETS DETECTED**: No API keys, passwords, or credentials visible in provided code",
+      "⚠️ **ADD VALIDATION**: Validate and sanitize all environment variable URLs in next.config.js with URL parsing",
+      "⚠️ **ADD INPUT SANITIZATION**: Implement path/key validation in memory.js to prevent injection attacks",
+      "⚠️ **VERIFY NEXT_PUBLIC VARS**: Confirm no API keys are in NEXT_PUBLIC_* environment variables (they're exposed to browser)",
+      "⚠️ **AUDIT DEPENDENCIES**: Run `npm audit` / `pnpm audit` to check pnpm-lock.yaml for known vulnerabilities in deps",
+      "⚠️ **FILE PERMISSIONS**: Ensure .claude-flow/ and .claude/ directories have restrictive permissions (mode 0700)",
+      "⚠️ **VERIFY POSTMESSAGE ORIGIN**: Confirm PlayGameClient.tsx validates origin on all postMessage handlers (not shown in files provided)",
+      "⚠️ **ADMIN SDK SAFETY**: Verify firebase-admin.ts is never exposed client-side and only used in API routes"
+    ]
+  },
+  "rawOutputPreview": "# Security Vulnerability Analysis Report\n\nBased on my analysis of the provided codebase files, here's a comprehensive security assessment:\n\n```json\n{\n  \"vulnerabilities\": [\n    {\n      \"severity\": \"medium\",\n      \"file\": \"next.config.js\",\n      \"line\": 7,\n      \"description\": \"API origin endpoints configured via environment variables without validation. If SPELLING_BEE_API_ORIGIN or VOCAB_API_ORIGIN are not properly set, requests could be redirected to unintended servers. Missing fallback validation or URL sanitization.\"\n    },\n    {\n      \"severity\": \"medium\",\n      \"file\": \".claude/helpers/memory.js\",\n      \"line\": 20,\n      \"description\": \"No input validation on key/value parameters before writing to filesystem. Keys could potentially contain path traversal sequences or special characters that could be exploited.\"\n    },\n    {\n      \"severity\": \"low\",\n      \"file\": \"public/games/2048/js/local_storage_manager.js\",\n      \"line\": 1,\n      \"description\": \"Game state stored in localStorage without encryption. While client-side only, sensitive game data is exposed in plaintext. Not a direct vulnerability but a privacy/integrity concern.\"\n    },\n    {\n      \"severity\": \"low\",\n      \"file\": \".claude/helpers/session.js\",\n      \"line\": 60,\n      \"description\": \"Session files stored with predictable locations (.claude-flow/sessions/). If file permissions are not restrictive, session data could be accessed by other users on shared systems.\"\n    }\n  ],\n  \"riskScore\": 28,\n  \"recommendations\": [\n    \"✅ **GOOD PRACTICE**: github-safe.js uses execFileSync() instead of shell interpolation, preventing command injection\",\n    \"✅ **GOOD PRACTICE**: Atomic file writes in session.js prevent corruption from concurrent access\",\n    \"✅ **NO HARDCODED SECRETS DETECTED**: No API keys, passwords, or credentials visible in provided code\",\n    \"⚠️ **ADD VALIDATION**: Validate and sanitize all environment variable URLs in next.config.js with URL parsing\",\n    \"⚠️ **ADD INPUT SANITIZATION**: Imp",
+  "rawOutputLength": 3466
+}

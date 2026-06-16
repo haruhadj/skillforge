@@ -9,7 +9,6 @@ import ThemeToggle from '@/app/components/ThemeToggle'
 import { getUserProfile, getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
 import { getActiveAnnouncements } from '@/app/services/adminService'
 import { isAdmin } from '@/app/services/adminService'
-import { getGamePopularity } from '@/app/services/gameDataService'
 import { defaultGames, mergeGamesWithFirestore } from '@/app/games/games'
 import { UserProfile, Announcement, Game } from '@/app/types'
 
@@ -133,8 +132,10 @@ export default function LibraryPage() {
     async function loadPopularity() {
       try {
         setPopularityLoading(true)
-        const popularity = await getGamePopularity()
-        setGamePopularity(popularity)
+        const res = await fetch('/api/leaderboard?mode=popularity')
+        const payload = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(payload.error || 'Failed to load game popularity')
+        setGamePopularity(payload.popularity ?? {})
       } catch (err) {
         console.error('Failed to load game popularity:', err)
         setGamePopularity({})
