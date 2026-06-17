@@ -46,6 +46,7 @@ export default function LibraryPage() {
   const [dismissedAnnouncements, setDismissedAnnouncements] = useState<string[]>([])
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [isAdminUser, setIsAdminUser] = useState(false)
+  const [isTeacherUser, setIsTeacherUser] = useState(false)
   const [games, setGames] = useState<Game[]>(defaultGames)
   const [gamesLoading, setGamesLoading] = useState(true)
   const [sortBy, setSortBy] = useState<'name' | 'recent' | 'popular'>('name')
@@ -61,6 +62,7 @@ export default function LibraryPage() {
     getUserProfile(currentUser.uid).then((profile) => {
       setUserProfile(profile)
       setAvatarURL(profile?.photoThumbURL || profile?.photoURL || null)
+      setIsTeacherUser(profile?.role === 'teacher')
     }).catch(() => {})
   }, [currentUser?.uid])
 
@@ -211,6 +213,11 @@ export default function LibraryPage() {
                 <DropdownMenuItem asChild>
                   <Link href="/activity" className="cursor-pointer">Activity</Link>
                 </DropdownMenuItem>
+                {isTeacherUser && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/teacher" className="cursor-pointer">Teacher Dashboard</Link>
+                  </DropdownMenuItem>
+                )}
                 {isAdminUser && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin" className="cursor-pointer">Admin Panel</Link>
@@ -240,9 +247,30 @@ export default function LibraryPage() {
                 <span className="mt-0.5 shrink-0 opacity-70">📣</span>
                 <div className="flex-1 min-w-0">
                   <span className="font-semibold">{ann.title}</span>
-                  {ann.message && <span className="opacity-80"> — {ann.message}</span>}
+                  {ann.message && (
+                    <span className="opacity-80">
+                      {' — '}
+                      {ann.linkUrl ? (
+                        <>
+                          {ann.message}{' '}
+                          <a
+                            href={ann.linkUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline font-medium opacity-100 hover:opacity-80 transition-opacity"
+                          >
+                            Learn more ↗
+                          </a>
+                        </>
+                      ) : (
+                        ann.message
+                      )}
+                    </span>
+                  )}
                 </div>
-                <button type="button" onClick={() => setDismissedAnnouncements((p) => [...p, ann.id])} className="shrink-0 opacity-50 hover:opacity-100 transition-opacity text-lg leading-none">×</button>
+                {!ann.sticky && (
+                  <button type="button" onClick={() => setDismissedAnnouncements((p) => [...p, ann.id])} className="shrink-0 opacity-50 hover:opacity-100 transition-opacity text-lg leading-none">×</button>
+                )}
               </div>
             )
           })}

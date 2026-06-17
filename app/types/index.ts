@@ -10,7 +10,7 @@ export interface UserProfile {
   photoThumbURL?: string
   authProvider?: 'google' | 'password' | 'facebook' | 'unknown'
   profileCompleted?: boolean
-  role?: 'admin' | 'user'
+  role?: 'admin' | 'teacher' | 'user'
   createdAt?: Date
   updatedAt?: Date
 }
@@ -101,6 +101,8 @@ export interface Announcement {
   message: string
   type: 'info' | 'warning' | 'success'
   active: boolean
+  sticky?: boolean
+  linkUrl?: string
   createdAt: Date
   updatedAt: Date
 }

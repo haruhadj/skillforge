@@ -23,9 +23,15 @@ export async function isAdmin(uid: string): Promise<boolean> {
   return snap.exists() && snap.data().role === 'admin'
 }
 
-export async function setUserRole(uid: string, role: 'admin' | 'user'): Promise<void> {
+export async function isTeacher(uid: string): Promise<boolean> {
+  if (!uid) return false
+  const snap = await getDoc(doc(db, 'users', uid))
+  return snap.exists() && snap.data().role === 'teacher'
+}
+
+export async function setUserRole(uid: string, role: 'admin' | 'teacher' | 'user'): Promise<void> {
   if (!uid) throw new Error('Missing user id')
-  if (!['admin', 'user'].includes(role)) throw new Error('Invalid role')
+  if (!['admin', 'teacher', 'user'].includes(role)) throw new Error('Invalid role')
 
   await setDoc(doc(db, 'users', uid), { role, updatedAt: serverTimestamp() }, { merge: true })
 }
@@ -97,6 +103,8 @@ export interface AnnouncementInput {
   message: string
   type?: 'info' | 'warning' | 'success'
   active?: boolean
+  sticky?: boolean
+  linkUrl?: string
   createdAt?: ReturnType<typeof serverTimestamp>
 }
 
@@ -107,6 +115,8 @@ export async function saveAnnouncement(data: AnnouncementInput): Promise<string>
     message: data.message || '',
     type: data.type || 'info',
     active: data.active !== false,
+    sticky: data.sticky === true,
+    linkUrl: data.linkUrl?.trim() || '',
     createdAt: data.createdAt || serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
@@ -114,13 +124,14 @@ export async function saveAnnouncement(data: AnnouncementInput): Promise<string>
 }
 
 export async function getActiveAnnouncements(): Promise<Announcement[]> {
-  const q = query(
-    collection(db, 'announcements'),
-    where('active', '==', true),
-    orderBy('createdAt', 'desc'),
-  )
+  const q = query(collection(db, 'announcements'), where('active', '==', true))
   const snap = await getDocs(q)
-  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() } as Announcement))
+  const docs = snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() } as Announcement))
+  return docs.sort((a, b) => {
+    const at = a.createdAt ? new Date(a.createdAt as unknown as string).getTime() : 0
+    const bt = b.createdAt ? new Date(b.createdAt as unknown as string).getTime() : 0
+    return bt - at
+  })
 }
 
 export async function getAllAnnouncements(): Promise<Announcement[]> {

@@ -21,6 +21,8 @@ const EMPTY_FORM: AnnouncementInput = {
   message: '',
   type: 'info',
   active: true,
+  sticky: false,
+  linkUrl: '',
 }
 
 export default function AdminAnnouncementsTab() {
@@ -124,7 +126,18 @@ export default function AdminAnnouncementsTab() {
             />
           </div>
 
-          <div className="flex items-center gap-6">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Link URL <span className="text-slate-400 font-normal">(optional — opens in new tab)</span></label>
+            <input
+              type="url"
+              value={form.linkUrl}
+              onChange={(e) => setForm((f) => ({ ...f, linkUrl: e.target.value }))}
+              placeholder="https://example.com"
+              className="w-full rounded-lg border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div className="flex items-center gap-6 flex-wrap">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Type</label>
               <select
@@ -148,6 +161,19 @@ export default function AdminAnnouncementsTab() {
               />
               <label htmlFor="active-toggle" className="text-sm font-medium text-slate-700 dark:text-gray-300">
                 Active
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2 mt-5">
+              <input
+                id="sticky-toggle"
+                type="checkbox"
+                checked={form.sticky}
+                onChange={(e) => setForm((f) => ({ ...f, sticky: e.target.checked }))}
+                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label htmlFor="sticky-toggle" className="text-sm font-medium text-slate-700 dark:text-gray-300">
+                Sticky <span className="text-slate-400 font-normal text-xs">(users can&apos;t dismiss)</span>
               </label>
             </div>
           </div>
@@ -191,6 +217,11 @@ export default function AdminAnnouncementsTab() {
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_STYLES[a.type] || TYPE_STYLES.info}`}>
                     {a.type}
                   </span>
+                  {a.sticky && (
+                    <span className="rounded-full px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+                      sticky
+                    </span>
+                  )}
                   {!a.active && (
                     <span className="rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500 dark:bg-gray-700 dark:text-gray-400">
                       inactive
@@ -198,6 +229,11 @@ export default function AdminAnnouncementsTab() {
                   )}
                 </div>
                 <p className="mt-1 text-sm text-slate-600 dark:text-gray-300 line-clamp-2">{a.message}</p>
+                {a.linkUrl && (
+                  <a href={a.linkUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-indigo-600 dark:text-indigo-400 hover:underline truncate max-w-xs">
+                    {a.linkUrl}
+                  </a>
+                )}
                 <p className="mt-1 text-xs text-slate-400 dark:text-gray-500">
                   {a.createdAt ? new Date(a.createdAt as unknown as string).toLocaleString() : ''}
                 </p>

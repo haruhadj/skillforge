@@ -46,7 +46,12 @@ export default function AdminUsersTab() {
       toast.error('You cannot change your own role')
       return
     }
-    const newRole = user.role === 'admin' ? 'user' : 'admin'
+    const cycle: Record<string, 'teacher' | 'admin' | 'user'> = {
+      user: 'teacher',
+      teacher: 'admin',
+      admin: 'user',
+    }
+    const newRole = cycle[user.role ?? 'user'] ?? 'teacher'
     try {
       await setUserRole(user.uid, newRole)
       toast.success(`${user.username || user.email} is now ${newRole}`)
@@ -54,6 +59,12 @@ export default function AdminUsersTab() {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to update role')
     }
+  }
+
+  const nextRoleLabel = (role: UserProfile['role']) => {
+    if (role === 'admin') return 'Demote to User'
+    if (role === 'teacher') return 'Make Admin'
+    return 'Make Teacher'
   }
 
   const handleResetData = async (uid: string) => {
@@ -213,9 +224,17 @@ export default function AdminUsersTab() {
 
                 {/* Role badge + Auth provider */}
                 <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                  <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${user.role === 'admin' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' : 'bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-gray-400'}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${user.role === 'admin' ? 'bg-amber-500' : 'bg-slate-400'}`} />
-                    {user.role === 'admin' ? 'Admin' : 'User'}
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                    user.role === 'admin'
+                      ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400'
+                      : user.role === 'teacher'
+                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
+                        : 'bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-gray-400'
+                  }`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${
+                      user.role === 'admin' ? 'bg-amber-500' : user.role === 'teacher' ? 'bg-emerald-500' : 'bg-slate-400'
+                    }`} />
+                    {user.role === 'admin' ? 'Admin' : user.role === 'teacher' ? 'Teacher' : 'User'}
                   </span>
                   {user.authProvider === 'google' && (
                     <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
@@ -265,9 +284,9 @@ export default function AdminUsersTab() {
                     onClick={() => handleToggleRole(user)}
                     disabled={isCurrentUser}
                     className="rounded-lg px-3 py-2 text-xs font-medium text-slate-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title={user.role === 'admin' ? 'Demote to user' : 'Promote to admin'}
+                    title={nextRoleLabel(user.role)}
                   >
-                    {user.role === 'admin' ? 'Demote' : 'Promote'}
+                    {nextRoleLabel(user.role)}
                   </button>
                   <button
                     type="button"

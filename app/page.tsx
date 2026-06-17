@@ -57,12 +57,12 @@ export default function HomePage() {
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
             Master new skills through interactive games, compete on leaderboards,
-            and track your progress across 20+ challenges.
+            and track your progress across 22 games.
           </p>
 
           {/* Stats row */}
           <div className="mt-10 flex items-center gap-8">
-            {[['20+', 'Games'], ['1000+', 'Players'], ['∞', 'Challenges']].map(([num, label]) => (
+            {[['22', 'Games'], ['Free', 'To Play'], ['100%', 'Browser-Based']].map(([num, label]) => (
               <div key={label}>
                 <p className="text-2xl font-bold text-foreground">{num}</p>
                 <p className="text-sm text-muted-foreground">{label}</p>
