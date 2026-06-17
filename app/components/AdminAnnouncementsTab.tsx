@@ -33,6 +33,7 @@ export default function AdminAnnouncementsTab() {
   const [confirmDelete, setConfirmDelete] = useState<Announcement | null>(null)
   const [form, setForm] = useState<AnnouncementInput>(EMPTY_FORM)
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const loadAnnouncements = async () => {
     try {
@@ -49,6 +50,26 @@ export default function AdminAnnouncementsTab() {
 
   useEffect(() => { loadAnnouncements() }, [])
 
+  const startEditing = (a: Announcement) => {
+    setForm({
+      id: a.id,
+      title: a.title,
+      message: a.message,
+      type: a.type,
+      active: a.active,
+      sticky: a.sticky,
+      linkUrl: a.linkUrl,
+    })
+    setEditingId(a.id)
+    setShowForm(true)
+  }
+
+  const cancelForm = () => {
+    setShowForm(false)
+    setForm(EMPTY_FORM)
+    setEditingId(null)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.title.trim() || !form.message.trim()) {
@@ -58,9 +79,8 @@ export default function AdminAnnouncementsTab() {
     try {
       setSaving(true)
       await saveAnnouncement(form)
-      toast.success('Announcement posted')
-      setForm(EMPTY_FORM)
-      setShowForm(false)
+      toast.success(editingId ? 'Announcement updated' : 'Announcement posted')
+      cancelForm()
       await loadAnnouncements()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to save announcement')
@@ -91,7 +111,7 @@ export default function AdminAnnouncementsTab() {
           <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">Manage platform-wide announcements</p>
         </div>
         <button
-          onClick={() => setShowForm((v) => !v)}
+          onClick={() => (showForm ? cancelForm() : setShowForm(true))}
           className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 transition-colors"
         >
           {showForm ? 'Cancel' : '+ New Announcement'}
@@ -100,7 +120,9 @@ export default function AdminAnnouncementsTab() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="glass p-6 rounded-2xl space-y-4">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">New Announcement</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {editingId ? 'Edit Announcement' : 'New Announcement'}
+          </h3>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Title</label>
@@ -181,7 +203,7 @@ export default function AdminAnnouncementsTab() {
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={() => { setShowForm(false); setForm(EMPTY_FORM) }}
+              onClick={cancelForm}
               className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel
@@ -191,7 +213,9 @@ export default function AdminAnnouncementsTab() {
               disabled={saving}
               className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 disabled:opacity-50 transition-colors"
             >
-              {saving ? 'Posting…' : 'Post Announcement'}
+              {saving
+                ? (editingId ? 'Updating…' : 'Posting…')
+                : (editingId ? 'Update Announcement' : 'Post Announcement')}
             </button>
           </div>
         </form>
@@ -238,13 +262,22 @@ export default function AdminAnnouncementsTab() {
                   {a.createdAt ? new Date(a.createdAt as unknown as string).toLocaleString() : ''}
                 </p>
               </div>
-              <button
-                onClick={() => setConfirmDelete(a)}
-                disabled={deletingId === a.id}
-                className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors"
-              >
-                Delete
-              </button>
+              <div className="shrink-0 flex gap-2">
+                <button
+                  onClick={() => startEditing(a)}
+                  disabled={deletingId === a.id}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 disabled:opacity-50 transition-colors"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(a)}
+                  disabled={deletingId === a.id}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
