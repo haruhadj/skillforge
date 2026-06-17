@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[20534,["/games/geoguessr-clone/_next/static/chunks/2_0fkisfp_eud.js"],"default"]
+3:I[38174,["/games/geoguessr-clone/_next/static/chunks/2_0fkisfp_eud.js"],"default"]
+4:[]
+0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"3z4CnLuv_r4HVLiv449qF"}

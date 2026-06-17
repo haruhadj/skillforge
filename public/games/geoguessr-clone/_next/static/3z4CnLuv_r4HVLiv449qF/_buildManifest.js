@@ -1,10 +1,6 @@
 self.__BUILD_MANIFEST = {
   "__rewrites": {
-    "afterFiles": [
-      {
-        "source": "/api/pmtiles/:path*"
-      }
-    ],
+    "afterFiles": [],
     "beforeFiles": [
       {
         "source": "/games/geoguessr-clone/_next/:path+",
