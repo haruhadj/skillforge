@@ -136,6 +136,12 @@ export const defaultGames: Game[] = [
     iframePath: '/games/geoguessr-clone/index.html',
     description: 'A self-hosted GeoGuessr clone featuring Google Street View panoramas and an interactive 2D guessing map. Guess your location from street view clues.',
   },
+  {
+    id: 'math-nerdle',
+    name: 'Math Nerdle',
+    iframePath: '/games/math-nerdle/index.html',
+    description: 'An 8-character math equation wordle clone. Guess the correct evaluation using numbers and standard operations.',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
