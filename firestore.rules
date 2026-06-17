@@ -8,10 +8,14 @@ service cloud.firestore {
 
     // User profiles are readable by anyone (for leaderboards, profile viewing)
     // Allow authenticated users to create their own profile
+    // Admins can update any user document (e.g. to assign roles)
     match /users/{uid} {
       allow read: if true;
       allow create: if request.auth != null && request.auth.uid == uid;
-      allow update: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && (
+        request.auth.uid == uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
     }
 
     // Usernames lookup - readable by anyone, writable by the owner
