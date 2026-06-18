@@ -50,6 +50,7 @@ export default function LibraryPage() {
   const [games, setGames] = useState<Game[]>(defaultGames)
   const [gamesLoading, setGamesLoading] = useState(true)
   const [sortBy, setSortBy] = useState<'name' | 'recent' | 'popular'>('name')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>([])
   const [gamePopularity, setGamePopularity] = useState<Record<string, number>>({})
 
@@ -133,8 +134,13 @@ export default function LibraryPage() {
   const name = userProfile?.username || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
 
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(games.filter((g) => g.enabled !== false && g.category).map((g) => g.category as string))).sort()
+    return ['all', ...cats]
+  }, [games])
+
   const sortedGames = useMemo(() => {
-    const enabled = games.filter((g) => g.enabled !== false)
+    const enabled = games.filter((g) => g.enabled !== false && (selectedCategory === 'all' || g.category === selectedCategory))
     if (sortBy === 'recent') return [...enabled].sort((a, b) => {
       const ai = recentlyPlayed.indexOf(a.id), bi = recentlyPlayed.indexOf(b.id)
       if (ai === -1 && bi === -1) return 0
@@ -146,7 +152,7 @@ export default function LibraryPage() {
       return ac === bc ? a.name.localeCompare(b.name) : bc - ac
     })
     return [...enabled].sort((a, b) => a.name.localeCompare(b.name))
-  }, [games, sortBy, recentlyPlayed, gamePopularity])
+  }, [games, sortBy, selectedCategory, recentlyPlayed, gamePopularity])
 
   const visibleAnnouncements = announcements.filter((a) => !dismissedAnnouncements.includes(a.id))
 
@@ -280,7 +286,7 @@ export default function LibraryPage() {
       {/* Main content */}
       <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
         {/* Section header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Game Library</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
@@ -298,6 +304,26 @@ export default function LibraryPage() {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Category filter */}
+        {!gamesLoading && (
+          <div className="flex flex-wrap gap-2 mb-8">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`h-8 px-3 rounded-full text-xs font-medium border transition-colors ${
+                  selectedCategory === cat
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'
+                }`}
+              >
+                {cat === 'all' ? 'All' : cat}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Games grid */}
         {gamesLoading ? (
