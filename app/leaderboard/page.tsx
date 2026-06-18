@@ -237,7 +237,7 @@ export default function LeaderboardPage() {
                   <SelectTrigger className="w-full h-10 font-medium text-sm">
                     <SelectValue placeholder="Select a game" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-[40vh] overflow-y-auto">
                     {defaultGames.map((game) => (
                       <SelectItem key={game.id} value={game.id}>{game.name}</SelectItem>
                     ))}

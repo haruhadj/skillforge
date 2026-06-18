@@ -30,11 +30,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate password reset link using Firebase Admin
-    const resetLink = await getAdminAuth().generatePasswordResetLink(email)
+    // actionCodeSettings.url must match the sending domain to avoid spam filters
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://olacqr.dpdns.org'
+    const firebaseLink = await getAdminAuth().generatePasswordResetLink(email, {
+      url: `${appUrl}/login`,
+    })
+
+    // Replace Firebase's action domain with our own so the link in the email
+    // matches the sending domain (firebaseapp.com triggers rspamd spam filters).
+    // /auth/action proxies the params back to Firebase for actual processing.
+    const resetLink = firebaseLink.replace(
+      'https://skillforge-7a058.firebaseapp.com/__/auth/action',
+      `${appUrl}/auth/action`
+    )
 
     // Send email via Resend
     const { data, error } = await getResend().emails.send({
-      from: 'SkillForge <noreply@olacqr.dpdns.org>',
+      from: 'SkillForge <support@haruhadj.org>',
       to: email,
       subject: 'Reset your SkillForge password',
       html: `
@@ -55,7 +67,7 @@ export async function POST(request: NextRequest) {
           </p>
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
           <p style="color: #9ca3af; font-size: 12px;">
-            This email was sent from SkillForge. Please do not reply to this email.
+            This email was sent from SkillForge. Questions? Reply to this email or contact support.
           </p>
         </div>
       `,
