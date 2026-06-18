@@ -33,20 +33,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signInWithGoogle(): Promise<{ method: string; result: UserCredential }> {
     const provider = new GoogleAuthProvider()
     provider.setCustomParameters({ prompt: 'select_account' })
-
     const result = await signInWithPopup(auth, provider)
-    
-    // Ensure profile exists for Google users (creates if missing)
     try {
       await ensureUserProfileDocument(result.user)
     } catch (err) {
       console.error('Failed to ensure Google user profile:', err)
     }
-    
-    return {
-      method: 'popup',
-      result,
-    }
+    return { method: 'popup', result }
   }
 
   async function signInWithFacebook(): Promise<{ method: string; result: UserCredential }> {

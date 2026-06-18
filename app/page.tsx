@@ -11,23 +11,16 @@ import { Separator } from '@/components/ui/separator'
 
 export default function HomePage() {
   const router = useRouter()
-  const { currentUser, signInWithGoogle } = useAuth()
+  const { currentUser } = useAuth()
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
   useEffect(() => {
     if (currentUser) router.push('/library')
   }, [currentUser, router])
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setIsGoogleLoading(true)
-      await signInWithGoogle()
-      router.push('/library')
-    } catch {
-      // handled by auth flow
-    } finally {
-      setIsGoogleLoading(false)
-    }
+  const handleGoogleSignIn = () => {
+    setIsGoogleLoading(true)
+    window.location.href = '/api/auth/google'
   }
 
   return (
@@ -122,13 +115,6 @@ export default function HomePage() {
                 <Link href="/signup">Create account</Link>
               </Button>
             </div>
-
-            <p className="text-center text-xs text-muted-foreground mt-6">
-              By continuing, you agree to our{' '}
-              <span className="underline underline-offset-2 cursor-pointer hover:text-foreground transition-colors">Terms</span>
-              {' '}and{' '}
-              <span className="underline underline-offset-2 cursor-pointer hover:text-foreground transition-colors">Privacy Policy</span>.
-            </p>
           </div>
         </div>
       </div>
