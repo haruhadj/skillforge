@@ -10,6 +10,7 @@ import AdminDashboardTab from '@/app/components/AdminDashboardTab'
 import AdminUsersTab from '@/app/components/AdminUsersTab'
 import AdminGamesTab from '@/app/components/AdminGamesTab'
 import AdminAnnouncementsTab from '@/app/components/AdminAnnouncementsTab'
+import AdminAnalyticsTab from '@/app/components/AdminAnalyticsTab'
 
 const TABS = [
   {
@@ -18,6 +19,15 @@ const TABS = [
     icon: (
       <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    icon: (
+      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M15.5 2A1.5 1.5 0 0014 3.5v13a1.5 1.5 0 003 0v-13A1.5 1.5 0 0015.5 2zM9.5 6A1.5 1.5 0 008 7.5v9a1.5 1.5 0 003 0v-9A1.5 1.5 0 009.5 6zM3.5 10A1.5 1.5 0 002 11.5v5a1.5 1.5 0 003 0v-5A1.5 1.5 0 003.5 10z" />
       </svg>
     ),
   },
@@ -77,6 +87,7 @@ export default function AdminPage() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard': return <AdminDashboardTab />
+      case 'analytics': return <AdminAnalyticsTab />
       case 'games': return <AdminGamesTab />
       case 'users': return <AdminUsersTab />
       case 'announcements': return <AdminAnnouncementsTab />

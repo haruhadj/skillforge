@@ -10,6 +10,7 @@ import ThemeToggle from '@/app/components/ThemeToggle'
 import TeacherOverviewTab from '@/app/components/TeacherOverviewTab'
 import TeacherStudentsTab from '@/app/components/TeacherStudentsTab'
 import TeacherActivityTab from '@/app/components/TeacherActivityTab'
+import AdminAnalyticsTab from '@/app/components/AdminAnalyticsTab'
 
 const TABS = [
   {
@@ -18,6 +19,15 @@ const TABS = [
     icon: (
       <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    icon: (
+      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M15.5 2A1.5 1.5 0 0014 3.5v13a1.5 1.5 0 003 0v-13A1.5 1.5 0 0015.5 2zM9.5 6A1.5 1.5 0 008 7.5v9a1.5 1.5 0 003 0v-9A1.5 1.5 0 009.5 6zM3.5 10A1.5 1.5 0 002 11.5v5a1.5 1.5 0 003 0v-5A1.5 1.5 0 003.5 10z" />
       </svg>
     ),
   },
@@ -69,6 +79,7 @@ export default function TeacherPage() {
   const renderContent = () => {
     switch (activeTab) {
       case 'overview': return <TeacherOverviewTab />
+      case 'analytics': return <AdminAnalyticsTab />
       case 'students': return <TeacherStudentsTab />
       case 'activity': return <TeacherActivityTab />
       default: return <TeacherOverviewTab />

@@ -1,4 +1,5 @@
 using pnpm runtime to lauch dev - (pnpm dev)
+always make sure the web ui are optimized for both dekstop and mobile devices responsivess
 # Ruflo — Claude Code Configuration
 
 ## SkillForge — Project Architecture
@@ -30,8 +31,8 @@ Educational gaming platform: **Next.js 16 (App Router) + React 19 + TypeScript +
 - ⚠️ **Deployment gap**: `docker-compose.prod.yml` runs Next directly (port 1234→3000) with **no service for nginx and no Next rewrite for the `*-ws/` socket paths**. WebSocket routing in that compose depends on an external reverse proxy (`nginx/skillforge.conf`) that isn't wired in. `next.config.js` only rewrites `/api/*` → spelling-bee/vocab.
 
 ### Build & test
-- `npm run dev` = `next dev` + all game servers (concurrently). `npm run build` = `next build`.
-- `npm test` = `vitest run`, configured by `vitest.config.ts` (jsdom, `@`→root alias, setup in `tests/setup.ts`). Tests live in `tests/`.
+- `pnpm dev` = `next dev` + all game servers (concurrently). `pnpm build` = `next build`.
+- `pnpm test` = `vitest run`, configured by `vitest.config.ts` (jsdom, `@`→root alias, setup in `tests/setup.ts`). Tests live in `tests/`.
 - The old Vite stack (`vite.config.js`, root `index.html`, `src/`) was legacy/broken and has been removed; Tailwind v4 is driven via `@tailwindcss/postcss`.
 
 ## Rules
@@ -182,7 +183,7 @@ Any string works as a custom agent type.
 - ALWAYS verify build succeeds before committing
 
 ```bash
-npm run build && npm test
+pnpm run build && pnpm test
 ```
 
 ## CLI Quick Reference
