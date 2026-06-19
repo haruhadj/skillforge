@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
 import { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
+import { getOAuthLinksForUid } from '@/app/lib/oauthLinks'
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,6 +67,10 @@ export async function POST(request: NextRequest) {
     // Delete gameStats subcollection
     const statsSnap = await adminDb.collection('users').doc(uid).collection('gameStats').get()
     statsSnap.docs.forEach((d: QueryDocumentSnapshot<DocumentData>) => batch.delete(d.ref))
+
+    // Delete any OAuth provider links pointing at this account
+    const oauthLinkDocs = await getOAuthLinksForUid(uid)
+    oauthLinkDocs.forEach((d) => batch.delete(d.ref))
 
     await batch.commit()
     console.log(`[Delete Account] Firestore data for ${uid} deleted successfully`)

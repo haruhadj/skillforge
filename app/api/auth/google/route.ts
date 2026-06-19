@@ -1,39 +1,36 @@
 import { NextResponse } from 'next/server'
-import crypto from 'crypto'
+import {
+  OAUTH_STATE_COOKIE,
+  OAUTH_LINK_UID_COOKIE,
+  buildAuthorizeUrl,
+  generateOAuthState,
+  oauthCookieOptions,
+  oauthRedirectUri,
+} from '@/app/lib/oauth'
 
 export async function GET(request: Request) {
-  const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID
-  if (!clientId) {
-    return NextResponse.json({ error: 'Google OAuth not configured' }, { status: 500 })
-  }
-
-  const state = crypto.randomBytes(16).toString('hex')
+  const state = generateOAuthState()
   // Derive the app origin from the incoming request so localhost and prod both work
   // even if NEXT_PUBLIC_APP_URL is not set.
   const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin
-  const redirectUri = `${origin}/api/auth/callback/google`
 
-  const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: redirectUri,
-    response_type: 'code',
-    scope: 'openid email profile',
-    state,
-    prompt: 'select_account',
-  })
+  let url: string
+  try {
+    url = buildAuthorizeUrl('google', oauthRedirectUri(origin, 'google'), state)
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : 'Google OAuth not configured' },
+      { status: 500 },
+    )
+  }
 
-  const response = NextResponse.redirect(
-    `https://accounts.google.com/o/oauth2/v2/auth?${params}`
-  )
+  const response = NextResponse.redirect(url)
 
   // Store state in a short-lived cookie for CSRF protection
-  response.cookies.set('oauth_state', state, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 10, // 10 minutes
-    path: '/',
-  })
+  response.cookies.set(OAUTH_STATE_COOKIE, state, oauthCookieOptions())
+  // A fresh sign-in must never be treated as a link, so clear any stale link intent
+  // left over from an abandoned account-linking flow.
+  response.cookies.delete(OAUTH_LINK_UID_COOKIE)
 
   return response
 }

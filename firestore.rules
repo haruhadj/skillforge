@@ -18,6 +18,12 @@ service cloud.firestore {
       );
     }
 
+    // OAuth provider -> account links. Managed exclusively by the server via the
+    // Admin SDK (which bypasses these rules); clients must never read or write them.
+    match /oauthLinks/{linkId} {
+      allow read, write: if false;
+    }
+
     // Usernames lookup - readable by anyone, writable by the owner
     match /usernames/{username} {
       allow read: if true;

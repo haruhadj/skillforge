@@ -19,6 +19,7 @@ import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 
 import { defaultGames } from '@/app/games/games'
 import { UserProfile, GlobalLeaderboardEntry } from '@/app/types'
 import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitialEditorState, AVATAR_EXPORT_SIZE, AVATAR_THUMB_SIZE } from './AvatarEditor'
+import ConnectedAccounts from './ConnectedAccounts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -338,6 +339,9 @@ export default function ProfilePage() {
                 </div>
               </div>
             )}
+
+            {/* Connected accounts */}
+            <ConnectedAccounts user={currentUser} profile={profile} onProfileChange={setProfile} />
 
             {/* Game stats */}
             <div>

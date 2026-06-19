@@ -20,6 +20,10 @@
         "graphify-out/graph.json"
       ],
       "type": "stdio"
+    },
+    "Better Auth": {
+      "url": "https://mcp.better-auth.com/mcp",
+      "headers": {}
     }
   }
 }

@@ -62,7 +62,7 @@ export function createSuggestedUsername(value: string, fallback = 'player'): str
   return 'player'
 }
 
-export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'password' | 'unknown' {
+export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown' {
   if (!user) {
     return 'unknown'
   }
@@ -83,11 +83,61 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
     return 'google'
   }
 
+  // Twitter (X) signs in via the Firebase popup, which populates providerData.
+  if (providerIds.includes('twitter.com')) {
+    return 'twitter'
+  }
+
+  if (providerIds.includes('facebook.com')) {
+    return 'facebook'
+  }
+
   if (providerIds.includes('password')) {
     return 'password'
   }
 
   return 'unknown'
+}
+
+export type LinkableProvider = 'google' | 'github'
+
+export interface ProviderMethodState {
+  // Whether this provider can currently sign the user into this account.
+  connected: boolean
+  // Whether the user explicitly linked it (and can therefore disconnect it).
+  linked: boolean
+  email: string | null
+}
+
+export interface SignInMethodsState {
+  password: boolean
+  google: ProviderMethodState
+  github: ProviderMethodState
+}
+
+// Derives the account's sign-in methods from the Firebase user (password / native
+// provider) plus the explicitly linked providers stored on the profile.
+export function getSignInMethods(
+  user: FirebaseUser | null,
+  profile: UserProfile | null,
+): SignInMethodsState {
+  const providerIds = user?.providerData?.map((p) => p.providerId) || []
+  const linked = profile?.linkedProviders || {}
+  const uid = user?.uid || ''
+
+  return {
+    password: providerIds.includes('password'),
+    google: {
+      linked: Boolean(linked.google),
+      connected: Boolean(linked.google) || uid.startsWith('google_') || providerIds.includes('google.com'),
+      email: linked.google?.email ?? (uid.startsWith('google_') ? user?.email ?? null : null),
+    },
+    github: {
+      linked: Boolean(linked.github),
+      connected: Boolean(linked.github) || uid.startsWith('github_'),
+      email: linked.github?.email ?? (uid.startsWith('github_') ? user?.email ?? null : null),
+    },
+  }
 }
 
 async function generateUniqueUsername(user: FirebaseUser): Promise<string | null> {
@@ -127,7 +177,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 interface EnsureProfilePayload {
   email: string | null
-  authProvider: 'google' | 'github' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown'
   updatedAt: ReturnType<typeof serverTimestamp>
   photoURL?: string
   photoThumbURL?: string
@@ -204,7 +254,7 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
 
 interface ClaimUsernameMetadata {
   email: string | null
-  authProvider: 'google' | 'github' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown'
 }
 
 interface ClaimUsernameResult {

@@ -8,7 +8,11 @@ export interface UserProfile {
   usernameNormalized?: string
   photoURL?: string
   photoThumbURL?: string
-  authProvider?: 'google' | 'github' | 'password' | 'unknown'
+  authProvider?: 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown'
+  linkedProviders?: {
+    google?: { email: string | null; linkedAt?: Date }
+    github?: { email: string | null; linkedAt?: Date }
+  }
   profileCompleted?: boolean
   role?: 'admin' | 'teacher' | 'user'
   createdAt?: Date
@@ -21,6 +25,8 @@ export interface AuthContextType {
   signup: (email: string, password: string) => Promise<UserCredential>
   login: (email: string, password: string) => Promise<UserCredential>
   signInWithGoogle: () => Promise<{ method: string; result: UserCredential }>
+  signInWithTwitter: () => Promise<{ method: string; result: UserCredential }>
+  signInWithFacebook: () => Promise<{ method: string; result: UserCredential }>
   logout: () => Promise<void>
 }
 

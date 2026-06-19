@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/app/lib/firebase-admin'
+import { OAUTH_STATE_COOKIE, OAUTH_LINK_UID_COOKIE } from '@/app/lib/oauth'
+import { resolveSignInUid, linkOAuthToAccount, type OAuthProfile } from '@/app/lib/oauthLinks'
 
 // GitHub requires a User-Agent header on every API request.
 const GITHUB_HEADERS = {
@@ -90,40 +92,36 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${appUrl}/?error=github_no_email`)
   }
 
-  // Look up or create the Firebase user
-  const adminAuth = getAdminAuth()
-  let firebaseUid: string
-  const displayName = name || login
-
-  try {
-    const existing = await adminAuth.getUserByEmail(email)
-    firebaseUid = existing.uid
-    // Keep displayName/photoURL up to date
-    if (!existing.displayName || !existing.photoURL) {
-      await adminAuth.updateUser(firebaseUid, {
-        displayName: existing.displayName || displayName,
-        photoURL: existing.photoURL || picture,
-      })
-    }
-  } catch {
-    // User doesn't exist — create them
-    const created = await adminAuth.createUser({
-      uid: `github_${githubId}`,
-      email,
-      displayName,
-      photoURL: picture,
-      emailVerified: true,
-    })
-    firebaseUid = created.uid
+  const profile: OAuthProfile = {
+    provider: 'github',
+    providerId: String(githubId),
+    email,
+    displayName: name || login,
+    photoURL: picture,
   }
 
-  // Create a short-lived custom token the client can use to sign in
-  const customToken = await adminAuth.createCustomToken(firebaseUid)
+  // Link mode: the user is already signed in and wants to attach this provider.
+  const linkUid = request.cookies.get(OAUTH_LINK_UID_COOKIE)?.value
+  if (linkUid) {
+    const result = await linkOAuthToAccount(linkUid, profile)
+    const dest = result.ok
+      ? `${appUrl}/profile?linked=github`
+      : `${appUrl}/profile?error=${result.error}`
+    const response = NextResponse.redirect(dest)
+    response.cookies.delete(OAUTH_STATE_COOKIE)
+    response.cookies.delete(OAUTH_LINK_UID_COOKIE)
+    return response
+  }
+
+  // Normal sign-in: resolve the target account (explicit link > email > create).
+  const firebaseUid = await resolveSignInUid(profile)
+  const customToken = await getAdminAuth().createCustomToken(firebaseUid)
 
   // Clear the CSRF cookie and redirect the client to finish sign-in
   const response = NextResponse.redirect(
     `${appUrl}/auth/callback?token=${encodeURIComponent(customToken)}`
   )
-  response.cookies.delete('oauth_state')
+  response.cookies.delete(OAUTH_STATE_COOKIE)
+  response.cookies.delete(OAUTH_LINK_UID_COOKIE)
   return response
 }
