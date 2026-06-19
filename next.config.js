@@ -5,8 +5,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  trailingSlash: true,
-  async rewrites() {
+async rewrites() {
     const spellingBeeApiOrigin = process.env.SPELLING_BEE_API_ORIGIN || 'http://localhost:8787'
     const vocabApiOrigin = process.env.VOCAB_API_ORIGIN || 'http://localhost:8788'
 
