@@ -15,8 +15,7 @@ import {
   resolveAuthProvider,
   uploadProfilePhoto,
 } from '@/app/services/userProfileService'
-import { sendPasswordResetEmail } from 'firebase/auth'
-import { auth } from '@/app/lib/firebase'
+import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth'
 import { defaultGames } from '@/app/games/games'
 import { UserProfile, GlobalLeaderboardEntry } from '@/app/types'
 import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitialEditorState, AVATAR_EXPORT_SIZE, AVATAR_THUMB_SIZE } from './AvatarEditor'
@@ -59,7 +58,8 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deletingAccount, setDeletingAccount] = useState(false)
   const [statSort, setStatSort] = useState<'name' | 'score' | 'matches' | 'played'>('played')
-  const [sendingReset, setSendingReset] = useState(false)
+  const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' })
+  const [savingPw, setSavingPw] = useState(false)
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
@@ -171,16 +171,27 @@ export default function ProfilePage() {
     }
   }
 
-  const handleResetPassword = async () => {
+  const handleChangePassword = async () => {
     if (!currentUser?.email) return
+    if (!pwForm.current) { toast.error('Enter your current password'); return }
+    if (pwForm.next.length < 6) { toast.error('New password must be at least 6 characters'); return }
+    if (pwForm.next !== pwForm.confirm) { toast.error('Passwords do not match'); return }
     try {
-      setSendingReset(true)
-      await sendPasswordResetEmail(auth, currentUser.email)
-      toast.success(`Password reset email sent to ${currentUser.email}`)
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to send reset email')
+      setSavingPw(true)
+      const credential = EmailAuthProvider.credential(currentUser.email, pwForm.current)
+      await reauthenticateWithCredential(currentUser, credential)
+      await updatePassword(currentUser, pwForm.next)
+      setPwForm({ current: '', next: '', confirm: '' })
+      toast.success('Password changed')
+    } catch (e: unknown) {
+      const code = (e as { code?: string }).code
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        toast.error('Current password is incorrect')
+      } else {
+        toast.error(e instanceof Error ? e.message : 'Failed to change password')
+      }
     } finally {
-      setSendingReset(false)
+      setSavingPw(false)
     }
   }
 
@@ -280,27 +291,49 @@ export default function ProfilePage() {
               <p className="text-xs text-muted-foreground mt-2">3–20 characters, letters, numbers, underscores only</p>
             </div>
 
-            {/* Password reset — only for email/password accounts */}
+            {/* Change password — only for email/password accounts */}
             {resolveAuthProvider(currentUser) === 'password' && (
               <div className="surface p-6">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-base font-semibold">Password</h3>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-muted text-muted-foreground uppercase tracking-wide">
-                        Email &amp; Password
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Send a reset link to <span className="font-medium text-foreground">{currentUser.email}</span></p>
+                <h3 className="text-base font-semibold mb-4">Change Password</h3>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="pw-current" className="text-sm">Current password</Label>
+                    <Input
+                      id="pw-current"
+                      type="password"
+                      autoComplete="current-password"
+                      value={pwForm.current}
+                      onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))}
+                      className="h-10"
+                      placeholder="••••••••"
+                    />
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="shrink-0 h-9 px-4"
-                    onClick={handleResetPassword}
-                    disabled={sendingReset}
-                  >
-                    {sendingReset ? 'Sending…' : 'Reset Password'}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="pw-new" className="text-sm">New password</Label>
+                    <Input
+                      id="pw-new"
+                      type="password"
+                      autoComplete="new-password"
+                      value={pwForm.next}
+                      onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))}
+                      className="h-10"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="pw-confirm" className="text-sm">Confirm new password</Label>
+                    <Input
+                      id="pw-confirm"
+                      type="password"
+                      autoComplete="new-password"
+                      value={pwForm.confirm}
+                      onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))}
+                      className="h-10"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <Button onClick={handleChangePassword} disabled={savingPw} className="h-10 px-5 mt-1">
+                    {savingPw ? 'Saving…' : 'Update Password'}
                   </Button>
                 </div>
               </div>
