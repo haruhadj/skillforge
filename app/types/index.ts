@@ -8,10 +8,11 @@ export interface UserProfile {
   usernameNormalized?: string
   photoURL?: string
   photoThumbURL?: string
-  authProvider?: 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown'
+  authProvider?: 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'password' | 'unknown'
   linkedProviders?: {
     google?: { email: string | null; linkedAt?: Date }
     github?: { email: string | null; linkedAt?: Date }
+    tiktok?: { email: string | null; linkedAt?: Date }
   }
   profileCompleted?: boolean
   role?: 'admin' | 'teacher' | 'user'

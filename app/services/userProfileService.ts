@@ -62,7 +62,7 @@ export function createSuggestedUsername(value: string, fallback = 'player'): str
   return 'player'
 }
 
-export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown' {
+export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'password' | 'unknown' {
   if (!user) {
     return 'unknown'
   }
@@ -75,6 +75,12 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
 
   if (user.uid.startsWith('github_')) {
     return 'github'
+  }
+
+  // TikTok signs in via a custom token (empty providerData), so it can only be
+  // detected by the uid prefix we assign when creating the account.
+  if (user.uid.startsWith('tiktok_')) {
+    return 'tiktok'
   }
 
   const providerIds = user.providerData?.map((provider) => provider.providerId) || []
@@ -99,7 +105,7 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
   return 'unknown'
 }
 
-export type LinkableProvider = 'google' | 'github'
+export type LinkableProvider = 'google' | 'github' | 'tiktok'
 
 export interface ProviderMethodState {
   // Whether this provider can currently sign the user into this account.
@@ -113,6 +119,7 @@ export interface SignInMethodsState {
   password: boolean
   google: ProviderMethodState
   github: ProviderMethodState
+  tiktok: ProviderMethodState
 }
 
 // Derives the account's sign-in methods from the Firebase user (password / native
@@ -137,7 +144,38 @@ export function getSignInMethods(
       connected: Boolean(linked.github) || uid.startsWith('github_'),
       email: linked.github?.email ?? (uid.startsWith('github_') ? user?.email ?? null : null),
     },
+    // TikTok never provides an email, so the email field stays null.
+    tiktok: {
+      linked: Boolean(linked.tiktok),
+      connected: Boolean(linked.tiktok) || uid.startsWith('tiktok_'),
+      email: linked.tiktok?.email ?? null,
+    },
   }
+}
+
+// Derives the full set of sign-in methods from a stored profile alone (no live
+// FirebaseUser). Combines the account's native/primary provider with any explicitly
+// linked providers — used by the admin panel to show every method a user can use.
+export type SignInMethod = 'password' | LinkableProvider
+
+export function getProfileSignInMethods(profile: UserProfile | null): SignInMethod[] {
+  if (!profile) return []
+  const methods = new Set<SignInMethod>()
+
+  if (profile.uid?.startsWith('google_')) methods.add('google')
+  if (profile.uid?.startsWith('github_')) methods.add('github')
+  if (profile.uid?.startsWith('tiktok_')) methods.add('tiktok')
+  if (profile.authProvider === 'google') methods.add('google')
+  if (profile.authProvider === 'github') methods.add('github')
+  if (profile.authProvider === 'tiktok') methods.add('tiktok')
+  if (profile.authProvider === 'password') methods.add('password')
+  if (profile.linkedProviders?.google) methods.add('google')
+  if (profile.linkedProviders?.github) methods.add('github')
+  if (profile.linkedProviders?.tiktok) methods.add('tiktok')
+
+  // Stable order: password first, then OAuth providers.
+  const order = ['password', 'google', 'github', 'tiktok']
+  return [...methods].sort((a, b) => order.indexOf(a) - order.indexOf(b))
 }
 
 async function generateUniqueUsername(user: FirebaseUser): Promise<string | null> {
@@ -177,7 +215,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 interface EnsureProfilePayload {
   email: string | null
-  authProvider: 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'password' | 'unknown'
   updatedAt: ReturnType<typeof serverTimestamp>
   photoURL?: string
   photoThumbURL?: string
@@ -254,7 +292,7 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
 
 interface ClaimUsernameMetadata {
   email: string | null
-  authProvider: 'google' | 'github' | 'twitter' | 'facebook' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'password' | 'unknown'
 }
 
 interface ClaimUsernameResult {

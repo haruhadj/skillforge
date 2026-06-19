@@ -1,5 +1,6 @@
 import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
 import { FieldValue } from 'firebase-admin/firestore'
+import type { UserRecord } from 'firebase-admin/auth'
 import type { OAuthProvider } from '@/app/lib/oauth'
 
 // Authoritative provider -> account mapping. Lives in the `oauthLinks` collection
@@ -12,7 +13,9 @@ const USERS = 'users'
 export interface OAuthProfile {
   provider: OAuthProvider
   providerId: string
-  email: string
+  // Null for providers that don't return an email (e.g. TikTok); such accounts
+  // are keyed solely by `provider`+`providerId` and skip email unification.
+  email: string | null
   displayName?: string
   photoURL?: string
 }
@@ -54,43 +57,58 @@ async function writeLink(uid: string, p: OAuthProfile): Promise<void> {
   )
 }
 
+// Seed displayName/photoURL from the provider when the account is missing them,
+// so OAuth re-logins backfill profile details without overwriting existing ones.
+async function backfillProfile(user: UserRecord, p: OAuthProfile): Promise<void> {
+  if (!user.displayName || !user.photoURL) {
+    await getAdminAuth().updateUser(user.uid, {
+      displayName: user.displayName || p.displayName,
+      photoURL: user.photoURL || p.photoURL,
+    })
+  }
+}
+
 // Resolve which Firebase uid an incoming OAuth sign-in should land on.
 // Explicit links win, then email unification, then a new account is created.
 export async function resolveSignInUid(p: OAuthProfile): Promise<string> {
   const adminAuth = getAdminAuth()
 
+  // 1. Explicit link wins.
   const link = await getOAuthLink(p.provider, p.providerId)
   if (link) {
     try {
       const linked = await adminAuth.getUser(link.uid)
-      if (!linked.displayName || !linked.photoURL) {
-        await adminAuth.updateUser(linked.uid, {
-          displayName: linked.displayName || p.displayName,
-          photoURL: linked.photoURL || p.photoURL,
-        })
-      }
+      await backfillProfile(linked, p)
       return linked.uid
     } catch {
-      // The linked account was deleted; fall through to email-based resolution.
+      // The linked account was deleted; fall through to email/native resolution.
     }
   }
 
-  try {
-    const existing = await adminAuth.getUserByEmail(p.email)
-    if (!existing.displayName || !existing.photoURL) {
-      await adminAuth.updateUser(existing.uid, {
-        displayName: existing.displayName || p.displayName,
-        photoURL: existing.photoURL || p.photoURL,
-      })
+  // 2. Email unification — only for providers that return an email (TikTok does
+  //    not), so identities sharing an email collapse onto one account.
+  if (p.email) {
+    try {
+      const existing = await adminAuth.getUserByEmail(p.email)
+      await backfillProfile(existing, p)
+      return existing.uid
+    } catch {
+      // No account with that email; fall through to get-or-create.
     }
+  }
+
+  // 3. Get-or-create the deterministic native account for this identity.
+  const nativeUid = oauthLinkId(p.provider, p.providerId)
+  try {
+    const existing = await adminAuth.getUser(nativeUid)
+    await backfillProfile(existing, p)
     return existing.uid
   } catch {
     const created = await adminAuth.createUser({
-      uid: oauthLinkId(p.provider, p.providerId),
-      email: p.email,
+      uid: nativeUid,
+      ...(p.email ? { email: p.email, emailVerified: true } : {}),
       displayName: p.displayName,
       photoURL: p.photoURL,
-      emailVerified: true,
     })
     return created.uid
   }

@@ -21,9 +21,9 @@
       ],
       "type": "stdio"
     },
-    "Better Auth": {
-      "url": "https://mcp.better-auth.com/mcp",
-      "headers": {}
+    "better-auth": {
+      "type": "http",
+      "url": "https://mcp.better-auth.com/mcp"
     }
   }
 }

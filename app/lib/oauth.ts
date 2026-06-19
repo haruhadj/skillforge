@@ -7,7 +7,7 @@ export const OAUTH_STATE_COOKIE = 'oauth_state'
 // operation rather than a fresh sign-in. Holds the verified uid being linked to.
 export const OAUTH_LINK_UID_COOKIE = 'oauth_link_uid'
 
-export type OAuthProvider = 'google' | 'github'
+export type OAuthProvider = 'google' | 'github' | 'tiktok'
 
 export function generateOAuthState(): string {
   return crypto.randomBytes(16).toString('hex')
@@ -46,6 +46,20 @@ export function buildAuthorizeUrl(
       prompt: 'select_account',
     })
     return `https://accounts.google.com/o/oauth2/v2/auth?${params}`
+  }
+
+  if (provider === 'tiktok') {
+    // TikTok uses `client_key` (not `client_id`) and never returns an email.
+    const clientKey = process.env.TIKTOK_OAUTH_CLIENT_KEY
+    if (!clientKey) throw new Error('TikTok OAuth not configured')
+    const params = new URLSearchParams({
+      client_key: clientKey,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'user.info.basic',
+      state,
+    })
+    return `https://www.tiktok.com/v2/auth/authorize/?${params}`
   }
 
   const clientId = process.env.GITHUB_OAUTH_CLIENT_ID

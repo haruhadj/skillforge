@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   const body = (await request.json().catch(() => ({}))) as { provider?: string }
   const provider = body.provider as OAuthProvider
-  if (provider !== 'google' && provider !== 'github') {
+  if (provider !== 'google' && provider !== 'github' && provider !== 'tiktok') {
     return NextResponse.json({ error: 'Invalid provider' }, { status: 400 })
   }
 
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
   if (userRecord.providerData.some((p) => p.providerId === 'password')) remaining.add('password')
   if (uid.startsWith('google_')) remaining.add('google')
   if (uid.startsWith('github_')) remaining.add('github')
+  if (uid.startsWith('tiktok_')) remaining.add('tiktok')
   Object.keys(linked)
     .filter((p) => p !== provider)
     .forEach((p) => remaining.add(p))
