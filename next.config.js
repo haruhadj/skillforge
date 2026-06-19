@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: 'dist',
-  basePath: '/skillforge',
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   images: {
     unoptimized: true,
   },
-async rewrites() {
+  trailingSlash: true,
+  async rewrites() {
     const spellingBeeApiOrigin = process.env.SPELLING_BEE_API_ORIGIN || 'http://localhost:8787'
     const vocabApiOrigin = process.env.VOCAB_API_ORIGIN || 'http://localhost:8788'
 
