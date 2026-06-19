@@ -4,7 +4,7 @@ services:
     container_name: skillforge-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "1234:80"
     volumes:
       - ./nginx/skillforge.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
