@@ -10,6 +10,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Guard: Windows/WSL editors save .env with CRLF, which bakes a stray '\r'
+# onto every value (e.g. NEXT_PUBLIC_APP_URL -> breaks the OAuth redirect_uri).
+# Strip carriage returns from env files before they reach the build.
+for envf in .env .env.local server/.env; do
+  [ -f "$envf" ] && sed -i 's/\r$//' "$envf"
+done
+
 # Loads NEXT_PUBLIC_* build args from .env for the frontend image.
 export $(grep -v '^#' .env | grep -E '^(NEXT_PUBLIC_|GOOGLE_OAUTH_)' | xargs) 2>/dev/null || true
 

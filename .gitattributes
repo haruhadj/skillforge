@@ -1,1 +1,8 @@
 server/wordnet/oewn-2025-sqlite-2.3.2.sqlite filter=lfs diff=lfs merge=lfs -text
+
+# Force LF on files that must run/parse correctly on Linux (Pi + WSL),
+# regardless of the editor used on Windows. Prevents CRLF from breaking
+# shell script shebangs, nginx config parsing, and Docker builds.
+*.sh        text eol=lf
+*.conf      text eol=lf
+Dockerfile* text eol=lf
