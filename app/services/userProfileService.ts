@@ -156,8 +156,8 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
     payload.createdAt = serverTimestamp()
   }
 
-  // Auto-generate username for OAuth users if they don't have one
-  if (!existingProfile?.username && isOAuth) {
+  // Auto-generate username for any user who doesn't have one yet (email prefix fallback)
+  if (!existingProfile?.username) {
     const generatedUsername = await generateUniqueUsername(user)
     if (generatedUsername) {
       const normalized = normalizeUsername(generatedUsername)

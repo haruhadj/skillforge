@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: 'dist',
+  basePath: '/skillforge',
   images: {
     unoptimized: true,
   },
