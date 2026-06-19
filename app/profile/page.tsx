@@ -15,6 +15,8 @@ import {
   resolveAuthProvider,
   uploadProfilePhoto,
 } from '@/app/services/userProfileService'
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { auth } from '@/app/lib/firebase'
 import { defaultGames } from '@/app/games/games'
 import { UserProfile, GlobalLeaderboardEntry } from '@/app/types'
 import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitialEditorState, AVATAR_EXPORT_SIZE, AVATAR_THUMB_SIZE } from './AvatarEditor'
@@ -57,6 +59,7 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deletingAccount, setDeletingAccount] = useState(false)
   const [statSort, setStatSort] = useState<'name' | 'score' | 'matches' | 'played'>('played')
+  const [sendingReset, setSendingReset] = useState(false)
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
@@ -168,6 +171,19 @@ export default function ProfilePage() {
     }
   }
 
+  const handleResetPassword = async () => {
+    if (!currentUser?.email) return
+    try {
+      setSendingReset(true)
+      await sendPasswordResetEmail(auth, currentUser.email)
+      toast.success(`Password reset email sent to ${currentUser.email}`)
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to send reset email')
+    } finally {
+      setSendingReset(false)
+    }
+  }
+
   const name = profile?.username || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
   const photoURL = profile?.photoThumbURL || profile?.photoURL || currentUser?.photoURL
@@ -263,6 +279,32 @@ export default function ProfilePage() {
               </div>
               <p className="text-xs text-muted-foreground mt-2">3–20 characters, letters, numbers, underscores only</p>
             </div>
+
+            {/* Password reset — only for email/password accounts */}
+            {resolveAuthProvider(currentUser) === 'password' && (
+              <div className="surface p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-base font-semibold">Password</h3>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-muted text-muted-foreground uppercase tracking-wide">
+                        Email &amp; Password
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Send a reset link to <span className="font-medium text-foreground">{currentUser.email}</span></p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 h-9 px-4"
+                    onClick={handleResetPassword}
+                    disabled={sendingReset}
+                  >
+                    {sendingReset ? 'Sending…' : 'Reset Password'}
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {/* Game stats */}
             <div>
