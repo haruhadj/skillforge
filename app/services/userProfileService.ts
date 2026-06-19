@@ -62,8 +62,22 @@ export function createSuggestedUsername(value: string, fallback = 'player'): str
   return 'player'
 }
 
-export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'password' | 'facebook' | 'unknown' {
-  const providerIds = user?.providerData?.map((provider) => provider.providerId) || []
+export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'password' | 'unknown' {
+  if (!user) {
+    return 'unknown'
+  }
+
+  // Server-side OAuth flows sign in via custom tokens, so providerData is empty.
+  // Detect those by the uid prefix we assign when creating the account.
+  if (user.uid.startsWith('google_')) {
+    return 'google'
+  }
+
+  if (user.uid.startsWith('github_')) {
+    return 'github'
+  }
+
+  const providerIds = user.providerData?.map((provider) => provider.providerId) || []
 
   if (providerIds.includes('google.com')) {
     return 'google'
@@ -71,10 +85,6 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'pass
 
   if (providerIds.includes('password')) {
     return 'password'
-  }
-
-  if (providerIds.includes('facebook.com')) {
-    return 'facebook'
   }
 
   return 'unknown'
@@ -117,7 +127,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 interface EnsureProfilePayload {
   email: string | null
-  authProvider: 'google' | 'password' | 'facebook' | 'unknown'
+  authProvider: 'google' | 'github' | 'password' | 'unknown'
   updatedAt: ReturnType<typeof serverTimestamp>
   photoURL?: string
   photoThumbURL?: string
@@ -140,16 +150,11 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
     updatedAt: serverTimestamp(),
   }
 
-  const isFacebook = resolveAuthProvider(user) === 'facebook'
-  const isGoogle = resolveAuthProvider(user) === 'google'
-  const isOAuth = isFacebook || isGoogle
-  const incomingPhoto = isFacebook && user.photoURL
-    ? user.photoURL.replace(/(\?|&)type=\w+/, '') + (user.photoURL.includes('?') ? '&type=large' : '?type=large')
-    : user.photoURL
-
-  if (incomingPhoto && (isFacebook || !existingProfile?.photoURL)) {
-    payload.photoURL = incomingPhoto
-    payload.photoThumbURL = incomingPhoto
+  // Only seed photo from the provider when the profile doesn't have one yet,
+  // so user-uploaded photos are never overwritten on re-login.
+  if (user.photoURL && !existingProfile?.photoURL) {
+    payload.photoURL = user.photoURL
+    payload.photoThumbURL = user.photoURL
   }
 
   if (!existingProfile?.createdAt) {
@@ -199,7 +204,7 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
 
 interface ClaimUsernameMetadata {
   email: string | null
-  authProvider: 'google' | 'password' | 'facebook' | 'unknown'
+  authProvider: 'google' | 'github' | 'password' | 'unknown'
 }
 
 interface ClaimUsernameResult {
