@@ -7,8 +7,6 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  TwitterAuthProvider,
-  FacebookAuthProvider,
   signInWithPopup,
   User as FirebaseUser,
   UserCredential,
@@ -43,58 +41,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { method: 'popup', result }
   }
 
-  async function signInWithTwitter(): Promise<{ method: string; result: UserCredential }> {
-    const provider = new TwitterAuthProvider()
-
-    let result: UserCredential
-    try {
-      result = await signInWithPopup(auth, provider)
-    } catch (err: unknown) {
-      if (
-        err instanceof Error &&
-        'code' in err &&
-        (err as { code: string }).code === 'auth/account-exists-with-different-credential'
-      ) {
-        throw new Error('An account with this email already exists. Please sign in with Google, GitHub, or your email/password instead.')
-      }
-      throw err
-    }
-
-    try {
-      await ensureUserProfileDocument(result.user)
-    } catch (err) {
-      console.error('Failed to ensure Twitter user profile:', err)
-    }
-
-    return { method: 'popup', result }
-  }
-
-  async function signInWithFacebook(): Promise<{ method: string; result: UserCredential }> {
-    const provider = new FacebookAuthProvider()
-
-    let result: UserCredential
-    try {
-      result = await signInWithPopup(auth, provider)
-    } catch (err: unknown) {
-      if (
-        err instanceof Error &&
-        'code' in err &&
-        (err as { code: string }).code === 'auth/account-exists-with-different-credential'
-      ) {
-        throw new Error('An account with this email already exists. Please sign in with Google, GitHub, X, or your email/password instead.')
-      }
-      throw err
-    }
-
-    try {
-      await ensureUserProfileDocument(result.user)
-    } catch (err) {
-      console.error('Failed to ensure Facebook user profile:', err)
-    }
-
-    return { method: 'popup', result }
-  }
-
   function logout(): Promise<void> {
     return signOut(auth)
   }
@@ -123,8 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signup,
     login,
     signInWithGoogle,
-    signInWithTwitter,
-    signInWithFacebook,
     logout,
   }
 

@@ -13,6 +13,8 @@ export interface UserProfile {
     google?: { email: string | null; linkedAt?: Date }
     github?: { email: string | null; linkedAt?: Date }
     tiktok?: { email: string | null; linkedAt?: Date }
+    twitter?: { email: string | null; linkedAt?: Date }
+    facebook?: { email: string | null; linkedAt?: Date }
   }
   profileCompleted?: boolean
   role?: 'admin' | 'teacher' | 'user'
@@ -26,8 +28,6 @@ export interface AuthContextType {
   signup: (email: string, password: string) => Promise<UserCredential>
   login: (email: string, password: string) => Promise<UserCredential>
   signInWithGoogle: () => Promise<{ method: string; result: UserCredential }>
-  signInWithTwitter: () => Promise<{ method: string; result: UserCredential }>
-  signInWithFacebook: () => Promise<{ method: string; result: UserCredential }>
   logout: () => Promise<void>
 }
 

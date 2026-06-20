@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import toast from 'react-hot-toast'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
@@ -13,7 +12,7 @@ import { getOAuthConfig, OAuthConfig } from '@/app/services/adminService'
 
 export default function HomePage() {
   const router = useRouter()
-  const { currentUser, signInWithTwitter, signInWithFacebook } = useAuth()
+  const { currentUser } = useAuth()
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [isGithubLoading, setIsGithubLoading] = useState(false)
   const [isTwitterLoading, setIsTwitterLoading] = useState(false)
@@ -50,34 +49,14 @@ export default function HomePage() {
     window.location.href = '/api/auth/tiktok'
   }
 
-  const handleTwitterSignIn = async () => {
+  const handleTwitterSignIn = () => {
     setIsTwitterLoading(true)
-    try {
-      await signInWithTwitter()
-      // The currentUser effect above redirects to /library on success.
-    } catch (err: unknown) {
-      const code = err instanceof Error && 'code' in err ? (err as { code: string }).code : ''
-      // Silently ignore the user closing/cancelling the popup.
-      if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
-        toast.error(err instanceof Error ? err.message : 'Sign-in failed. Please try again.')
-      }
-      setIsTwitterLoading(false)
-    }
+    window.location.href = '/api/auth/twitter'
   }
 
-  const handleFacebookSignIn = async () => {
+  const handleFacebookSignIn = () => {
     setIsFacebookLoading(true)
-    try {
-      await signInWithFacebook()
-      // The currentUser effect above redirects to /library on success.
-    } catch (err: unknown) {
-      const code = err instanceof Error && 'code' in err ? (err as { code: string }).code : ''
-      // Silently ignore the user closing/cancelling the popup.
-      if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
-        toast.error(err instanceof Error ? err.message : 'Sign-in failed. Please try again.')
-      }
-      setIsFacebookLoading(false)
-    }
+    window.location.href = '/api/auth/facebook'
   }
 
   return (

@@ -91,6 +91,9 @@ export async function resolveSignInUid(p: OAuthProfile): Promise<string> {
     try {
       const existing = await adminAuth.getUserByEmail(p.email)
       await backfillProfile(existing, p)
+      // Persist the link so subsequent sign-ins use the explicit path and the
+      // profile page shows this provider as connected.
+      await writeLink(existing.uid, p)
       return existing.uid
     } catch {
       // No account with that email; fall through to get-or-create.
