@@ -1,0 +1,6 @@
+{
+  "name": "Shape Memory Game Clone",
+  "description": "A dark, high-contrast shape memorization, drag-and-scale reconstruction game.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

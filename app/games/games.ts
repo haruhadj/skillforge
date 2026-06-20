@@ -193,6 +193,13 @@ export const defaultGames: Game[] = [
     description: 'Get hooked on Japanese! Four arcade minigames — Boss Battle, Elemental Card Match, Word Forge, and Particle Bubble Pop — powered by a 22k-word JMdict vocabulary engine.',
     category: 'Language',
   },
+  {
+    id: 'shape-recall',
+    name: 'Shape Recall',
+    iframePath: '/games/shape-recall/index.html',
+    description: 'Memorize a shape\'s position and size in 3 seconds, then drag and resize it back with maximum precision. A high-contrast spatial recall challenge across 5 rounds.',
+    category: 'Memory',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */

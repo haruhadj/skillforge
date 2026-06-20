@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom background grid for the play canvas */
+.grid-bg {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Highlighted subtle dot grid */
+.dot-bg {
+  background-size: 20px 20px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+/* Marching-ants animation for the SCORE-phase target↔guess connector line */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+/* Smooth motion default adjustments */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0c0c0e;
+  color: #f4f4f5;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  /* Mobile-first touch ergonomics */
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Use the dynamic viewport height so mobile browser chrome never clips the UI */
+#root {
+  height: 100dvh;
+}
+
