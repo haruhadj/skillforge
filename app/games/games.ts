@@ -179,6 +179,20 @@ export const defaultGames: Game[] = [
     description: 'Combine four number tiles with +, −, ×, and ÷ to make exactly 24. Exact fraction math (no rounding), streaks, an algorithmic hint solver, and custom decks.',
     category: 'Math',
   },
+  {
+    id: 'code-quest',
+    name: 'Code Quest',
+    iframePath: '/games/code-quest/index.html',
+    description: 'Guide a robot through grid puzzles using visual logic blocks. Learn sequencing, loops, conditionals, and subroutines — core CS concepts made fun.',
+    category: 'Logic',
+  },
+  {
+    id: 'hamaru',
+    name: 'Hamaru (ハマル)',
+    iframePath: '/games/hamaru/index.html',
+    description: 'Get hooked on Japanese! Four arcade minigames — Boss Battle, Elemental Card Match, Word Forge, and Particle Bubble Pop — powered by a 22k-word JMdict vocabulary engine.',
+    category: 'Language',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */

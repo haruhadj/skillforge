@@ -29,6 +29,10 @@ const servers = [
     name: 'Vocab API',
     script: path.join(__dirname, 'games', 'vocab', 'server.js'),
   },
+  {
+    name: 'Hamaru API',
+    script: path.join(__dirname, 'games', 'hamaru', 'server.js'),
+  },
 ]
 
 console.log(`\n  Starting ${servers.length} game server(s)…\n`)

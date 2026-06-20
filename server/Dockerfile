@@ -14,6 +14,6 @@ COPY server/start-all.js ./server/
 # Create empty wordnet directory for volume mount
 RUN mkdir -p ./server/wordnet
 
-EXPOSE 3001 3002 3004 3005 8787 8788
+EXPOSE 3001 3002 3004 3005 8787 8788 8789
 
 CMD ["node", "server/start-all.js"]

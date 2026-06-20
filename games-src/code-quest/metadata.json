@@ -1,0 +1,6 @@
+{
+  "name": "Code Quest",
+  "description": "An interactive logic block puzzle game teaching sequencing, loops, conditions, and subroutines to beginner students.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -8,12 +8,18 @@ const nextConfig = {
   async rewrites() {
     const spellingBeeApiOrigin = process.env.SPELLING_BEE_API_ORIGIN || 'http://localhost:8787'
     const vocabApiOrigin = process.env.VOCAB_API_ORIGIN || 'http://localhost:8788'
+    const hamaruApiOrigin = process.env.HAMARU_API_ORIGIN || 'http://localhost:8789'
 
     return [
       // Vocab API (port 8788) — must be listed before the catch-all spelling-bee rewrite
       {
         source: '/api/vocab/:path*',
         destination: `${vocabApiOrigin}/api/vocab/:path*`,
+      },
+      // Hamaru JMdict API (port 8789) — must be before the catch-all spelling-bee rewrite
+      {
+        source: '/api/hamaru/:path*',
+        destination: `${hamaruApiOrigin}/api/hamaru/:path*`,
       },
       // Spelling Bee API (port 8787)
       {

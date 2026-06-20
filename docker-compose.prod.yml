@@ -14,6 +14,7 @@ services:
       - chroma-memory
       - spelling-bee
       - vocab
+      - hamaru
 
   frontend:
     image: ghcr.io/haruhadj/skillforge-frontend:latest
@@ -65,6 +66,7 @@ services:
       - chroma-memory
       - spelling-bee
       - vocab
+      - hamaru
 
   tictactoe:
     image: ghcr.io/haruhadj/skillforge-server:latest
@@ -143,6 +145,23 @@ services:
       - "8788"
     volumes:
       - ./server/wordnet/oewn-2025-sqlite-2.3.2.sqlite:/app/server/wordnet/oewn-2025-sqlite-2.3.2.sqlite:ro
+
+  hamaru:
+    image: ghcr.io/haruhadj/skillforge-server:latest
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: skillforge-hamaru
+    restart: unless-stopped
+    command: ["node", "server/games/hamaru/server.js"]
+    environment:
+      - NODE_ENV=production
+      - HAMARU_PORT=8789
+      - HAMARU_HOST=0.0.0.0
+    expose:
+      - "8789"
+    # The 16 MB JMdict JSON is baked into the image (server/Dockerfile copies
+    # server/games), so no volume mount is needed.
 
 networks:
   default:

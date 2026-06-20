@@ -1,6 +1,6 @@
 - my production is by docker hosted on my raspberry pi 5 (192.168.1.5), with nginx proxy manager `skillforge.haruhadj.org => 192.168.1.5:1234`, my domain `haruhadj.org`
 - using pnpm runtime to lauch dev - (pnpm dev)
-- always make sure the web ui are optimized for both dekstop and mobile devices responsivess
+- always make sure the web's and the game's ui are optimized for both dekstop and mobile devices responsivess
 # Ruflo — Claude Code Configuration
 
 ## SkillForge — Project Architecture
