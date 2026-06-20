@@ -200,6 +200,13 @@ export const defaultGames: Game[] = [
     description: 'Memorize a shape\'s position and size in 3 seconds, then drag and resize it back with maximum precision. A high-contrast spatial recall challenge across 5 rounds.',
     category: 'Memory',
   },
+  {
+    id: 'pitch-perfect',
+    name: 'Pitch Perfect',
+    iframePath: '/games/pitch-perfect/index.html',
+    description: 'Listen to a mystery tone (80–1200 Hz) then tune a logarithmic slider to match it exactly. Score up to 50 points per round across 5 rounds — under 2 cents earns a perfect score.',
+    category: 'Music',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
