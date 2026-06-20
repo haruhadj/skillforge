@@ -97,7 +97,9 @@ export function buildAuthorizeUrl(
   }
 
   if (provider === 'twitter') {
-    // X (Twitter) OAuth 2.0 mandates PKCE and never returns an email.
+    // X (Twitter) OAuth 2.0 mandates PKCE. Since Apr 2025 it can also return the
+    // user's email via the users.email scope (read as confirmed_email from
+    // /2/users/me), so we request it to capture an email like the other providers.
     const clientId = process.env.TWITTER_OAUTH_CLIENT_ID
     if (!clientId) throw new Error('Twitter OAuth not configured')
     if (!codeChallenge) throw new Error('Twitter OAuth requires PKCE')
@@ -105,7 +107,7 @@ export function buildAuthorizeUrl(
       client_id: clientId,
       redirect_uri: redirectUri,
       response_type: 'code',
-      scope: 'users.read tweet.read',
+      scope: 'users.read tweet.read users.email',
       state,
       code_challenge: codeChallenge,
       code_challenge_method: 'S256',

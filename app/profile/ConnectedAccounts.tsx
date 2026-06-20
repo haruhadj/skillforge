@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { User as FirebaseUser } from 'firebase/auth'
 import { UserProfile } from '@/app/types'
 import { getSignInMethods, type LinkableProvider } from '@/app/services/userProfileService'
+import { getOAuthConfig, OAuthConfig } from '@/app/services/adminService'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
@@ -86,8 +87,21 @@ export default function ConnectedAccounts({ user, profile, onProfileChange }: Co
   const router = useRouter()
   const searchParams = useSearchParams()
   const [busy, setBusy] = useState<LinkableProvider | null>(null)
+  const [oauthConfig, setOauthConfig] = useState<OAuthConfig>({
+    google: true,
+    github: true,
+    twitter: true,
+    facebook: true,
+    tiktok: true,
+  })
 
   const methods = getSignInMethods(user, profile)
+
+  // Mirror the admin OAuth provider toggles so methods disabled in the admin
+  // panel don't appear here either.
+  useEffect(() => {
+    getOAuthConfig().then(setOauthConfig).catch(() => {})
+  }, [])
 
   // Surface the outcome of a redirect-based link flow, then clean the URL.
   useEffect(() => {
@@ -186,8 +200,11 @@ export default function ConnectedAccounts({ user, profile, onProfileChange }: Co
           )}
         </div>
 
-        {/* OAuth providers */}
-        {providerRows.map(({ id, label, icon, state }) => (
+        {/* OAuth providers — hidden when disabled in the admin panel, unless the
+            user already has it connected (so they can still disconnect it). */}
+        {providerRows
+          .filter(({ id, state }) => oauthConfig[id] || state.connected)
+          .map(({ id, label, icon, state }) => (
           <div key={id} className="flex items-center gap-3 rounded-lg border border-border/60 p-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
               {icon}

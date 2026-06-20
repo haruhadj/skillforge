@@ -57,14 +57,24 @@ async function writeLink(uid: string, p: OAuthProfile): Promise<void> {
   )
 }
 
-// Seed displayName/photoURL from the provider when the account is missing them,
-// so OAuth re-logins backfill profile details without overwriting existing ones.
+// Seed displayName/photoURL/email from the provider when the account is missing
+// them, so OAuth re-logins backfill profile details without overwriting existing
+// ones. This also heals accounts created before X added email support (Apr 2025):
+// they pick up their email on the next sign-in.
 async function backfillProfile(user: UserRecord, p: OAuthProfile): Promise<void> {
-  if (!user.displayName || !user.photoURL) {
-    await getAdminAuth().updateUser(user.uid, {
-      displayName: user.displayName || p.displayName,
-      photoURL: user.photoURL || p.photoURL,
-    })
+  // Only set an email the account lacks; never overwrite an existing one.
+  const backfillEmail = p.email && !user.email ? p.email : undefined
+  if (!user.displayName || !user.photoURL || backfillEmail) {
+    try {
+      await getAdminAuth().updateUser(user.uid, {
+        displayName: user.displayName || p.displayName,
+        photoURL: user.photoURL || p.photoURL,
+        ...(backfillEmail ? { email: backfillEmail, emailVerified: true } : {}),
+      })
+    } catch {
+      // Best-effort: e.g. another account already owns this email
+      // (auth/email-already-exists). Don't let a backfill failure break sign-in.
+    }
   }
 }
 

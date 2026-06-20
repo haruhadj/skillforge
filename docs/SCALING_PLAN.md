@@ -12,8 +12,8 @@ Last updated: 2026-06-19
 
 - [x] Add nginx service to `docker-compose.prod.yml`
 - [x] Update `nginx/skillforge.conf` to proxy `/` to the Next.js frontend (instead of serving static files)
-- [x] Expose nginx on port 80 as the single entry point; remove direct frontend port 1234 exposure
-- [ ] Smoke-test in prod: confirm Chess, TicTacToe, and Chroma Memory Socket.IO connections succeed via same-origin paths (`/chess-ws/`, `/tictactoe-ws/`, `/chroma-memory-ws/`)
+- [x] Expose nginx on port 80 as the single entry point; remove direct frontend port 1234 exposure - this is obsolete/modified have new solution
+- [x] Smoke-test in prod: confirm Chess, TicTacToe, and Chroma Memory Socket.IO connections succeed via same-origin paths (`/chess-ws/`, `/tictactoe-ws/`, `/chroma-memory-ws/`)
 
 ---
 
