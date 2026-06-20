@@ -110,7 +110,7 @@ export function buildAuthorizeUrl(
       code_challenge: codeChallenge,
       code_challenge_method: 'S256',
     })
-    return `https://twitter.com/i/oauth2/authorize?${params}`
+    return `https://x.com/i/oauth2/authorize?${params}`
   }
 
   const clientId = process.env.GITHUB_OAUTH_CLIENT_ID
