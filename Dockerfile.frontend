@@ -8,7 +8,10 @@ RUN apk add --no-cache libc6-compat
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+# --ignore-scripts skips node-gyp compiles for native dev-tooling deps
+# (agentic-flow → hnswlib-node/better-sqlite3) that alpine can't build and
+# the Next.js frontend never imports. Keeps the build toolchain-free.
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Builder stage
 FROM --platform=$BUILDPLATFORM base AS builder
