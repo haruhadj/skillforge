@@ -43,14 +43,23 @@ build_one() {
   if [[ -f "$src/package.json" ]]; then
     ( cd "$src"
       if [[ ! -d node_modules ]]; then
-        # --ignore-workspace: install in isolation so the game's pinned deps
-        # (often older React/Vite from exports) never collide with the root
-        # app or rewrite the root pnpm-lock.yaml.
-        echo ">> [$id] installing deps (pnpm install --ignore-workspace)..."
-        pnpm install --ignore-workspace
+        # Game source is built with npm, NOT pnpm. Two reasons:
+        #   1. pnpm v11 blocks dependency build scripts by default
+        #      (ERR_PNPM_IGNORED_BUILDS) and cannot be overridden under
+        #      --ignore-workspace, which breaks Vite games whose toolchain
+        #      (esbuild) relies on its postinstall. npm runs build scripts by
+        #      default, so these games build cleanly.
+        #   2. npm installs in isolation here — a local package-lock.json +
+        #      node_modules in the game folder — so a game's pinned React/Vite
+        #      versions never collide with the root app or touch the root
+        #      pnpm-lock.yaml/workspace.
+        # pnpm stays the package manager for the main app; npm is ONLY for
+        # building game source under games-src/. See docs/ADDING_GAMES.md.
+        echo ">> [$id] installing deps (npm install)..."
+        npm install
       fi
-      echo ">> [$id] pnpm run build..."
-      pnpm run build
+      echo ">> [$id] npm run build..."
+      npm run build
     )
     if   [[ -d "$src/dist"  ]]; then publish_dir="$src/dist"
     elif [[ -d "$src/build" ]]; then publish_dir="$src/build"

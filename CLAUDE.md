@@ -33,6 +33,7 @@ Educational gaming platform: **Next.js 16 (App Router) + React 19 + TypeScript +
 
 ### Build & test
 - `pnpm dev` = `next dev` + all game servers (concurrently). `pnpm build` = `next build`.
+- **Game source under `games-src/<id>/` builds with npm, NOT pnpm**: `scripts/build-game.sh` (run via `pnpm game:build <id>`) does `npm install` + `npm run build` inside the game folder. pnpm v11 aborts on dependency build scripts (`ERR_PNPM_IGNORED_BUILDS`, not overridable under `--ignore-workspace`), which breaks Vite/esbuild game builds; npm runs them by default and installs in isolation (local `package-lock.json`, never the root pnpm lockfile). pnpm stays the package manager for the main app. Never run `pnpm install`/`pnpm run build` inside `games-src/`. See `docs/ADDING_GAMES.md`.
 - `pnpm test` = `vitest run`, configured by `vitest.config.ts` (jsdom, `@`→root alias, setup in `tests/setup.ts`). Tests live in `tests/`.
 - The old Vite stack (`vite.config.js`, root `index.html`, `src/`) was legacy/broken and has been removed; Tailwind v4 is driven via `@tailwindcss/postcss`.
 

@@ -20,7 +20,7 @@ Every game has **two** locations — one rule keeps them in sync:
 - Only `games-src/**/node_modules/` and `games-src/*/{dist,build}/` are git-ignored — that's the actual bloat — so committed source stays tiny. Heavy binary assets → Git LFS (already configured).
 - `games-src/` is **docker-ignored** → the frontend image (its builder does `COPY . .`) ships only the published artifacts under `public/`, not source or deps.
 
-> ℹ️ Each game under `games-src/` is its own **isolated** mini-project: `build-game.sh` installs deps with `pnpm install --ignore-workspace`, so a game's pinned React/Vite versions never collide with the main app or rewrite the root `pnpm-lock.yaml`.
+> ℹ️ Each game under `games-src/` is its own **isolated** mini-project. **Game source is built with npm, never pnpm** — `build-game.sh` runs `npm install` + `npm run build` inside the game folder (its own local `package-lock.json` + `node_modules`), so a game's pinned React/Vite versions never collide with the main app or touch the root `pnpm-lock.yaml`/workspace. pnpm remains the package manager for the main app; npm is used **only** for building game source. See [Why npm, not pnpm](#why-npm-not-pnpm-for-game-source) below.
 
 ---
 
@@ -35,6 +35,24 @@ Every game has **two** locations — one rule keeps them in sync:
 A game is **buildable** when `games-src/<id>/package.json` exists (Vite/Node): the script runs its build and publishes `dist/` (or `build/`). Otherwise it is a **static** game and the folder is published as-is. A curated `cover.png` already present in `public/games/<id>/` is preserved across rebuilds.
 
 `<id>` is lowercase-kebab-case and is used as the folder name, the iframe path, **and** the Firestore document id.
+
+---
+
+### Why npm, not pnpm (for game source)
+
+Build game source with **npm** (`npm install` / `npm run build`) inside `games-src/<id>/`. The `pnpm game:*` commands above are root scripts for convenience, but they shell out to `build-game.sh`, which uses **npm** for the per-game install + build.
+
+Why not pnpm: pnpm v11 blocks dependency **build scripts** by default and aborts with `ERR_PNPM_IGNORED_BUILDS`. That can't be overridden under `--ignore-workspace` (the isolation flag a per-game install needs — it makes pnpm ignore the local `pnpm-workspace.yaml` where the approval would live), and it breaks every Vite game, because Vite's bundler (**esbuild**) ships its platform binary via a postinstall script. **npm runs build scripts by default**, so these games build cleanly, and `npm install` is naturally isolated — a local `package-lock.json` + `node_modules` that never rewrites the root pnpm lockfile/workspace.
+
+**Rule:** never run `pnpm install` or `pnpm run build` inside `games-src/<id>/`. If you build or debug a game by hand, use npm:
+
+```bash
+cd games-src/<id>
+npm install
+npm run build
+```
+
+pnpm stays the package manager for everything else — the main Next.js app, `pnpm dev`, `pnpm test`, etc.
 
 ---
 
@@ -60,9 +78,9 @@ The scaffold already wires the iframe contract (sends `BEST_SCORE` + `GAME_STATS
      base: './',   // REQUIRED — without it the iframe loads a blank page
    })
    ```
-3. Publish:
+3. Publish (installs with **npm** if needed, builds, copies `dist/*` → `public/games/<id>/`):
    ```bash
-   pnpm game:build <id>   # installs deps if missing, builds, copies dist/* -> public/games/<id>/
+   pnpm game:build <id>   # root script → build-game.sh → npm install + npm run build
    ```
 
 Then **register** it (see below).
@@ -189,6 +207,7 @@ There is **no** game-specific deploy step — `games-src/` is excluded from the 
 | Blank page in iframe | Asset paths are absolute (`/assets/...`) | Set `base: './'` in the game's Vite config and rebuild |
 | `pnpm game:build` says "no source folder" | Building before scaffolding/dropping source | Create `games-src/<id>/` first (`pnpm game:new` or drop an export) |
 | Build runs but "no dist/ or build/ output" | Game's build emits to a different dir | Make its build output `dist/` (Vite default) or `build/` |
+| `ERR_PNPM_IGNORED_BUILDS` during a game build | Game source was built with pnpm | Build game source with **npm** — `build-game.sh` already does; by hand run `npm install` + `npm run build` in `games-src/<id>/`. See [Why npm, not pnpm](#why-npm-not-pnpm-for-game-source) |
 | `cover.png` disappears after rebuild | Build doesn't emit a cover | Keep the cover in the game's own `public/cover.png` (Vite copies it), or it's auto-preserved if it already exists in `public/games/<id>/` |
 | API calls fail (404) | Next.js rewrite not configured | Add a rewrite in `next.config.js` |
 | WebSocket won't connect | CORS blocking | Update socket server CORS to allow the app's origin |

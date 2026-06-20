@@ -1,0 +1,6 @@
+{
+  "name": "Make 24 Game",
+  "description": "A polished and mathematically sound Make 24 puzzle game with exact fractional math, an algorithmic solver for hints, interactive tactile tiles, scores, and dark tactile theme.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

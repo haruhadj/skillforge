@@ -172,6 +172,13 @@ export const defaultGames: Game[] = [
     category: 'History',
     difficulty: 'medium',
   },
+  {
+    id: 'make-24-precision',
+    name: 'Make 24',
+    iframePath: '/games/make-24-precision/index.html',
+    description: 'Combine four number tiles with +, −, ×, and ÷ to make exactly 24. Exact fraction math (no rounding), streaks, an algorithmic hint solver, and custom decks.',
+    category: 'Math',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
