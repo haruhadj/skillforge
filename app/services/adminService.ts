@@ -144,3 +144,30 @@ export async function deleteAnnouncement(id: string): Promise<void> {
   if (!id) throw new Error('Missing announcement id')
   await deleteDoc(doc(db, 'announcements', id))
 }
+
+// OAuth provider availability
+export interface OAuthConfig {
+  google: boolean
+  github: boolean
+  twitter: boolean
+  facebook: boolean
+  tiktok: boolean
+}
+
+const OAUTH_CONFIG_DEFAULTS: OAuthConfig = {
+  google: true,
+  github: true,
+  twitter: true,
+  facebook: true,
+  tiktok: true,
+}
+
+export async function getOAuthConfig(): Promise<OAuthConfig> {
+  const snap = await getDoc(doc(db, 'config', 'oauthProviders'))
+  if (!snap.exists()) return { ...OAUTH_CONFIG_DEFAULTS }
+  return { ...OAUTH_CONFIG_DEFAULTS, ...snap.data() } as OAuthConfig
+}
+
+export async function saveOAuthConfig(config: OAuthConfig): Promise<void> {
+  await setDoc(doc(db, 'config', 'oauthProviders'), config)
+}
