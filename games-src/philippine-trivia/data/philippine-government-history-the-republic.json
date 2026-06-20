@@ -1,0 +1,95 @@
+{
+  "quiz_title": "Philippine Government History (The Republic)",
+  "questions": [
+    {
+      "id": 1,
+      "question": "The First Republic of the Philippines was established during a war. Which one?",
+      "options": ["Spanish-American War", "Philippine-American War", "World War I", "Philippine Revolution"],
+      "answer_key": {
+        "correct_answer": "Philippine-American War",
+        "explanation": "Emilio Aguinaldo, the very first Philippine President, ruled from 1898 to 1901 in Malolos, Bulacan. The conflict between the First Republic and the United States of America had started the \"Philippine-American War\" or also called \"Philippine Insurrection\"."
+      }
+    },
+    {
+      "id": 2,
+      "question": "Who won the first Philippine National Presidential Election?",
+      "options": ["General Miguel Malvar", "Emilio Aguinaldo", "Manuel Luis Quezon", "Bishop Gregorio Aglipay"],
+      "answer_key": {
+        "correct_answer": "Manuel Luis Quezon",
+        "explanation": "The first Philippine President of the Commonwealth and the \"Father of the Philippine language\", Manuel L. Quezon (1935-1944) won the elections in 1935 against First Republic President Emilio Aguinaldo and Bishop Gregorio Aglipay."
+      }
+    },
+    {
+      "id": 3,
+      "question": "During the World War II, the \"Puppet Government\" (Second Republic) was set up in the Philippines during Japan's occupation of the country. The name of the lawyer-politician appointed by the Japanese was Sergio Osmeña.",
+      "options": ["True", "False"],
+      "answer_key": {
+        "correct_answer": "False",
+        "explanation": "Jose P. Laurel's presidency had put him in danger because of his collaboration with the Japanese. He was selected by the National Assembly to serve as the 3rd President of the Philippines, but he was nearly shot."
+      }
+    },
+    {
+      "id": 4,
+      "question": "Manuel Roxas became the last Commonwealth President before the Philippines gained independence from United States.",
+      "options": ["True", "False"],
+      "answer_key": {
+        "correct_answer": "True",
+        "explanation": "The successor to Sergio Osmeña as the third and last Commonwealth President, Manuel Roxas served the Commonwealth for only 37 days (28th of May - 4th of July 1946). He became the President of the Third Republic of the Philippines on July 4, 1946 until his death in 1948."
+      }
+    },
+    {
+      "id": 5,
+      "question": "This late lawyer-politician from Ilocos had served two Republics, and the longest seated President of the Philippines. His name was _____________________.",
+      "options": ["Ferdinand Marcos"],
+      "answer_key": {
+        "correct_answer": "Ferdinand Marcos",
+        "explanation": "He served 21 years as the President until \"People Power Revolution\" in February 1986. He was the 6th President of the Third Republic (1969-1973), First Prime Minister/New Society President (1978-1981), and also the First President of the 4th Republic (1981-1986) of the Philippines."
+      }
+    },
+    {
+      "id": 6,
+      "question": "This former Senator, Benigno \"Ninoy\" Aquino was shot at Manila International Airport after seven years in exile. When did this assassination happened?",
+      "options": ["21st of August 1983", "23rd of August 1980", "22nd of August 1982", "20th of August 1985"],
+      "answer_key": {
+        "correct_answer": "21st of August 1983",
+        "explanation": "The late Senator Benigno \"Ninoy\" Aquino's death had shocked the whole Philippines because of the assassination in Manila Internation Airport. The 21st of August is now a national holiday in the Philippines."
+      }
+    },
+    {
+      "id": 7,
+      "question": "1986: Three years after Benigno \"Ninoy\" Aquino's death, the battle cries of the nation had changed. The Filipinos protested in the streets using prayers and flowers, instead of knives and guns. What was the name of this revolution?",
+      "options": ["EDSA"],
+      "answer_key": {
+        "correct_answer": "EDSA",
+        "explanation": "Despite Marcos winning against Ninoy's widow, Corazon Aquino, some of his supporters said that the results of the February 7 snap election were unreliable because of malpractice."
+      }
+    },
+    {
+      "id": 8,
+      "question": "Two significant events happened on this day in Philippine history: 1. The revolution ended when the former president and his family fled to the United States. 2. Corazon Aquino and Salvador Laurel were sworn in as President and Vice-President, respectively. Which day was it?",
+      "options": ["1st May 1986", "25th February 1986", "20th August 1985", "9th April 1985"],
+      "answer_key": {
+        "correct_answer": "25th February 1986",
+        "explanation": "On the morning of February 25, 1986, Corazon Aquino and Salvador Laurel took their oaths as President and Vice-President on the same day in the Club Filipino, San Juan in the presence of Supreme Court Associate Justice Claudio Teehankee. President Marcos fled to the US on the same day and stayed in exile until his death in 1989."
+      }
+    },
+    {
+      "id": 9,
+      "question": "Former film actor-politician Joseph \"Erap\" Estrada was also ousted by the following revolt of People Power, called EDSA 2 in 2001. He faced the impeachment trial for which of these violations?",
+      "options": ["\"Jose Velarde\" account", "All of these are true", "Extortion of \"jueteng\" money", "Graft and corruption"],
+      "answer_key": {
+        "correct_answer": "All of these are true",
+        "explanation": "Former President Joseph Estrada, was the first President to face and to lose from the impeachment trial on-air. The scandal involved accusations regarding \"jueteng\" money and the \"Jose Velarde\" account."
+      }
+    },
+    {
+      "id": 10,
+      "question": "Gloria Macapagal-Arroyo, the President after the 2001 People Power Revolution, had also faced controversies regarding her administration status. One of these was in regard to the elections in May 2004.",
+      "options": ["Hello Garci Scandal", "National Broadband Network Scandal", "Joint Marine Seismic Undertaking (JMSU) Scandal", "None of these"],
+      "answer_key": {
+        "correct_answer": "Hello Garci Scandal",
+        "explanation": "Mrs. Arroyo and former Commission on Elections Chairman Virgilio \"Garci\" Garcillano were both involved in \"Hello Garci\" Scandal because of the wiretapped conversation between them."
+      }
+    }
+  ]
+}

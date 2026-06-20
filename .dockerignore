@@ -2,6 +2,10 @@ node_modules
 server/node_modules
 dist
 server/dist
+# Game source (+ its node_modules/dist). Only the published artifacts under
+# public/games/ are needed in the image; the source must never enter the build
+# context (the builder does `COPY . .`), or it bloats the image.
+games-src
 .git
 .gitignore
 .vscode

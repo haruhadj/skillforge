@@ -1,0 +1,155 @@
+{
+  "quiz_title": "Philippine Trivia Quiz",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the capital of the Republic of the Philippines?",
+      "options": ["Cebu", "Baguio", "Davao", "Manila"],
+      "hint": "2 hints left",
+      "answer_key": {
+        "correct_answer": "Manila",
+        "explanation": "Manila is part of a metropolitan area. It consists of neighboring cities and municipalities including Quezon City, Pasig City, Pasay City etc. The population in 2003 was around eight million."
+      }
+    },
+    {
+      "id": 2,
+      "question": "What is the \"Summer Capital\" of the Philippines?",
+      "options": ["Davao City", "Quezon City", "Cebu City", "Baguio City"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Baguio City",
+        "explanation": "Baguio City is in the northern part of Luzon in the province of Benguet. Due to the city's altitude, a lot of people go here every summer to escape the heat of the lowlands."
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is the oldest city of the Philippines?",
+      "options": ["Manila", "Cebu", "Pasig", "Davao"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Cebu",
+        "explanation": "Cebu is in the Visayas group of islands. It's also known as the \"Queen city of the south\"."
+      }
+    },
+    {
+      "id": 4,
+      "question": "What is the largest island of the Philippine Archipelago?",
+      "options": ["Palawan", "Visayas", "Luzon", "Mindanao"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Luzon",
+        "explanation": "Visayas is a group of islands. Mindanao is the second largest. Palawan is technically part of the Luzon islands."
+      }
+    },
+    {
+      "id": 5,
+      "question": "The Philippines is predominantly Catholic in religion. Islam is the second largest religion of the Philippines and most of the Filipino Muslims live in what island?",
+      "options": ["Tawi-Tawi", "Luzon", "Mindanao", "Visayas"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Mindanao",
+        "explanation": "Mindanao is in the southern part of the country. It is the only group of islands that the Spanish church failed to dominate."
+      }
+    },
+    {
+      "id": 6,
+      "question": "During World War Two, it was known as \"The Rock\" due to its fortress and the strong resistance of the USAFFE (United States Army Forces in the Far East) forces. What is the name of this island?",
+      "options": ["Bataan", "Corregidor", "Palawan", "Mindoro"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Corregidor",
+        "explanation": "After the fall of Bataan it was the last resistance of the Filipino and USAFFE forces."
+      }
+    },
+    {
+      "id": 7,
+      "question": "Where can you find the marker for \"Kilometer 0 (zero)\"? It is the distance reference to all points in the country.",
+      "options": ["Bonifacio Shrine", "There is no such thing", "Quezon Monument", "Rizal Monument in Luneta Park"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Rizal Monument in Luneta Park",
+        "explanation": "The Rizal monument can be found in Luneta formerly known as Bagumbayan. The monument serve as the starting point of any location in the Philippines."
+      }
+    },
+    {
+      "id": 8,
+      "question": "Where is the highest peak in the Philippines?",
+      "options": ["Mt. Pulag", "Mt. Apo", "Mt. Pinatubo", "Mt. Province"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Mt. Apo",
+        "explanation": "Mount Apo can be found in Davao in Mindanao. It's also an active Volcano."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What is the longest river in the Philippines?",
+      "options": ["Agno River", "Cagayan River", "Pasig River", "Marikina River"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Cagayan River",
+        "explanation": "It runs through the whole length of Cagayan Valley from Cagayan, Isabela to almost central Luzon."
+      }
+    },
+    {
+      "id": 10,
+      "question": "Where can you find Mayon Volcano?",
+      "options": ["Albay", "Sorsogon", "Camarines Norte", "Catanduanes"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Albay",
+        "explanation": "Though all of these provinces are in the \"Bicol Region\", Mayon can be found in Albay province. This volcano is famous due to its near perfect cone, but it's one of the deadliest volcanos in the island."
+      }
+    },
+    {
+      "id": 11,
+      "question": "What is the provincial capital of Isabela?",
+      "options": ["San Fernando", "Tuguegarao", "Ilagan", "Malolos"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Ilagan",
+        "explanation": "This is the second largest province. It is in the northern part of Luzon. Together with Cagayan, Quirino, Nueva Viscaya and Batanes it is called the Cagayan Valley Region."
+      }
+    },
+    {
+      "id": 12,
+      "question": "The Philippines is composed of approximately how many islands?",
+      "options": ["5,500", "7,500", "15,000", "2,000"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "7,500",
+        "explanation": "It still depends, if it is low tide or high tide."
+      }
+    },
+    {
+      "id": 13,
+      "question": "What is the largest province in the Philippines in terms of land area?",
+      "options": ["Palawan", "Cagayan", "Isabela", "Maguindanao"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Palawan",
+        "explanation": "This province is a large, long island found in the west-central part of the country. The capital is Puerto Princesa City."
+      }
+    },
+    {
+      "id": 14,
+      "question": "What is the longest mountain range in the Country?",
+      "options": ["Caraballo", "Sierra Madre", "Cordillera", "Pinatubo"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Sierra Madre",
+        "explanation": "The Sierra Madre mountain range runs from Cagayan in the north to Quezon province in the south, which is almost the entire length of eastern Luzon island."
+      }
+    },
+    {
+      "id": 15,
+      "question": "In the early 1990s, this volcano exploded and it is one the most violent in the 20th century. What is the name of this volcano?",
+      "options": ["Mt. Mayon", "Mt. Pinatubo", "Mt. Kanlaon", "Mt. Hibok-hibok"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Mt. Pinatubo",
+        "explanation": "It can be found in Zambales province. This volcano was dormant for almost 600 years before the explosion which left most of central Luzon devastated. Up to the present, every rainy season the province of Pampanga and Zambales is still ravaged by lahar."
+      }
+    }
+  ]
+}

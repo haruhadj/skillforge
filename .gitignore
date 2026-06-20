@@ -101,8 +101,13 @@ dist
 # Sveltekit cache directory
 .svelte-kit/
 
-# # Games folder - exclude from git
-# public/games/
+# Games: BOTH the editable source (games-src/<id>/) and the built artifact
+# (public/games/<id>/) are committed. Only each game's dependencies and build
+# output are ignored — that's the actual bloat; source text is tiny. Use Git LFS
+# (already configured) for any genuinely heavy binary game assets.
+games-src/**/node_modules/
+games-src/*/dist/
+games-src/*/build/
 
 # vitepress build output
 **/.vitepress/dist

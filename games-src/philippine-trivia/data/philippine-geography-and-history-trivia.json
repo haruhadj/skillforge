@@ -1,0 +1,95 @@
+{
+  "quiz_title": "Philippine Geography & History Trivia",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the largest provincial capital in Luzon in terms of land area?",
+      "options": ["Antipolo City, Rizal", "Kabugao, Apayao", "Ilagan City, Isabela", "Batangas City, Batangas"],
+      "answer_key": {
+        "correct_answer": "Ilagan City, Isabela",
+        "explanation": "Ilagan City in Isabela province became the newest Philippine city in December 2012. It is the capital city of the province and is the largest city (land area) in Luzon."
+      }
+    },
+    {
+      "id": 2,
+      "question": "This island in Zamboanga City in Mindanao Island is famous for its pink sand beach. What is the name of this island?",
+      "options": ["Tictauan", "Pulahan", "Malanipa", "Santa Cruz"],
+      "answer_key": {
+        "correct_answer": "Santa Cruz",
+        "explanation": "Santa Cruz Island is just south of Zamboanga City and boasts pink-sand beaches."
+      }
+    },
+    {
+      "id": 3,
+      "question": "This city is nicknamed as the 'City in the Sky'. What is the name of this highly urbanized city?",
+      "options": ["Antipolo City", "Davao City", "Baguio City", "Lipa City"],
+      "answer_key": {
+        "correct_answer": "Antipolo City",
+        "explanation": "Antipolo City is called the 'City in the Sky' because it is located at a higher altitude in the mountains of Rizal province compared to its neighboring cities in Metro Manila."
+      }
+    },
+    {
+      "id": 4,
+      "question": "This body of water separates Guimaras island from Panay island. What is the name of this strait?",
+      "options": ["Cebu Strait", "Guimaras Strait", "Iloilo Strait", "Tanon Strait"],
+      "answer_key": {
+        "correct_answer": "Iloilo Strait",
+        "explanation": "The Iloilo Strait separates Iloilo province in Panay island from the island province of Guimaras. Guimaras Strait separates Guimaras from Negros island."
+      }
+    },
+    {
+      "id": 5,
+      "question": "This Philippine island is the 62nd largest island in the world. What is this island?",
+      "options": ["Bohol", "Samar", "Negros", "Palawan"],
+      "answer_key": {
+        "correct_answer": "Negros",
+        "explanation": "Negros is the third largest island in the Philippines."
+      }
+    },
+    {
+      "id": 6,
+      "question": "Which city is the official capital of Agusan del Norte?",
+      "options": ["Cabadbaran City", "Iligan City", "Butuan City", "Bislig City"],
+      "answer_key": {
+        "correct_answer": "Cabadbaran City",
+        "explanation": "Cabadbaran is the de jure capital of the province of Agusan del Norte. It is the second town to become a city in the province of Agusan del Norte after Butuan City."
+      }
+    },
+    {
+      "id": 7,
+      "question": "Verde Island is the largest island within the Verde Island Passage in terms of land area.",
+      "options": ["True", "False"],
+      "answer_key": {
+        "correct_answer": "False",
+        "explanation": "The VIP (Verde Island Passage) is a body of water between the island of Mindoro and the province of Batangas in the island of Luzon. The largest island in the area is Maricaban Island."
+      }
+    },
+    {
+      "id": 8,
+      "question": "Which of the following is the largest island in the Calamianes Group of Islands which hosts an airport that is a jump off point to its neighboring islands?",
+      "options": ["Calauit Island", "Coron Island", "Busuanga Island", "Culion Island"],
+      "answer_key": {
+        "correct_answer": "Busuanga Island",
+        "explanation": "Busuanga Island is the largest island in the Calamianes Group. It is also the gateway to the famous Coron island and the Calauit Game Preserve."
+      }
+    },
+    {
+      "id": 9,
+      "question": "The world famous island of Boracay is part of which municipality in the province of Aklan?",
+      "options": ["Kalibo", "Buruanga", "Malay", "Nabas"],
+      "answer_key": {
+        "correct_answer": "Malay",
+        "explanation": "Boracay is part of the municipality of Malay in Aklan's far north. It is famous for its powdery white sand beach."
+      }
+    },
+    {
+      "id": 10,
+      "question": "This city was the last capital during the Spanish occupation of the Philippines. Which of the following is this city?",
+      "options": ["Cebu City", "Legazpi City", "Manila City", "Iloilo City"],
+      "answer_key": {
+        "correct_answer": "Iloilo City",
+        "explanation": "In 1898, just prior to the turnover of the Philippines from Spain to the US through the Treaty of Paris, the capital of Las Islas Filipinas was moved to Iloilo City."
+      }
+    }
+  ]
+}

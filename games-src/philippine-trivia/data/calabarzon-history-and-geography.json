@@ -1,0 +1,95 @@
+{
+  "quiz_title": "Calabarzon History and Geography",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which Calabarzon province produces more coconut than any other place in the Philippines, making it known as \"The Coconut Capital of the Philippines\"?",
+      "options": ["Surigao del Norte", "Albay", "Batangas", "Quezon"],
+      "answer_key": {
+        "correct_answer": "Quezon",
+        "explanation": "Quezon is the province known for its extensive coconut production."
+      }
+    },
+    {
+      "id": 2,
+      "question": "On June 12, 1898, what memorable event took place at the balcony of Emilio Aguinaldo's house?",
+      "options": ["Emilio Aguinaldo's presidential inauguration", "The constitution was amended", "The national anthem was first sung", "The declaration of Philippine independence"],
+      "answer_key": {
+        "correct_answer": "The declaration of Philippine independence",
+        "explanation": "June 12, 1898 was the fall of the Spanish regime in the Philippines. It is considered the first declaration of independence."
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is the largest and most significant lake in the region? It is the biggest freshwater lake in the Philippines.",
+      "options": ["Laguna de Bay", "Taal Lake", "Sampaloc Lake", "Villa Escudero's manmade lake"],
+      "answer_key": {
+        "correct_answer": "Laguna de Bay",
+        "explanation": "Laguna de Bay has an area of 911.36 km² and a shoreline of 220 kilometers."
+      }
+    },
+    {
+      "id": 4,
+      "question": "The first SM Mall in the Calabarzon region is located where?",
+      "options": ["Bacoor, Cavite", "Lucena City", "Taytay, Rizal", "Lipa City"],
+      "answer_key": {
+        "correct_answer": "Bacoor, Cavite",
+        "explanation": "SM Bacoor is the first Calabarzon SM Mall. It opened on July 1997."
+      }
+    },
+    {
+      "id": 5,
+      "question": "Where is the administrative capital of Calabarzon?",
+      "options": ["Antipolo City, Rizal", "Calamba City, Laguna", "Bacoor Cavite", "It has no administrative capital"],
+      "answer_key": {
+        "correct_answer": "Calamba City, Laguna",
+        "explanation": "Calamba City is the capital per Executive Order No. 246, dated October 28, 2003."
+      }
+    },
+    {
+      "id": 6,
+      "question": "Which among these provinces does not represent one of the eight rays of the sun in the Philippines' flag?",
+      "options": ["Cavite", "Batangas", "Rizal", "Laguna"],
+      "answer_key": {
+        "correct_answer": "Rizal",
+        "explanation": "Batangas, Bulacan, Cavite, Laguna, Manila, Nueva Ecija, Pampanga, and Tarlac represent the eight rays of the sun in the Philippines' flag."
+      }
+    },
+    {
+      "id": 7,
+      "question": "Which municipality was declared as the Special Science and Nature City of the Philippines through presidential proclamation?",
+      "options": ["Sta Cruz", "Cabuyao", "Canlubang", "Los Banos"],
+      "answer_key": {
+        "correct_answer": "Los Banos",
+        "explanation": "Los Banos is home to many prestigious educational, environmental and research institutions, such as the University of the Philippines-Los Banos and IRRI (International Rice Research Institute). It was proclaimed on August 7, 2000 through Presidential Proclamation No. 349."
+      }
+    },
+    {
+      "id": 8,
+      "question": "What is the oldest city in Calabarzon? This city was founded on May 6, 1571.",
+      "options": ["Antipolo City, Rizal", "San Pablo City, Laguna", "Cavite City, Cavite", "Batangas City, Batangas"],
+      "answer_key": {
+        "correct_answer": "Cavite City, Cavite",
+        "explanation": "Cavite is the oldest city in Calabarzon. It was founded on May 16, 1571."
+      }
+    },
+    {
+      "id": 9,
+      "question": "San Juan, Batangas is famous for which of the following?",
+      "options": ["Judy Ann and Ryan Agoncillo's Billboard", "Its white sand beaches, hotels, restaurants and resorts", "Being the capital of Batangas", "Its research center on animal husbandry"],
+      "answer_key": {
+        "correct_answer": "Its white sand beaches, hotels, restaurants and resorts",
+        "explanation": "San Juan, Batangas is the region's most famous summer getaway due to numerous resorts and white sand beaches."
+      }
+    },
+    {
+      "id": 10,
+      "question": "President Elpidio Quirino issued an Executive Order regarding the restoration of which landmark building?",
+      "options": ["The Basilica of St. Martin de Tours", "Malacañang Palace", "Aguinaldo's shrine", "Patriot Jose Rizal's Ancestral House"],
+      "answer_key": {
+        "correct_answer": "Patriot Jose Rizal's Ancestral House",
+        "explanation": "Jose Rizal's house was ruined during World War II. Executive Order No. 145 by President Elpidio Quirino stated that the house was to be restored with the help of native artist Juan Nakpil."
+      }
+    }
+  ]
+}

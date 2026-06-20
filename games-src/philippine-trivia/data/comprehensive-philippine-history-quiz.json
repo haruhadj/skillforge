@@ -1,0 +1,346 @@
+{
+  "quiz_title": "Comprehensive Philippine History Quiz",
+  "rounds": [
+    {
+      "round_name": "Round 1: Easy Philippines History Trivia Questions",
+      "questions": [
+        {
+          "q_id": 1,
+          "question": "Which country invaded the Philippines 10 hours after Pearl Harbor?",
+          "answer": "Japan",
+          "explanation": "Japan"
+        },
+        {
+          "q_id": 2,
+          "question": "What is the oldest city in the Philippines?",
+          "answer": "Cebu",
+          "explanation": "Cebu is the oldest city in the Philippines."
+        },
+        {
+          "q_id": 3,
+          "question": "From which Spanish king do the Philippines takes its name?",
+          "answer": "Philip II",
+          "explanation": "The Philippines was named after Philip II of Spain."
+        },
+        {
+          "q_id": 4,
+          "question": "Who was the first president of the Philippines?",
+          "answer": "Emilio Aguinaldo",
+          "explanation": "Emilio Aguinaldo was the first Philippine President."
+        },
+        {
+          "q_id": 5,
+          "question": "What was the name of the largest naval battle fought in the Philippines?",
+          "answer": "Battle of Leyte Gulf",
+          "explanation": "The Battle of Leyte Gulf was a major naval engagement in Philippine history."
+        },
+        {
+          "q_id": 6,
+          "question": "To which country did Spain cede the Philippines in 1898?",
+          "answer": "United States",
+          "explanation": "Spain ceded the Philippines to the United States in 1898."
+        },
+        {
+          "q_id": 7,
+          "question": "Which president is sometimes referred to as PBBM?",
+          "answer": "President Bongbong Marcos",
+          "explanation": "Bongbong Marcos is currently the President of the Philippines."
+        },
+        {
+          "q_id": 8,
+          "question": "Which president introduced the Martial law in 1972?",
+          "answer": "Ferdinand Marcos",
+          "explanation": "Ferdinand Marcos declared Martial Law in 1972."
+        },
+        {
+          "q_id": 9,
+          "question": "During which battle with the warriors of Lapulapu was Ferdinand Magellan killed?",
+          "answer": "Battle of Mactan",
+          "explanation": "Magellan was killed during the Battle of Mactan."
+        },
+        {
+          "q_id": 10,
+          "question": "What is the oldest university in the Philippines?",
+          "answer": "University of Santo Tomas",
+          "explanation": "UST is one of the oldest and most historic universities in the country."
+        },
+        {
+          "q_id": 11,
+          "question": "Who was the first female president of the Philippines?",
+          "answer": "Corazon Aquino",
+          "explanation": "Corazon Aquino is the first female president of the Philippines."
+        }
+      ]
+    },
+    {
+      "round_name": "Round 2: Philippines History Multiple Choice Questions",
+      "questions": [
+        {
+          "q_id": 1,
+          "question": "In which year was Martial Law declared in the Philippines?",
+          "options": ["A. 1972", "B. 1965", "C. 1986", "D. 2016"],
+          "answer": "A. 1972",
+          "explanation": "Martial Law was declared in the Philippines in 1972."
+        },
+        {
+          "q_id": 2,
+          "question": "How old was Jose Rizal when he was executed?",
+          "options": ["A. 45", "B. 50", "C. 36", "D. 28"],
+          "answer": "C. 36",
+          "explanation": "Jose Rizal was 36 years old when he was executed."
+        },
+        {
+          "q_id": 3,
+          "question": "Which of these isn’t a written work of Jose Rizal?",
+          "options": ["A. Mi Ultimo Adios", "B. Aves De Rapina", "C. El Filibusterismo", "D. Noli Me Tangere"],
+          "answer": "Aves De Rapina",
+          "explanation": "The written works of Rizal include Noli Me Tangere and El Filibusterismo."
+        },
+        {
+          "q_id": 4,
+          "question": "In what year did the Philippine Revolution against Spain begin?",
+          "options": ["A. 1901", "B. 1890", "C. 1861", "D. 1896"],
+          "answer": "D. 1896",
+          "explanation": "The Philippine Revolution against Spain began in 1896."
+        },
+        {
+          "q_id": 5,
+          "question": "Which of these wasn’t a President of the Philippines?",
+          "options": ["A. Carlos P Garcia", "B. Jose Abad Santos", "C. Elpidio Quirino", "D. Manuel Roxas"],
+          "answer": "B. Jose Abad Santos",
+          "explanation": "Jose Abad Santos was not a President of the Philippines."
+        },
+        {
+          "q_id": 6,
+          "question": "In which year did Magellan discover the Philippines?",
+          "options": ["A. 1521", "B. 1571", "C. 1600", "D. 1611"],
+          "answer": "A. 1521",
+          "explanation": "Ferdinand Magellan first landed in the Philippines in 1521."
+        },
+        {
+          "q_id": 7,
+          "question": "One what date was Philippine Independence proclaimed?",
+          "options": ["A. June 26, 1898", "B. June 12, 1898", "C. June 12, 1901", "D. July 4, 1898"],
+          "answer": "B. June 12, 1898",
+          "explanation": "Philippine Independence was proclaimed on June 12, 1898."
+        },
+        {
+          "q_id": 8,
+          "question": "What is the name of the script widely used in Luzon before the adaptation of the Latin Alphabet?",
+          "options": ["A. Baybayin", "B. Cuneiform", "C. Tangut", "D. Nandinagari"],
+          "answer": "A. Baybayin",
+          "explanation": "Baybayin was the indigenous script used before the adaptation of the Latin Alphabet."
+        },
+        {
+          "q_id": 9,
+          "question": "In which year were the Gomburza priests executed?",
+          "options": ["A. 1872", "B. 1898", "C. 1896", "D. 1862"],
+          "answer": "A. 1872",
+          "explanation": "The Gomburza priests were executed in 1872."
+        },
+        {
+          "q_id": 10,
+          "question": "Which of these Filipino historical figures didn’t start a rebellion against Spain?",
+          "options": ["A. Diego Silang", "B. Francisco Dagohoy", "C. Andres Malong", "D. Kapitan Tiago"],
+          "answer": "D. Kapitan Tiago",
+          "explanation": "Kapitan Tiago is not generally recognized as a leader of the major rebellions against Spain."
+        }
+      ]
+    },
+    {
+      "round_name": "Round 3: Philippines History Quiz – True or False",
+      "questions": [
+        {
+          "q_id": 1,
+          "statement": "The current Constitution was created in 1972.",
+          "answer": "False",
+          "explanation": "The current Philippine Constitution was created in 1987."
+        },
+        {
+          "q_id": 2,
+          "statement": "President Fidel Ramos served as a lieutenant in the Korean War.",
+          "answer": "True",
+          "explanation": "Fidel Ramos served as a lieutenant during the Korean War."
+        },
+        {
+          "q_id": 3,
+          "statement": "Ninoy Aquino was a correspondent in the Vietnam War.",
+          "answer": "False",
+          "explanation": "He served as a correspondent during the Korean War."
+        },
+        {
+          "q_id": 4,
+          "statement": "The name Manila came from a flower which grew on the banks of the Pasig River.",
+          "answer": "True",
+          "explanation": "Manila is historically linked to plants and river systems in its area."
+        },
+        {
+          "q_id": 5,
+          "statement": "The Philippines were under US tutelage for 48 years.",
+          "answer": "True",
+          "explanation": "The period of US administration and tutelage over the Philippines lasted for a significant duration."
+        },
+        {
+          "q_id": 6,
+          "statement": "Tagalog was declared the basis of the National Language in 1937 by Manuel Quezon.",
+          "answer": "True",
+          "explanation": "Manuel L. Quezon declared Filipino as the national language during his presidency."
+        },
+        {
+          "q_id": 7,
+          "statement": "The Mendiola Massacre took place in the 70s.",
+          "answer": "False",
+          "explanation": "The Mendiola Massacre primarily occurred in the 1940s."
+        },
+        {
+          "q_id": 8,
+          "statement": "The first mass in the Philippines was celebrated in Limasawa, Southern Leyte.",
+          "answer": "True",
+          "explanation": "The first recorded Mass in the Philippines is traditionally attributed to Limasawa."
+        },
+        {
+          "q_id": 9,
+          "statement": "President Ramon Magsaysay died in a car accident.",
+          "answer": "False",
+          "explanation": "President Ramon Magsaysay died in a plane crash."
+        },
+        {
+          "q_id": 10,
+          "statement": "The Subic and Clark Bases in the Philippines were the largest military installations by the US Armed Forces outside America until they left in 1991.",
+          "answer": "True",
+          "explanation": "Subic and Clark Bases were indeed major US military installations."
+        }
+      ]
+    },
+    {
+      "round_name": "Round 4: Medium Philippines History Trivia Questions",
+      "questions": [
+        {
+          "q_id": 1,
+          "question": "Which American general delivered a famous speech title ‘I Have Returned’ in 1944?",
+          "answer": "General Douglas MacArthur",
+          "explanation": "General Douglas MacArthur delivered this famous speech upon his return to the Philippines."
+        },
+        {
+          "q_id": 2,
+          "question": "Who was the first president of the Philippine Commonwealth?",
+          "answer": "Manuel Quezon",
+          "explanation": "Manuel Quezon was the first President of the Commonwealth of the Philippines."
+        },
+        {
+          "q_id": 3,
+          "question": "Who was the commander of the Japanese Forces in the Philippines during the campaigns of 1944 and 1945 and who was executed for War Crimes?",
+          "answer": "Tomoyuki Yamashita",
+          "explanation": "General Tomoyuki Yamashita was executed for war crimes."
+        },
+        {
+          "q_id": 4,
+          "question": "Who was the politician and leading opposition figure who was assassinated upon his arrival and return to the Philippines in 1983?",
+          "answer": "Benigno “Ninoy” Aquino",
+          "explanation": "Benigno Aquino was assassinated upon his return to the Philippines in 1983."
+        },
+        {
+          "q_id": 5,
+          "question": "Who was the Philippine President who underwent impeachment proceedings and was ousted from power in 2001?",
+          "answer": "Joseph “Erap” Estrada",
+          "explanation": "Joseph Estrada faced impeachment proceedings leading to his ouster."
+        },
+        {
+          "q_id": 6,
+          "question": "Which 2015 movie stars John Arcilla as the leader of the Philippine Revolutionary Army?",
+          "answer": "Heneral Luna",
+          "explanation": "The movie Heneral Luna features Antonio Luna."
+        },
+        {
+          "q_id": 7,
+          "question": "Which Filipino painter who is known for a piece called the Spolarium?",
+          "answer": "Juan Luna",
+          "explanation": "Juan Luna painted 'Spoliarium'."
+        },
+        {
+          "q_id": 8,
+          "question": "Who was the Filipino General who is known as the hero of Tirad Pass?",
+          "answer": "Gregorio del Pilar",
+          "explanation": "Gregorio del Pilar is known as the hero of Tirad Pass."
+        },
+        {
+          "q_id": 9,
+          "question": "Against which country were the Americans and Filipinos fighting in the battle of Mindanao?",
+          "answer": "Japan",
+          "explanation": "The conflict involved various groups against the Japanese occupation."
+        },
+        {
+          "q_id": 10,
+          "question": "In which city did Ferdinand Magellan first land in the Philippines?",
+          "answer": "Cebu",
+          "explanation": "Ferdinand Magellan first landed in Cebu."
+        }
+      ]
+    },
+    {
+      "round_name": "Round 5: Hard Philippines History Trivia Questions",
+      "questions": [
+        {
+          "q_id": 1,
+          "question": "On which island in the Central Philippines was Jose Rizal exiled?",
+          "answer": "Dapitan",
+          "explanation": "Rizal was exiled to Dapitan."
+        },
+        {
+          "q_id": 2,
+          "question": "Which Filipino President accompanied General McArthur on his return to the Philippines?",
+          "answer": "Sergio Osmena",
+          "explanation": "Sergio Osmena accompanied MacArthur upon his return."
+        },
+        {
+          "q_id": 3,
+          "question": "What was the first book published in the Philippines?",
+          "answer": "Doctrina Christiana",
+          "explanation": "The Doctrina Christiana is considered one of the earliest printed books in the Philippines."
+        },
+        {
+          "q_id": 4,
+          "question": "Which Filipino hero was known as The Sublime Paralytic?",
+          "answer": "Apolinario Mabini",
+          "explanation": "Apolinario Mabini is often referred to as the Sublime Paralytic."
+        },
+        {
+          "q_id": 5,
+          "question": "What was the name given to the first batch of teachers who arrived in the Philippines from the United States?",
+          "answer": "The Thomasites",
+          "explanation": "The group of American teachers who arrived in the Philippines were known as the Thomasites."
+        },
+        {
+          "q_id": 6,
+          "question": "Who composed the National Anthem of the Philippines?",
+          "answer": "Julian Felipe",
+          "explanation": "Julian Felipe composed the music for the Philippine National Anthem."
+        },
+        {
+          "q_id": 7,
+          "question": "Who was the Filipino woman who made the first ever Philippine flag?",
+          "answer": "Marcela Mariño Agoncillo",
+          "explanation": "Marcela Mariño Agoncillo is recognized for her role in creating the first Philippine flag."
+        },
+        {
+          "q_id": 8,
+          "question": "Which Spanish conquistador who founded Manila?",
+          "answer": "Miguel López de Legazpi",
+          "explanation": "Miguel López de Legazpi is credited with founding Manila."
+        },
+        {
+          "q_id": 9,
+          "question": "Who was the famous World War II guerilla fighter who became the leader of Hukbalahap Communist Insurgents during the 40s and 50s?",
+          "answer": "Luis Taruc",
+          "explanation": "Luis Taruc was a significant figure in the communist insurgency."
+        },
+        {
+          "q_id": 10,
+          "question": "Which Filipino was elected as UN Secretary General in 1949?",
+          "answer": "Carlos P. Romulo",
+          "explanation": "Carlos P. Romulo was elected as the UN Secretary General."
+        }
+      ]
+    }
+  ]
+}

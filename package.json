@@ -8,6 +8,9 @@
     "dev:servers": "node server/start-all.js",
     "build": "next build",
     "start": "next start",
+    "game:new": "bash scripts/new-game.sh",
+    "game:build": "bash scripts/build-game.sh",
+    "game:build:all": "bash scripts/build-game.sh --all",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -1,0 +1,140 @@
+{
+  "quiz_title": "The Philippine's Greatest Hero: Jose Rizal Trivia",
+  "questions": [
+    {
+      "id": 1,
+      "question": "The Rizal family had 11 siblings, of whom Rizal was the seventh. One of his siblings died early and is said to have been Rizal's 'first sorrow'. Who was this sibling?",
+      "options": ["Narcisa", "Concepcion", "Lucia", "Saturnia"],
+      "answer_key": {
+        "correct_answer": "Concepcion",
+        "explanation": "Concepcion's nickname was Concha. She died at the age of three in 1865."
+      }
+    },
+    {
+      "id": 2,
+      "question": "When Rizal excelled as a top student at Ateneo de Manila, a school administered by the Jesuit priests, he loved reading books and novels. Among other books, he read a novel by Alexander Dumas. This was the first novel that he really loved. What was it?",
+      "options": ["The Fencing Master", "The Three Musketeers", "The Count of Monte Cristo", "Le Captaine Paul"],
+      "answer_key": {
+        "correct_answer": "The Count of Monte Cristo",
+        "explanation": "This novel made a great impression on him. Some readers say that the \"El Filibusterismo\", Rizal's second novel, was a Filipino version of the Dumas novel."
+      }
+    },
+    {
+      "id": 3,
+      "question": "While at the Ateneo, Rizal met his first love. She was a pretty fourteen-year old Batangueña. Who was she?",
+      "options": ["Leonor Valenzuela", "Gertude Beckette", "Leonor Rivera", "Segunda Katigbak"],
+      "answer_key": {
+        "correct_answer": "Segunda Katigbak",
+        "explanation": "Rizal described Segunda Katigbak as small and rosy-cheeked, with an enchanting smile."
+      }
+    },
+    {
+      "id": 4,
+      "question": "When Rizal decided to travel to Europe, specifically Spain, in order to study medicine he also had another aim. What is it?",
+      "options": ["To form small revolutionary groups", "To gather material for novels", "To study socialism", "To observe European culture"],
+      "answer_key": {
+        "correct_answer": "To observe European culture",
+        "explanation": "In addition to being a medical student, he observed and studied European culture to prepare himself for the task of liberating his country from the Spaniards."
+      }
+    },
+    {
+      "id": 5,
+      "question": "When he traveled to Japan, Rizal met a girl named Seiko Usui, also known as O-Sei-San. If he had not had any patriotic mission, he could have married her. A year after Rizal's execution (1897), Seiko married Alfred Charlton. What was Charlton's job?",
+      "options": ["Chemist", "Engineer", "Soldier", "Teacher"],
+      "answer_key": {
+        "correct_answer": "Teacher",
+        "explanation": "After many years of devoted teaching, Charlton was awarded the Order of Merit, 5th Class, by the Japanese government."
+      }
+    },
+    {
+      "id": 6,
+      "question": "When \"Noli Me Tangere\", Rizal's most famous novel, was first published, a priest masterminded its banning. This priest is the subject of Rizal's \"Por Telefono in Paris\". Who was this priest?",
+      "options": ["Fr. Pedro Payo", "Fr. Antonio Piernavieja", "Fr. Salvador Font", "Fr. Gregorio Echivarria"],
+      "answer_key": {
+        "correct_answer": "Fr. Salvador Font",
+        "explanation": "The Spanish friars at Calamba (Laguna) were urged to fight Rizal for his \"malicious\" novel and a commission, headed by Font, was set up."
+      }
+    },
+    {
+      "id": 7,
+      "question": "Dr. Jose Rizal traveled to Madrid in 1890 and discovered his \"bitter enemy of the pen\". This enemy was an editor of a newspaper named \"La Epoca\". In an article he wrote, he repeatedly maligned Rizal's family. Who was this \"bitter enemy?",
+      "options": ["Ferdinand Blumentritt", "Wenceslao Retana", "Edward Boustead", "Valentin Ventura"],
+      "answer_key": {
+        "correct_answer": "Wenceslao Retana",
+        "explanation": "Retana was a press agent, working for the friars. Rizal challenged Retana to a duel. Since Retana was sent a letter by Rizal's seconds stating that he was superior with both the pistol and the sword, Retana retracted his statement and apologized to Rizal."
+      }
+    },
+    {
+      "id": 8,
+      "question": "Rizal traveled to Biarritz in France, where he had an affair with a Protestant girl. This girl wanted Rizal to become a Protestant, like herself. As a Catholic, Rizal declined her request, and this resulted in Rizal's early departure. This girl was Gertude Beckette.",
+      "options": ["True", "False"],
+      "answer_key": {
+        "correct_answer": "False",
+        "explanation": "The girl was Nellie Boustead, a Protestant Rizal met at Biarritz, France. He had a good relationship with the Boustead family. However, due to the fact that Nellie wanted Rizal to become a Protestant, the relationship with both the girl and her family ended."
+      }
+    },
+    {
+      "id": 9,
+      "question": "At the time of his trip in Europe, Rizal published \"El Filibusterismo\" in Ghent, Belgium. He was so glad about the printing but his funds were extremely low and he had to leave the printing half-done. Joy turned to despair and Rizal was about to burn the novel ... Then a hero came to his aid and the printing resumed. Who was this hero?",
+      "options": ["Dr. Maximo Viola", "Valentin Ventura", "Dr. Antonio Regidor", "Marcelo H. Del Pilar"],
+      "answer_key": {
+        "correct_answer": "Valentin Ventura",
+        "explanation": "Rizal was about to burn the novel completely. It's a good thing that Valentin Ventura came and sent Rizal enough money to continue the printing."
+      }
+    },
+    {
+      "id": 10,
+      "question": "During his exile at Dapitan in Zamboanga (following the publication of \"Noli Me Tangere\") Rizal indulged what a biographer has called \"his only vice\". What was it?",
+      "options": ["Lottery", "Women", "Wine", "All of these"],
+      "answer_key": {
+        "correct_answer": "Lottery",
+        "explanation": "Lottery winnings for Rizal were a great help for him to improve his life in Dapitan. He used the money for agriculture and for building schools and churches."
+      }
+    },
+    {
+      "id": 11,
+      "question": "During his exile in Dapitan, Rizal met someone claiming to a cousin or relative of his. He was actually a friar's spy seeking a way of ruining Rizal legally. This spy has been identified as P.M. Given that M stands for Mercado, what does the P stand for?",
+      "options": ["Pablo", "Paciano", "Pedro", "Pio"],
+      "answer_key": {
+        "correct_answer": "Pablo",
+        "explanation": "\"P.M.'s\" real name was Florencio Namanan. He came from Cagayan de Misamis and instructed by the Recollects to steal certain files from Rizal which might destroy his good name in the eyes of the Governor-General."
+      }
+    },
+    {
+      "id": 12,
+      "question": "While Rizal was still in exile, the Katipunan, an organization founded by Andres Bonifacio, planned a bloody revolution against the Spaniards. In order to inform Rizal, Bonifacio sent an emissary to Dapitan. Who was he?",
+      "options": ["Dr. Pio Valenzuela", "Deodato Arellano", "Juan Luna", "Andres Bonifacio went there himself"],
+      "answer_key": {
+        "correct_answer": "Dr. Pio Valenzuela",
+        "explanation": "Dr. Valenzuela was unknown to Rizal, making him the perfect emissary. He traveled safely by bringing with him a blind man named Raymundo Mata."
+      }
+    },
+    {
+      "id": 13,
+      "question": "Rizal's exile was over he was and turned over to the officials of Manila for his \"last days\". Meanwhile, a Governor General brought more mayhem to the Philippines than its predecessor. This Governor General signed the order for Rizal's execution. Who was he?",
+      "options": ["Gov. Gen. Ramon Blanco", "Gov. Gen. Eulogio Despujol", "Gov. Gen. Primo de Rivera", "Gov. Gen. Camilio Polavieja"],
+      "answer_key": {
+        "correct_answer": "Gov. Gen. Camilio Polavieja",
+        "explanation": "Steeped in brutality, he was the most notorious general among those listed above."
+      }
+    },
+    {
+      "id": 14,
+      "question": "At the time Rizal's final hours at Fort Santiago, a fortress near Pasig City, he handed one of his sisters a lamp which contained his last poem, \"Mi Ultimo Adios\". He whispered to her in English, \"There is something inside.\" Who was this sister?",
+      "options": ["Olimpia", "Josefa", "Paciano", "Trinidad"],
+      "answer_key": {
+        "correct_answer": "Trinidad",
+        "explanation": "Trinidad understood English because Rizal had taught her the language."
+      }
+    },
+    {
+      "id": 15,
+      "question": "Dr. Jose Rizal, when a medical student at Madrid, predicted that he would die on December 30. Is this prediction true or false?",
+      "options": ["True", "False"],
+      "answer_key": {
+        "correct_answer": "True",
+        "explanation": "This extraordinary prediction was recorded in an entry of Rizal's diary. That was dated January 1, 1883. Rizal was executed by firing squad on 30 December 1896 for alleged sedition, conspiracy and treason."
+      }
+    }
+  ]
+}

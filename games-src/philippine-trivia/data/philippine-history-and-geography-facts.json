@@ -1,0 +1,95 @@
+{
+  "quiz_title": "Philippine History and Geography Facts",
+  "questions": [
+    {
+      "id": 1,
+      "question": "\"Marcha Filipina Magdalo\" was the original title of the Philippines' national anthem before it was changed to \"Marcha Nacional Filipina\" and then to \"Lupang Hinirang.\"",
+      "options": ["True", "False"],
+      "answer_key": {
+        "correct_answer": "True",
+        "explanation": "Julian Felipe, a composer from Cavite, wrote the national anthem. He submitted the first draft to Emilio Aguinaldo."
+      }
+    },
+    {
+      "id": 2,
+      "question": "How many provinces are there?",
+      "options": ["81", "65", "71", "93"],
+      "answer_key": {
+        "correct_answer": "81",
+        "explanation": "There are 17 regions and within the regions are 81 provinces. The provinces are divided into 115 cities and 1,495 municipalities."
+      }
+    },
+    {
+      "id": 3,
+      "question": "Who was the \"Hero of Tirad Pass\"?",
+      "options": ["Marcelo H. del Pilar", "Juan Luna", "Gregorio del Pilar", "Andres Bonifacio"],
+      "answer_key": {
+        "correct_answer": "Gregorio del Pilar",
+        "explanation": "He was born in San Jose, Bulacan on November 14, 1875. He died on December 2, 1899."
+      }
+    },
+    {
+      "id": 4,
+      "question": "The Mayon Volcano is located in what province in Region V?",
+      "options": ["Catanduanes", "Albay", "Masbate", "Camarines Sur"],
+      "answer_key": {
+        "correct_answer": "Albay",
+        "explanation": "Mayon Volcano is known for its almost perfect shape. Its height is 2,460 meters."
+      }
+    },
+    {
+      "id": 5,
+      "question": "Which Philippine hero was born in Ilocos Norte and was also known for his \"Spoliarium\"?",
+      "options": ["Gen. Antonio Luna", "Juan Luna", "Emilio Jacinto", "Andres Bonifacio"],
+      "answer_key": {
+        "correct_answer": "Juan Luna",
+        "explanation": "Juan Luna's painting \"Spoliarium\" won a gold medal in the Exposicion Nacional de Bellas Artes in Madrid in 1884."
+      }
+    },
+    {
+      "id": 6,
+      "question": "What is the \"world's smallest commercial fish\" that can be found in Bicol called?",
+      "options": ["shrimp", "dilis", "sinarapan", "sardine"],
+      "answer_key": {
+        "correct_answer": "sinarapan",
+        "explanation": "Lake Buhi of Camarines Sur is known as the habitat of sinarapan."
+      }
+    },
+    {
+      "id": 7,
+      "question": "In which town is the \"First Monument of Rizal\" located?",
+      "options": ["Naga", "Basud", "Manila", "Daet"],
+      "answer_key": {
+        "correct_answer": "Daet",
+        "explanation": "This was built in 1898 across the Old Daet Municipal Hall. Daet is the capital of the province of Camarines Norte in the Bicol region."
+      }
+    },
+    {
+      "id": 8,
+      "question": "How many cities and municipalities does the National Capital Region (NCR) have?",
+      "options": ["20", "17", "13", "15"],
+      "answer_key": {
+        "correct_answer": "17",
+        "explanation": "Manila, one of the cities in NCR, is the country's capital. There are 16 cities and 1 municipality."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What are the official languages of the Philippines?",
+      "options": ["Filipino and English", "Tagalog and Spanish", "Cebuano and Chinese", "Bicol and Ilocano"],
+      "answer_key": {
+        "correct_answer": "Filipino and English",
+        "explanation": "Filipino is based on Tagalog. Former President Manuel L. Quezon was known as \"Ama Ng Wikang Pambansa\" because during his presidency they declared Filipino as the national language."
+      }
+    },
+    {
+      "id": 10,
+      "question": "Who is considered the second president of the Philippines?",
+      "options": ["Fidel Castro", "Ramon Magsaysay", "Fidel V. Ramos", "Manuel L. Quezon"],
+      "answer_key": {
+        "correct_answer": "Manuel L. Quezon",
+        "explanation": "Manuel Quezon was the first president of the Commonwealth of the Philippines. He is considered the second President of the Philippines, after Emilio Aguinaldo."
+      }
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "quiz_title": "Philippine Provincial Capitals Trivia",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the capital of the province Abra?",
+      "options": ["Bangued", "La Trinidad", "Kabugao", "Lagawe"],
+      "answer_key": {
+        "correct_answer": "Bangued",
+        "explanation": "The Province of Abra was established last March 10, 1917. It's dialect is Iloko."
+      }
+    },
+    {
+      "id": 2,
+      "question": "What is the capital of Ilocos Norte?",
+      "options": ["Vigan", "Lingayen", "San Fernando", "Laoag City"],
+      "answer_key": {
+        "correct_answer": "Laoag City",
+        "explanation": "Ilocos Norte is the upper part of Ilocos - \"Norte\" means North. The lower part of it is called Ilocos Sur which has the capital of Vigan."
+      }
+    },
+    {
+      "id": 3,
+      "question": "What is the capital of Batanes?",
+      "options": ["Bayombong", "Tuguegarao", "Basco", "Ilagan"],
+      "answer_key": {
+        "correct_answer": "Basco",
+        "explanation": "Basco, Batanes is located in the northern part of the Philippines where typhoons are very common."
+      }
+    },
+    {
+      "id": 4,
+      "question": "What is the capital of Bataan?",
+      "options": ["Balanga City", "Palayan City", "Malolos", "San Fernando"],
+      "answer_key": {
+        "correct_answer": "Balanga City",
+        "explanation": "Balanga, Bataan is located at Region 3 of the Philippines."
+      }
+    },
+    {
+      "id": 5,
+      "question": "What is the capital of Aurora?",
+      "options": ["Batangas City", "Santa Cruz", "Trece Martires", "Baler"],
+      "answer_key": {
+        "correct_answer": "Baler",
+        "explanation": "Baler, Aurora was the birthplace of the deceased Philippine President Manuel L. Quezon."
+      }
+    },
+    {
+      "id": 6,
+      "question": "What is the capital of Albay?",
+      "options": ["Legaspi City", "Pili", "Daet", "Virac"],
+      "answer_key": {
+        "correct_answer": "Legaspi City",
+        "explanation": "Legaspi (or Legazpi), Albay is famous for its Mayon Volcano because it has the perfect symmetrical cone."
+      }
+    },
+    {
+      "id": 7,
+      "question": "What is the capital of Aklan?",
+      "options": ["San Jose de Buenavista", "Jordan", "Roxas City", "Kalibo"],
+      "answer_key": {
+        "correct_answer": "Kalibo",
+        "explanation": "Kalibo, Aklan is famous for its \"Ati-Atihan Festival\" wherein the revelers paint their faces and bodies black to imitate the early inhabitants. It takes place during the month of January."
+      }
+    },
+    {
+      "id": 8,
+      "question": "What is the capital of Bohol?",
+      "options": ["Siquijor", "Cebu City", "Tagbilaran City", "Dumaguete City"],
+      "answer_key": {
+        "correct_answer": "Tagbilaran City",
+        "explanation": "Bohol is the home of the world's smallest primate called the Tarsier. It measures four to five inches and has big round eyes and a tail that is longer than its body."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What is the capital of Biliran?",
+      "options": ["Borongan", "Naval", "Tacloban City", "Catarman"],
+      "answer_key": {
+        "correct_answer": "Naval",
+        "explanation": "Biliran has a history of being a pirate sanctuary."
+      }
+    },
+    {
+      "id": 10,
+      "question": "What is the capital of Basilan?",
+      "options": ["Lamitan", "Pagadian City", "Dipolog City", "Maasin"],
+      "answer_key": {
+        "correct_answer": "Lamitan",
+        "explanation": "Basilan is famous for its weaving and the Yakan Festival that is called \"Lami-Lamihan\"."
+      }
+    },
+    {
+      "id": 11,
+      "question": "What is the capital of Bukidnon?",
+      "options": ["Malaybalay", "Oroquieta City", "Mambajao", "Cagayan De Oro City"],
+      "answer_key": {
+        "correct_answer": "Malaybalay",
+        "explanation": "Bukidnon has Del Monte Pineapple Plantation which is one of the largest in East Asia."
+      }
+    },
+    {
+      "id": 12,
+      "question": "What is the capital of Davao Del Norte?",
+      "options": ["Digos", "Alabel", "Mati", "Tagum City"],
+      "answer_key": {
+        "correct_answer": "Tagum City",
+        "explanation": "Davao Del Norte was established last May 18, 1967. It is the largest out of the other two Davao provinces, which is Davao Del Sur and Davao Oriental."
+      }
+    },
+    {
+      "id": 13,
+      "question": "What is the capital of Lanao Del Norte?",
+      "options": ["Tubod", "Kidapawan City", "Isulam", "Koronadal"],
+      "answer_key": {
+        "correct_answer": "Tubod",
+        "explanation": "Lanao del Norte is blessed with many water resources."
+      }
+    },
+    {
+      "id": 14,
+      "question": "What of these is the capital of Agusan Del Norte?",
+      "options": ["Cabadbaran", "Surigao City", "Prosperidad", "Tandag"],
+      "answer_key": {
+        "correct_answer": "Cabadbaran",
+        "explanation": "On August 16, 2000. The seat of provincial government was transferred from Butuan City to Cabadbaran by virtue of Republic Act 8811."
+      }
+    },
+    {
+      "id": 15,
+      "question": "What is the capital of Lanao Del Sur?",
+      "options": ["Maganoy", "Marawi City", "Jolo", "Bongao"],
+      "answer_key": {
+        "correct_answer": "Marawi City",
+        "explanation": "Tuguya Town that is found in Lanao Del Sur is famous for producing brassware."
+      }
+    }
+  ]
+}

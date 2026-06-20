@@ -164,6 +164,14 @@ export const defaultGames: Game[] = [
     description: 'An 8-character math equation wordle clone. Guess the correct evaluation using numbers and standard operations.',
     category: 'Math',
   },
+  {
+    id: 'philippine-trivia',
+    name: 'The Philippine Trivia',
+    iframePath: '/games/philippine-trivia/index.html',
+    description: 'Test your knowledge of Philippine history, geography, culture, and heroes across 11 themed quizzes.',
+    category: 'History',
+    difficulty: 'medium',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */

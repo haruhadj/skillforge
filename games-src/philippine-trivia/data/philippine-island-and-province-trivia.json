@@ -1,0 +1,105 @@
+{
+  "quiz_title": "Philippine Island & Province Trivia",
+  "questions": [
+    {
+      "id": 1,
+      "question": "This island province is the smallest province in the Philippines in terms of land area and population.",
+      "options": ["Batanes", "Guimaras", "Sulu", "Cavite"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Batanes",
+        "explanation": "Batanes is the northernmost province of the Philippines. It is a group of islands a little less than 200 kms from the Luzon mainland."
+      }
+    },
+    {
+      "id": 2,
+      "question": "What province is nearest to Sabah, Malaysia?",
+      "options": ["Sulu", "Tawi-Tawi", "Palawan", "Camiguin"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Tawi-Tawi",
+        "explanation": "Tawi-Tawi is the southernmost province of the Philippines. The Turtle Islands which are part of the province of Tawi-Tawi are just 20 kilometers from Sabah."
+      }
+    },
+    {
+      "id": 3,
+      "question": "This island is about 315 kilometers south of Manila, and is part of the province of Aklan. It is a favourite tourist destination of both locals and foreigners.",
+      "options": ["Corregidor", "Boracay", "Guimaras", "Bohol"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Boracay",
+        "explanation": "Boracay is best known to local and foreign tourist for its crystal clear waters and powdery white beaches."
+      }
+    },
+    {
+      "id": 4,
+      "question": "This is the 12th largest island in the Philippines and is also a province. It is part of the region known as the Bicol region.",
+      "options": ["Biliran", "Samar", "Leyte", "Catanduanes"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Catanduanes",
+        "explanation": "Catanduanes is a kidney-shaped island on the eastern-most part of the Philippines. It is nicknamed the \"land of the howling winds\"."
+      }
+    },
+    {
+      "id": 5,
+      "question": "The San Juanico Bridge connects the island province of Samar to another island province. What island does it connect Samar to?",
+      "options": ["Leyte", "Negros", "Cebu", "Luzon"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Leyte",
+        "explanation": "Leyte is most known for its role in World War II. It was also the site of one of the largest naval battles in history, the \"Battle of Leyte Gulf\"."
+      }
+    },
+    {
+      "id": 6,
+      "question": "What island, once a sub-province of Iloilo, became an independent province in May 1992?",
+      "options": ["Boracay", "San Juan", "Negros", "Guimaras"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Guimaras",
+        "explanation": "Guimaras produces some of the freshest vegetable crops in the country but it is most known for producing some of the world's sweetest mangoes."
+      }
+    },
+    {
+      "id": 7,
+      "question": "What island province is home to more than a thousand limestone hill formations collectively known as the Chocolate Hills?",
+      "options": ["Cebu", "Bohol", "Palawan", "Camiguin"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Bohol",
+        "explanation": "Bohol is located east of Cebu and west of Leyte. It is rich in natural resources and is home to the Philippine Tarsier."
+      }
+    },
+    {
+      "id": 8,
+      "question": "This island is also known as \"The Rock\" or \"Island Fortress\" and it is strategically located at the mouth of Manila Bay.",
+      "options": ["Bataan", "Cebu", "Cavite", "Corregidor"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Corregidor",
+        "explanation": "Corregidor was once witness to the ferocity of the Japanese in World War II and became the headquarters of the Allied forces."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What island province is known for its production of quality marble?",
+      "options": ["Masbate", "Romblon", "Marinduque", "Panay"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Romblon",
+        "explanation": "Romblon, an island province that lies south of Manila and north of Panay is rich in both lush vegetation and mineral resources."
+      }
+    },
+    {
+      "id": 10,
+      "question": "Of the Philippines' 7,107 islands, what is the largest?",
+      "options": ["Luzon", "Palawan", "Mindanao", "Visayas"],
+      "hint": "",
+      "answer_key": {
+        "correct_answer": "Luzon",
+        "explanation": "Luzon is home to the seat of government of the Philippines, and its capital which is Manila."
+      }
+    }
+  ]
+}

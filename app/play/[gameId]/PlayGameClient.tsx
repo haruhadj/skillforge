@@ -85,6 +85,7 @@ export default function PlayGameClient() {
     if (!currentUser || !iframeSrc || typeof window === 'undefined') return
 
     const uid = currentUser.uid
+    const authedUser = currentUser
     const allowedOrigin = window.location.origin
 
     function handleMessage(event: MessageEvent) {
@@ -152,6 +153,28 @@ export default function PlayGameClient() {
           return
         }
         saveGameStats(uid, gameId, msg.data)
+      }
+
+      // Per-quiz community analytics for the Philippine Trivia game. Best-effort:
+      // recorded server-side via an authenticated route, never blocks gameplay.
+      if (msg.event === 'TRIVIA_PLAY' && gameId === 'philippine-trivia') {
+        const { quizId, score, total } = msg.data || {}
+        authedUser
+          .getIdToken()
+          .then((token) =>
+            fetch(`/api/games/${gameId}/plays`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ quizId, score, total }),
+            }),
+          )
+          .catch(() => {
+            /* analytics is non-critical */
+          })
+        return
       }
 
       if (msg.event === 'REQUEST_PROGRESS') {

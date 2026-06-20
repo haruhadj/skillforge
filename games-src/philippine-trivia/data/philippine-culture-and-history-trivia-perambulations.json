@@ -1,0 +1,86 @@
+{
+  "quiz_title": "Philippine Culture & History Trivia: Perambulations",
+  "description": "A quiz covering cultural facts, historical figures, national symbols, and daily life in the Philippines.",
+  "questions": [
+    {
+      "q_id": 1,
+      "questionText": "The American influence is very evident in the Philippines and its fast food culture is evident in many towns and cities. Which is the most popular fast food chain in the country?",
+      "type": "multiple_choice",
+      "options": ["Jollibee", "Wendy's", "McDonald's", "Fairwood"],
+      "correctAnswer": "Jollibee",
+      "explanation": "Jollibee started as an ice cream parlour before branching out into burgers. It adapted its food to the Philippine palate, adding spaghetti and rice."
+    },
+    {
+      "q_id": 2,
+      "questionText": "Which ruler was the Philippines named after?",
+      "type": "multiple_choice",
+      "options": ["King Philip I of Spain", "King Philip II of Spain", "Queen Philippa of Holland", "King Philip III of Spain"],
+      "correctAnswer": "King Philip II of Spain",
+      "explanation": "In 1565, the Spanish landed in Cebu and claimed the country in the name of Spain. This led to a great influence on the Philippines which is evident in its religion, culture, etc."
+    },
+    {
+      "q_id": 3,
+      "questionText": "Magellan attempted to sail around the world but was killed in the Philippines. Who led the men who killed him?",
+      "type": "multiple_choice",
+      "options": ["Araw Araw", "Mahal", "Mundo Mundo", "Lapu Lapu"],
+      "correctAnswer": "Lapu Lapu",
+      "explanation": "Magellan was killed by the forces of Lapu-Lapu. Magellan landed in the Philippines in 1521, and a scuffle broke out between the Spanish and the local chieftain."
+    },
+    {
+      "q_id": 4,
+      "questionText": "One of the Philippines delicacies is called balut. What is it?",
+      "type": "multiple_choice",
+      "options": ["A partially formed duck egg", "Monkey brains", "Raw milk fish", "Dog"],
+      "correctAnswer": "A partially formed duck egg",
+      "explanation": "Balut, although found in other parts of Asia, is cooked 17 days after being laid. It is a common street snack."
+    },
+    {
+      "q_id": 5,
+      "questionText": "What is the national language of the Philippines?",
+      "type": "multiple_choice",
+      "options": ["Filipino", "Cebuano", "Visayan", "Ilocano"],
+      "correctAnswer": "Filipino",
+      "explanation": "While home to many different languages, Filipino was officially chosen as the national language in 1987. It is based primarily on Tagalog."
+    },
+    {
+      "q_id": 6,
+      "questionText": "It is possible to find a multitude of different cuisines in the Philippines as they have adapted many dishes from China, Spain, America etc. The food is usually contained in a covered pot and sold by vendors, you lift the lid and point to the food you want to eat. What is the name of this kind of stall?",
+      "type": "multiple_choice",
+      "options": ["Sip-Sip", "Ihaw-Ihaw", "Turo-Turo", "Araw-Araw"],
+      "correctAnswer": "Turo-Turo",
+      "explanation": "The name 'Turo-Turo' literally means 'point point', referring to the manner of ordering food from this kind of street stall."
+    },
+    {
+      "q_id": 7,
+      "questionText": "President Marcos, one of the more colourful politicians in the Philippines was removed from power in 1986. Where did he spend his last days before dying in 1989?",
+      "type": "multiple_choice",
+      "options": ["New York", "Hawaii", "Los Angeles", "San Francisco"],
+      "correctAnswer": "Hawaii",
+      "explanation": "Marcos was overthrown by \"People Power\" in 1986 and spent his final days exiled in Honolulu, Hawaii."
+    },
+    {
+      "q_id": 8,
+      "questionText": "What is the name of the palace that Imelda Marcos built for the visit of Pope John Paul the Second in 1981?",
+      "type": "multiple_choice",
+      "options": ["The Marble Palace", "The Jewelled Palace", "The Sampaguita Palace", "The Coconut Palace"],
+      "correctAnswer": "The Coconut Palace",
+      "explanation": "Although built for the Pope, he reportedly refused to stay there, finding it too ostentatious."
+    },
+    {
+      "q_id": 9,
+      "questionText": "Body language is very important in the Philippines. When you are talking to somebody, they raise their eyebrows. What does this gesture generally signify?",
+      "type": "multiple_choice",
+      "options": ["No - disagreement", "I don't know", "Surprise", "Yes - agreement"],
+      "correctAnswer": "Yes - agreement",
+      "explanation": "Filipinos use a lot of non-verbal communication. Raising eyebrows can signify affirmation or agreement in conversation."
+    },
+    {
+      "q_id": 10,
+      "questionText": "What is the national flower of the Philippines?",
+      "type": "multiple_choice",
+      "options": ["Bauhinia", "Rose", "Sampaguita", "Orchid"],
+      "correctAnswer": "Sampaguita",
+      "explanation": "The Sampaguita, or Jasmine, was adopted as the national flower of the Philippines."
+    }
+  ]
+}

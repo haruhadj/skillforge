@@ -1,0 +1,95 @@
+{
+  "quiz_title": "Philippine Cities & Landmarks Trivia",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What city is home to the famous Rizal Park and is the capital of the Philippines as well?",
+      "options": ["Manila", "Davao", "Cebu", "Baguio"],
+      "answer_key": {
+        "correct_answer": "Manila",
+        "explanation": "Manila is located in Luzon in the National Capital region. It is the Philippines' seat of government and is found on the shores of the famous Manila Bay."
+      }
+    },
+    {
+      "id": 2,
+      "question": "What city is known as the \"Summer Capital of the Philippines\"?",
+      "options": ["Baguio City", "Palawan", "Quezon City", "Bohol"],
+      "answer_key": {
+        "correct_answer": "Baguio City",
+        "explanation": "Baguio is the only city in the Cordillera region. During summer, many local and foreign tourists visit, not just because of its beautiful scenery, but also because of its pleasant climate."
+      }
+    },
+    {
+      "id": 3,
+      "question": "Name the oldest Philippine city.",
+      "options": ["Manila", "Makati", "Davao", "Cebu"],
+      "answer_key": {
+        "correct_answer": "Cebu",
+        "explanation": "Cebu is the oldest city in the Philippines. It is the center for commerce, trade and industry."
+      }
+    },
+    {
+      "id": 4,
+      "question": "What Philippine city is known for its shoe industry?",
+      "options": ["Mandaue", "Marikina", "Pasig", "Pasay"],
+      "answer_key": {
+        "correct_answer": "Marikina",
+        "explanation": "Marikina is called the \"Shoe Capital of the Philippines\", because of its notable shoe industry."
+      }
+    },
+    {
+      "id": 5,
+      "question": "What city is the largest in the Philippines in terms of total land area?",
+      "options": ["Manila", "Legaspi", "Tagaytay", "Davao City"],
+      "answer_key": {
+        "correct_answer": "Davao City",
+        "explanation": "Davao City has an area of over 2,070 sq kilometres (800 sq ml). Close to 50% of this land remains covered in rainforest or agricultural activity as the economy is still very much based on agronomy."
+      }
+    },
+    {
+      "id": 6,
+      "question": "Name the only surviving Spanish colonial city in the Philippines.",
+      "options": ["Olongapo", "Vigan City", "Masbate", "Dapitan"],
+      "answer_key": {
+        "correct_answer": "Vigan City",
+        "explanation": "Vigan City is a UNESCO World Heritage Site because of the preserved remnants of Colonial Spanish architecture."
+      }
+    },
+    {
+      "id": 7,
+      "question": "In terms of land area, what is the largest city found on the island of Mindanao?",
+      "options": ["Davao", "Negros", "Tagbiliran", "General Santos"],
+      "answer_key": {
+        "correct_answer": "Davao",
+        "explanation": "Davao is one of the Philippines' most progressive cities. It is known for its wonderful scenic spots such as Mount Apo, the highest mountain in the Philippines."
+      }
+    },
+    {
+      "id": 8,
+      "question": "What coastal city, near Obando, is dubbed the \"Fishing Capital of the Philippines\"?",
+      "options": ["Las Pinas", "Navotas", "Cotabato", "Negros"],
+      "answer_key": {
+        "correct_answer": "Navotas",
+        "explanation": "Navotas City is considered the \"Fishing Capital of the Philippines\", because most of the people there earn their income through fishing, fishnet mending and fish trading."
+      }
+    },
+    {
+      "id": 9,
+      "question": "What Philippine city borders the Lingayen Gulf and is the country's top producer of milk fish?",
+      "options": ["Dagupan", "Lipa", "Bacolod", "Urdaneta"],
+      "answer_key": {
+        "correct_answer": "Dagupan",
+        "explanation": "Dagupan City is known for its milk fish industry. It is one of the main suppliers of milk fish in the country, thus it is dubbed as the \"Bangus (Milk fish) Capital\" of the Philippines."
+      }
+    },
+    {
+      "id": 10,
+      "question": "What Philippine city, famed for its coastline and harbor, is known as the City of Golden Friendship?",
+      "options": ["Cotabato", "Island City of Samal", "Negros", "Cagayan de Oro"],
+      "answer_key": {
+        "correct_answer": "Cagayan de Oro",
+        "explanation": "Cagayan de Oro is known as the City of Golden Friendship because of the legendary friendliness and hospitality of its people."
+      }
+    }
+  ]
+}
