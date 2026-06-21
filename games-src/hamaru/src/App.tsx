@@ -215,6 +215,37 @@ export default function App() {
     setCurrentMode('menu');
   };
 
+  // Learning XP handler — lighter than a battle clear: grants XP/points and may
+  // level up, but never touches battle high-scores or mastery levels.
+  const handleLearningXp = (xpGained: number) => {
+    if (xpGained <= 0) return;
+    const totalScore = score + xpGained;
+    const totalXp = xp + xpGained;
+    const calculatedLevel = Math.floor(totalXp / 500) + 1;
+
+    setScore(totalScore);
+    setXp(totalXp);
+    persistStats(totalScore, totalXp, calculatedLevel, highScores, masterLevels);
+
+    reportBestScore(totalScore);
+    reportStats({
+      score: totalScore,
+      bestScore: totalScore,
+      xp: totalXp,
+      level: calculatedLevel,
+      totalGames,
+      highScores,
+      masterLevels,
+      lastGame: 'Learning Dojo',
+    });
+
+    if (calculatedLevel > level) {
+      setOldLevel(level);
+      setLevel(calculatedLevel);
+      setTimeout(() => setShowLevelUp(true), 400);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none overflow-x-hidden">
       
@@ -349,6 +380,7 @@ export default function App() {
                 masterLevels={masterLevels}
                 onSelectGame={(mode) => setCurrentMode(mode)}
                 onResetStats={resetStats}
+                onLearningXp={handleLearningXp}
               />
             </motion.div>
           )}

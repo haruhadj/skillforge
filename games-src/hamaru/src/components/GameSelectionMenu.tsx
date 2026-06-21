@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Sword, Sparkles, Hammer, Info, Award, Star, Flame, Compass, Lock, Unlock, LogOut, ChevronRight, BookOpen } from 'lucide-react';
+import { Sword, Sparkles, Hammer, Info, Flame, Lock, ChevronRight, BookOpen, GraduationCap } from 'lucide-react';
 import { GameModeId } from '../types';
-import { FLASHCARDS, PARTICLE_QUESTIONS } from '../data';
+import LearningHub from './learning/LearningHub';
 
 interface GameSelectionMenuProps {
   score: number;
@@ -11,6 +11,7 @@ interface GameSelectionMenuProps {
   masterLevels: Record<GameModeId, number>;
   onSelectGame: (mode: GameModeId) => void;
   onResetStats: () => void;
+  onLearningXp: (xp: number) => void;
 }
 
 export default function GameSelectionMenu({
@@ -20,10 +21,11 @@ export default function GameSelectionMenu({
   highScores,
   masterLevels,
   onSelectGame,
-  onResetStats
+  onResetStats,
+  onLearningXp
 }: GameSelectionMenuProps) {
-  const [activeTab, setActiveTab] = useState<'games' | 'scrolls'>('games');
-  const [selectedScrollFilter, setSelectedScrollFilter] = useState<'all' | 'hiragana' | 'katakana' | 'kanji' | 'vocab' | 'grammar'>('all');
+  // Learning is the natural first stop — default the player here before battles.
+  const [activeTab, setActiveTab] = useState<'learn' | 'battle'>('learn');
 
   // Definition of the 4 Minigames
   const GAMES = [
@@ -77,32 +79,27 @@ export default function GameSelectionMenu({
     }
   ];
 
-  // Map Filter scrolls
-  const filteredScrolls = FLASHCARDS.filter(
-    item => selectedScrollFilter === 'all' || item.type === selectedScrollFilter
-  );
-
   return (
     <div id="game-selection-menu" className="w-full max-w-5xl mx-auto space-y-6">
       
       {/* GLOBAL PROGRESS HEADER */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl flex flex-col md:flex-row md:justify-between md:items-center gap-5 relative overflow-hidden">
         {/* Glow corner decoration */}
         <div className="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="flex items-center gap-4.5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-3xl shadow-lg border border-indigo-400/20">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 md:w-16 md:h-16 shrink-0 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-2xl md:text-3xl shadow-lg border border-indigo-400/20">
             💮
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black text-slate-100 tracking-tight">KotobaQuest</h1>
-              <span className="text-xs bg-indigo-950/80 text-indigo-400 font-mono font-bold px-2.5 py-0.5 rounded-full border border-indigo-900/60">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl md:text-2xl font-black text-slate-100 tracking-tight">KotobaQuest</h1>
+              <span className="text-[10px] md:text-xs bg-indigo-950/80 text-indigo-400 font-mono font-bold px-2.5 py-0.5 rounded-full border border-indigo-900/60">
                 Expanded Edition
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Level {level} Samurai Instructor • Practice your scrolls and claim levels
+              Level {level} Samurai Instructor • Learn first, then claim levels
             </p>
           </div>
         </div>
@@ -128,32 +125,47 @@ export default function GameSelectionMenu({
       {/* TABS SELECT */}
       <div className="flex border-b border-slate-800">
         <button
-          id="tab-games"
-          onClick={() => setActiveTab('games')}
-          className={`px-5 py-3 font-semibold text-sm border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'games'
+          id="tab-learn"
+          onClick={() => setActiveTab('learn')}
+          className={`flex-1 sm:flex-none justify-center px-4 sm:px-5 py-3 font-semibold text-sm border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
+            activeTab === 'learn'
               ? 'border-indigo-500 text-indigo-400 bg-indigo-950/10'
               : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Compass size={16} /> Learning Arenas
+          <BookOpen size={16} /> Learn
         </button>
         <button
-          id="tab-scrolls"
-          onClick={() => setActiveTab('scrolls')}
-          className={`px-5 py-3 font-semibold text-sm border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'scrolls'
+          id="tab-battle"
+          onClick={() => setActiveTab('battle')}
+          className={`flex-1 sm:flex-none justify-center px-4 sm:px-5 py-3 font-semibold text-sm border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
+            activeTab === 'battle'
               ? 'border-indigo-500 text-indigo-400 bg-indigo-950/10'
               : 'border-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          <BookOpen size={16} /> Character Encyclopedia
+          <Sword size={16} /> Battle Arenas
         </button>
       </div>
 
-      {/* GAMES TAB */}
-      {activeTab === 'games' && (
+      {/* LEARN TAB */}
+      {activeTab === 'learn' && (
+        <LearningHub onLearningXp={onLearningXp} />
+      )}
+
+      {/* BATTLE TAB */}
+      {activeTab === 'battle' && (
         <div className="space-y-6">
+          {/* Soft recommend banner */}
+          <div className="flex items-start gap-3 bg-indigo-950/30 border border-indigo-900/50 rounded-xl p-3.5">
+            <GraduationCap size={18} className="text-indigo-400 shrink-0 mt-0.5" />
+            <p className="text-xs text-slate-300 leading-relaxed">
+              <strong className="text-indigo-300">New here?</strong> Warm up in the{' '}
+              <button onClick={() => setActiveTab('learn')} className="text-indigo-400 font-bold underline underline-offset-2 cursor-pointer">Learn</button>{' '}
+              tab first — flashcards, quizzes and writing practice build the muscle memory these battles test.
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {GAMES.map((game) => {
               const isLocked = xp < game.requiredXp;
@@ -241,75 +253,6 @@ export default function GameSelectionMenu({
             >
               RESET ALL HIGH SCORES
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* CHARACTER SCROLLS ENCYCLOPEDIA TAB */}
-      {activeTab === 'scrolls' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-slate-800 pb-5">
-            <div>
-              <h2 className="text-lg font-bold text-slate-200">Samurai Dojo Scrolls Study</h2>
-              <p className="text-xs text-slate-400">Unlock your muscle memory before heading to Boss Battles</p>
-            </div>
-
-            {/* FILTERS DIALECTS */}
-            <div className="flex flex-wrap gap-1 bg-slate-950 p-1 rounded-xl border border-slate-850">
-              {(['all', 'hiragana', 'katakana', 'kanji', 'vocab'] as const).map(f => (
-                <button
-                  key={f}
-                  onClick={() => setSelectedScrollFilter(f)}
-                  className={`px-3 py-1 text-[11px] font-bold uppercase rounded-lg cursor-pointer transition-all ${
-                    selectedScrollFilter === f
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* CHARACTER TILES SCROLLER */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
-            {filteredScrolls.map((card, idx) => (
-              <div
-                key={card.id}
-                id={`encyclo-tile-${idx}`}
-                className="bg-slate-950 border border-slate-850 hover:border-slate-800 rounded-xl p-3.5 text-center transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <span className="text-[9px] font-bold font-mono tracking-wide uppercase text-indigo-400 bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-900/10 block mb-2 w-max mx-auto">
-                    {card.type}
-                  </span>
-                  <div className="text-3xl font-bold font-sans text-amber-300 my-2">
-                    {card.japanese}
-                  </div>
-                </div>
-                <div className="border-t border-slate-900 pt-2 text-xs">
-                  <p className="font-semibold text-slate-200">{card.english}</p>
-                  <p className="text-[10px] text-slate-450 font-mono italic">romaji: {card.romaji}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-850 space-y-2">
-            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-widest font-mono">⚡ Master Particles Summary</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-              {PARTICLE_QUESTIONS.slice(0, 4).map((q, i) => (
-                <div key={i} className="text-xs bg-slate-900 p-2.5 rounded-lg border border-slate-800/80">
-                  <div className="flex justify-between font-mono text-[10px] text-indigo-400 font-bold mb-1">
-                    <span>PARTICLE: [{q.correctParticle}]</span>
-                    <span>Q #{i+1}</span>
-                  </div>
-                  <p className="font-sans text-slate-200 font-semibold">{q.sentenceBefore} <span className="text-amber-400 font-extrabold underline">{q.correctParticle}</span> {q.sentenceAfter}</p>
-                  <p className="text-[10px] text-slate-450 mt-1 italic">"{q.englishTranslation}"</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       )}

@@ -334,6 +334,19 @@ export function getQuiz({ level = 1, count = 10, reverse = false } = {}) {
   });
 }
 
+/**
+ * Learning Hub study cards. `category: 'kanji'` returns single-kanji words
+ * (good for character study); anything else returns general vocabulary cards.
+ */
+export function getStudyCards({ category = 'vocab', level = 1, count = 12 } = {}) {
+  const predicate =
+    category === 'kanji'
+      ? (c) => c.kanji && [...c.kanji].length === 1
+      : null;
+  const pool = poolForLevel(level, predicate);
+  return sample(pool, count).map(publicCard);
+}
+
 /** Elemental Card Match: N japanese⇄english pairs. */
 export function getMemoryPairs({ level = 1, count = 6 } = {}) {
   const pool = poolForLevel(level);

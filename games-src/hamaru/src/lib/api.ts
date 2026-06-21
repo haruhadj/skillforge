@@ -71,6 +71,18 @@ export async function fetchQuiz(
   return body?.questions?.length ? body.questions : null;
 }
 
+/** Learning Hub study cards (Flashcards / Quiz / Writing for kanji & vocab). */
+export async function fetchStudyCards(
+  category: 'kanji' | 'vocab',
+  level = 1,
+  count = 12,
+): Promise<ApiWord[] | null> {
+  const body = await getJson<{ words: ApiWord[] }>(
+    `/cards?category=${category}&level=${level}&count=${count}`,
+  );
+  return body?.words?.length ? body.words : null;
+}
+
 /** Japanese⇄English pairs (Elemental Card Match). */
 export async function fetchMemoryPairs(level = 1, count = 6): Promise<ApiMemoryPair[] | null> {
   const body = await getJson<{ pairs: ApiMemoryPair[] }>(

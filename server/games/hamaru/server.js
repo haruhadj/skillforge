@@ -10,6 +10,7 @@
  *   GET /api/hamaru/stats                         - Dictionary statistics
  *   GET /api/hamaru/words?level=&count=&maxMora=  - Word Forge cards (kana blocks)
  *   GET /api/hamaru/quiz?level=&count=&reverse=   - Multiple-choice translation quiz
+ *   GET /api/hamaru/cards?category=&level=&count= - Learning Hub study cards
  *   GET /api/hamaru/memory-pairs?level=&count=    - Card Match pairs
  *   GET /api/hamaru/word/:term                    - Single-word lookup
  *
@@ -125,6 +126,22 @@ app.get('/api/hamaru/quiz', (req, res) => {
   }
 });
 
+app.get('/api/hamaru/cards', (req, res) => {
+  try {
+    const category = req.query.category === 'kanji' ? 'kanji' : 'vocab';
+    const level = clampLevel(req.query.level);
+    const count = clampCount(req.query.count, 12, 30);
+    const words = dict.getStudyCards({ category, level, count });
+    if (words.length === 0) {
+      return res.status(500).json({ success: false, error: 'No cards available' });
+    }
+    res.json({ success: true, category, level, count: words.length, words });
+  } catch (err) {
+    console.error('[Hamaru] Cards error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to generate cards' });
+  }
+});
+
 app.get('/api/hamaru/memory-pairs', (req, res) => {
   try {
     const level = clampLevel(req.query.level);
@@ -167,6 +184,7 @@ app.use((req, res) => {
       'GET /api/hamaru/stats',
       'GET /api/hamaru/words?level=&count=&maxMora=',
       'GET /api/hamaru/quiz?level=&count=&reverse=',
+      'GET /api/hamaru/cards?category=&level=&count=',
       'GET /api/hamaru/memory-pairs?level=&count=',
       'GET /api/hamaru/word/:term',
     ],
