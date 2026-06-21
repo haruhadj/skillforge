@@ -55,6 +55,12 @@ export default function PlayCanvas({
   const canvasRef = useRef<HTMLDivElement>(null);
   const boardWrapRef = useRef<HTMLDivElement>(null);
   const dragStateRef = useRef<DragTouchState | null>(null);
+  const pinchStateRef = useRef<{
+    startDist: number;
+    startMidXpct: number;
+    startMidYpct: number;
+    startShape: ShapeTransform;
+  } | null>(null);
   const [showHelperGrid, setShowHelperGrid] = useState(true);
   // SCORE-phase magnifier: frames the target↔guess pair so small deviations are visible.
   const [isZoomed, setIsZoomed] = useState(false);
@@ -169,13 +175,60 @@ export default function PlayCanvas({
     }
   };
 
+  // Two-finger pinch: detected at canvas level so it works regardless of where fingers land.
+  const handleCanvasTouchStart = (e: React.TouchEvent) => {
+    if (phase !== 'MANIPULATE' || e.touches.length !== 2) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+    const midXpct = ((t1.clientX + t2.clientX) / 2 - rect.left) / rect.width * 100;
+    const midYpct = ((t1.clientY + t2.clientY) / 2 - rect.top) / rect.height * 100;
+    dragStateRef.current = null;
+    pinchStateRef.current = {
+      startDist: dist,
+      startMidXpct: midXpct,
+      startMidYpct: midYpct,
+      startShape: { ...userTransform },
+    };
+  };
+
   useEffect(() => {
     const handlePointerMove = (e: MouseEvent | TouchEvent) => {
-      const state = dragStateRef.current;
-      if (!state || !canvasRef.current) return;
-
+      if (!canvasRef.current) return;
       const rect = canvasRef.current.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) return;
+
+      // Two-finger pinch to resize
+      if ('touches' in e && e.touches.length === 2 && pinchStateRef.current) {
+        const pinch = pinchStateRef.current;
+        const t1 = e.touches[0];
+        const t2 = e.touches[1];
+        const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+        const scaleFactor = dist / pinch.startDist;
+        const midXpct = ((t1.clientX + t2.clientX) / 2 - rect.left) / rect.width * 100;
+        const midYpct = ((t1.clientY + t2.clientY) / 2 - rect.top) / rect.height * 100;
+        const ar = pinch.startShape.width / pinch.startShape.height;
+        const minDim = 6;
+        let newWidth = Math.max(minDim, Math.min(90, pinch.startShape.width * scaleFactor));
+        let newHeight = newWidth / ar;
+        if (newHeight < minDim) { newHeight = minDim; newWidth = newHeight * ar; }
+        if (newHeight > 90)     { newHeight = 90;     newWidth = newHeight * ar; }
+        const newX = Math.max(-newWidth / 2, Math.min(100 - newWidth / 2, midXpct - newWidth / 2));
+        const newY = Math.max(-newHeight / 2, Math.min(100 - newHeight / 2, midYpct - newHeight / 2));
+        onUserTransformChange({
+          x: Math.round(newX * 100) / 100,
+          y: Math.round(newY * 100) / 100,
+          width: Math.round(newWidth * 100) / 100,
+          height: Math.round(newHeight * 100) / 100,
+        });
+        return;
+      }
+
+      const state = dragStateRef.current;
+      if (!state) return;
 
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
@@ -319,20 +372,28 @@ export default function PlayCanvas({
       onUserTransformChange(updated);
     };
 
-    const handlePointerEnd = () => {
+    const handlePointerEnd = (e: MouseEvent | TouchEvent) => {
+      if ('touches' in e) {
+        if (e.touches.length < 2) pinchStateRef.current = null;
+        if (e.touches.length === 0) dragStateRef.current = null;
+        return;
+      }
       dragStateRef.current = null;
+      pinchStateRef.current = null;
     };
 
     window.addEventListener('mousemove', handlePointerMove);
     window.addEventListener('mouseup', handlePointerEnd);
     window.addEventListener('touchmove', handlePointerMove, { passive: false });
     window.addEventListener('touchend', handlePointerEnd);
+    window.addEventListener('touchcancel', handlePointerEnd);
 
     return () => {
       window.removeEventListener('mousemove', handlePointerMove);
       window.removeEventListener('mouseup', handlePointerEnd);
       window.removeEventListener('touchmove', handlePointerMove);
       window.removeEventListener('touchend', handlePointerEnd);
+      window.removeEventListener('touchcancel', handlePointerEnd);
     };
   }, [userTransform, onUserTransformChange, phase]);
 
@@ -393,6 +454,7 @@ export default function PlayCanvas({
           id="play-canvas-container"
           className="relative overflow-hidden rounded-xl border border-zinc-800/70 bg-black touch-none sm:rounded-2xl"
           style={{ width: boardSize || undefined, height: boardSize || undefined, touchAction: 'none' }}
+          onTouchStart={handleCanvasTouchStart}
         >
           {/* Zoomable content layer — identity transform unless the SCORE magnifier is on */}
           <div
@@ -564,7 +626,7 @@ export default function PlayCanvas({
                   <Move className="h-4 w-4 shrink-0 text-cyan-400" /> Recreate the shape
                 </div>
                 <div className="mt-1 text-[11px] leading-snug text-zinc-400 sm:text-xs">
-                  Drag the body to move it, pull the corners to resize, then submit.
+                  Drag to move · pinch or pull corners to resize · then submit.
                 </div>
               </div>
               <button
