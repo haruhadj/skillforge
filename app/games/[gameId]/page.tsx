@@ -165,12 +165,40 @@ export default function GameDetailsPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-12 space-y-6">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-3 sm:py-6 pb-12 space-y-3 sm:space-y-6">
         {/* Game info card */}
         <div className="surface overflow-hidden animate-fade-in">
-          <div className="flex flex-col sm:flex-row">
-            <div className="sm:w-52 lg:w-64 shrink-0">
-              <div className="aspect-[4/3] sm:aspect-auto sm:h-full bg-muted relative overflow-hidden min-h-[120px]">
+          {/* Mobile: compact horizontal strip */}
+          <div className="flex sm:hidden items-center gap-3 p-3">
+            <div className="w-16 h-16 shrink-0 rounded-lg bg-muted overflow-hidden">
+              <img
+                src={`/games/${game.id}/cover.png`}
+                alt={game.name}
+                className="h-full w-full object-contain"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                {game.category && (
+                  <Badge variant="secondary" className="text-[10px] h-4 px-1.5">{game.category}</Badge>
+                )}
+                {game.difficulty && (
+                  <Badge variant="outline" className="text-[10px] h-4 px-1.5 capitalize">{game.difficulty}</Badge>
+                )}
+              </div>
+              <p className="text-sm font-bold tracking-tight truncate">{game.name}</p>
+              <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{game.description}</p>
+            </div>
+            <Button asChild size="sm" className="shrink-0 font-semibold text-xs px-3">
+              <Link href={`/play/${game.id}`}>Play →</Link>
+            </Button>
+          </div>
+
+          {/* Desktop: full layout */}
+          <div className="hidden sm:flex">
+            <div className="w-52 lg:w-64 shrink-0">
+              <div className="aspect-auto h-full bg-muted relative overflow-hidden min-h-[140px]">
                 <img
                   src={`/games/${game.id}/cover.png`}
                   alt={game.name}
@@ -179,7 +207,7 @@ export default function GameDetailsPage() {
                 />
               </div>
             </div>
-            <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between gap-4">
+            <div className="flex-1 p-6 flex flex-col justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-2.5 flex-wrap">
                   {game.category && (
@@ -189,10 +217,10 @@ export default function GameDetailsPage() {
                     <Badge variant="outline" className="text-xs capitalize">{game.difficulty}</Badge>
                   )}
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold tracking-tight mb-2">{game.name}</h2>
+                <h2 className="text-xl font-bold tracking-tight mb-2">{game.name}</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">{game.description}</p>
               </div>
-              <Button asChild size="lg" className="w-full sm:w-auto sm:self-start font-semibold">
+              <Button asChild size="lg" className="w-auto self-start font-semibold">
                 <Link href={`/play/${game.id}`}>Play Now →</Link>
               </Button>
             </div>
