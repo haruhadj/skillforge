@@ -28,6 +28,16 @@
   }
 }
 
+/* Ready-Set-Go word entrance */
+@keyframes word-pop {
+  0%   { opacity: 0; transform: scale(0.25) translateY(20px); }
+  60%  { opacity: 1; transform: scale(1.22) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+.word-pop {
+  animation: word-pop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
 /* Smooth motion default adjustments */
 html, body, #root {
   margin: 0;

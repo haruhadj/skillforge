@@ -6,25 +6,24 @@
 import { ShapeTransform, ShapeType } from './types';
 
 /**
- * Creates a randomized transformation within reasonable boundaries of the canvas card.
- * Bounded so the shape is fully visible (10% margins).
+ * Creates a randomized transformation. Shapes can partially overflow the canvas
+ * border (center always stays on-board so at least 50% is visible).
  */
 export function generateRandomTarget(shapeType: ShapeType): ShapeTransform {
-  // Custom widths based on shape to make them look aesthetically balanced
   const minSize = 15;
-  const maxSize = 38;
+  const maxSize = 65;
 
   const width = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
-  // All shapes possess a cohesive 1:1 aspect ratio so that squares are authentic squares,
-  // circles are authentic circles, and triangles can be perfectly matched by the uniform scaling.
   const height = width;
 
-  // Compute boundaries
-  const maxStartX = 100 - width - 10;
-  const maxStartY = 100 - height - 10;
+  // Allow center to land anywhere on [0, 100], so up to half the shape can overflow any edge.
+  const minX = Math.round(-width / 2);
+  const maxX = Math.round(100 - width / 2);
+  const minY = Math.round(-height / 2);
+  const maxY = Math.round(100 - height / 2);
 
-  const x = Math.floor(Math.random() * (maxStartX - 10 + 1)) + 10;
-  const y = Math.floor(Math.random() * (maxStartY - 10 + 1)) + 10;
+  const x = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+  const y = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
 
   return { x, y, width, height };
 }
@@ -128,7 +127,13 @@ export function getPerformanceCommentary(score: number): { title: string; desc: 
 /**
  * Lists random shape sequences for a game
  */
-export const SHAPE_POOL: ShapeType[] = ['SQUARE', 'CIRCLE', 'TRIANGLE'];
+export const SHAPE_POOL: ShapeType[] = [
+  'SQUARE', 'CIRCLE', 'TRIANGLE',
+  'PENTAGON', 'HEXAGON', 'HEPTAGON', 'OCTAGON', 'NONAGON', 'DECAGON',
+  'DIAMOND', 'KITE', 'TRAPEZOID', 'PARALLELOGRAM', 'RIGHT_TRIANGLE',
+  'STAR', 'STAR_4_POINT', 'STAR_6_POINT', 'SPARKLE',
+  'CROSS', 'ARROW', 'HEART', 'CHEVRON',
+];
 
 export function getRandomShapeSequence(): ShapeType[] {
   const list: ShapeType[] = [];

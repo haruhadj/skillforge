@@ -4,7 +4,41 @@
  */
 
 import React from 'react';
-import { RoundData } from '../types';
+import { RoundData, ShapeType } from '../types';
+
+const MINI_CLIP_PATHS: Record<string, string> = {
+  TRIANGLE:       'polygon(50% 0%, 0% 100%, 100% 100%)',
+  RIGHT_TRIANGLE: 'polygon(0% 0%, 100% 0%, 0% 100%)',
+  PENTAGON:       'polygon(50% 0%, 98% 35%, 79% 90%, 21% 90%, 2% 35%)',
+  HEXAGON:        'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+  HEPTAGON:       'polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%)',
+  OCTAGON:        'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+  NONAGON:        'polygon(50% 0%, 83% 12%, 100% 43%, 94% 78%, 68% 100%, 32% 100%, 6% 78%, 0% 43%, 17% 12%)',
+  DECAGON:        'polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%)',
+  DIAMOND:        'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+  KITE:           'polygon(50% 0%, 100% 30%, 50% 100%, 0% 30%)',
+  TRAPEZOID:      'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)',
+  PARALLELOGRAM:  'polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%)',
+  CHEVRON:        'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+  STAR:           'polygon(50% 0%, 62% 33%, 97% 35%, 70% 56%, 79% 90%, 50% 71%, 21% 90%, 30% 56%, 3% 35%, 38% 33%)',
+  STAR_4_POINT:   'polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%)',
+  STAR_6_POINT:   'polygon(50% 0%, 65% 25%, 100% 25%, 79% 50%, 100% 75%, 65% 75%, 50% 100%, 35% 75%, 0% 75%, 21% 50%, 0% 25%, 35% 25%)',
+  SPARKLE:        'polygon(50% 0%, 55% 45%, 100% 50%, 55% 55%, 50% 100%, 45% 55%, 0% 50%, 45% 45%)',
+  CROSS:          'polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%)',
+  ARROW:          'polygon(40% 0%, 60% 0%, 60% 70%, 100% 70%, 50% 100%, 0% 70%, 40% 70%)',
+  HEART:          'polygon(50% 20%, 65% 0%, 85% 10%, 90% 35%, 75% 55%, 50% 75%, 25% 55%, 10% 35%, 15% 10%, 35% 0%)',
+};
+
+function ShapeMiniIcon({ shape }: { shape: ShapeType }) {
+  if (shape === 'CIRCLE') return <div className="h-5 w-5 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500" />;
+  if (shape === 'SQUARE') return <div className="h-5 w-5 rounded bg-gradient-to-tr from-cyan-500 to-indigo-500" />;
+  return (
+    <div
+      className="h-5 w-5 bg-gradient-to-tr from-cyan-500 to-indigo-500"
+      style={{ clipPath: MINI_CLIP_PATHS[shape] || '' }}
+    />
+  );
+}
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -271,14 +305,7 @@ export default function GameSummary({ roundsLog, onPlayAgain }: GameSummaryProps
                   <div className="flex items-center space-x-4">
                     {/* Visual Shape Mini Representation */}
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-zinc-950 border border-zinc-800/50">
-                      {log.shapeType === 'SQUARE' && <div className="h-5 w-5 rounded bg-gradient-to-tr from-cyan-500 to-indigo-500" />}
-                      {log.shapeType === 'CIRCLE' && <div className="h-5 w-5 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500" />}
-                      {log.shapeType === 'TRIANGLE' && (
-                        <div 
-                          className="h-5 w-5 bg-gradient-to-tr from-cyan-500 to-indigo-500" 
-                          style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }}
-                        />
-                      )}
+                      <ShapeMiniIcon shape={log.shapeType} />
                     </div>
                     <div>
                       <div className="font-display font-bold text-white text-md">

@@ -33,6 +33,11 @@ interface DragTouchState {
 // Conic-gradient swatch reused in the score legend so the legend matches the on-board target shape.
 const GRADIENT_SWATCH = 'conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red)';
 
+// Starting transform for the intro fly-in animation (center of the board, small).
+const CENTER_XFORM: ShapeTransform = { x: 40, y: 40, width: 20, height: 20 };
+
+type ReadyWord = 'READY' | 'SET' | 'GO';
+
 export default function PlayCanvas({
   phase,
   roundNumber,
@@ -57,6 +62,36 @@ export default function PlayCanvas({
   // Largest square that fits the available area. Keeping the board square means a 20%×20%
   // shape renders as a true square/circle and the target↔guess comparison is geometrically faithful.
   const [boardSize, setBoardSize] = useState(0);
+
+  // READY phase — cycles through READY → SET → GO words.
+  const [readyWord, setReadyWord] = useState<ReadyWord | null>(null);
+
+  // MEMORIZE intro — shape flies from center to target.
+  // false = render at CENTER (start), true = render at target (animate there).
+  const [introStarted, setIntroStarted] = useState(false);
+
+  useEffect(() => {
+    if (phase !== 'READY') { setReadyWord(null); return; }
+    setReadyWord('READY');
+    const t1 = setTimeout(() => setReadyWord('SET'), 700);
+    const t2 = setTimeout(() => setReadyWord('GO'),  1400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [phase, roundNumber]);
+
+  useEffect(() => {
+    if (phase !== 'MEMORIZE') {
+      setIntroStarted(false);
+      return;
+    }
+    // The shape MUST first be committed AND painted at CENTER (introStarted=false),
+    // otherwise there is no "before" state for the CSS transition and the move to the
+    // target looks instant. So we keep the first MEMORIZE render at center, then after
+    // ~60 ms (a real macro-task — long enough that the center frame has painted) flip
+    // to the target, which animates center → target over the transition duration.
+    setIntroStarted(false);
+    const trigger = setTimeout(() => setIntroStarted(true), 60);
+    return () => clearTimeout(trigger);
+  }, [phase, roundNumber]);
 
   useEffect(() => {
     const el = boardWrapRef.current;
@@ -158,12 +193,13 @@ export default function PlayCanvas({
       let updated = { ...userTransform };
 
       if (state.type === 'DRAG') {
-        // Translate entire shape body, clamping so the shape remains fully inside the canvas
+        // Allow overflow so the user can match targets that spawn beyond the border.
+        // Clamp so the shape center stays within [0, 100] (at least half always visible).
         let newX = start.x + pctDx;
         let newY = start.y + pctDy;
 
-        newX = Math.max(0, Math.min(100 - start.width, newX));
-        newY = Math.max(0, Math.min(100 - start.height, newY));
+        newX = Math.max(-start.width / 2, Math.min(100 - start.width / 2, newX));
+        newY = Math.max(-start.height / 2, Math.min(100 - start.height / 2, newY));
 
         updated = {
           ...start,
@@ -367,13 +403,40 @@ export default function PlayCanvas({
             <div className={`absolute inset-0 transition-opacity duration-300 ${showHelperGrid ? 'grid-bg opacity-100' : 'opacity-0'}`} />
             <div className="absolute inset-0 dot-bg opacity-40" />
 
-            {/* 1. MEMORIZE — show the randomized target shape */}
+            {/* 0. READY — dim ghost at center + READY/SET/GO word */}
+            {phase === 'READY' && (
+              <>
+                <div className="opacity-20">
+                  <ShapeRenderer type={shapeType} transform={CENTER_XFORM} styleMode="GRADIENT" idPrefix="ready-preview" />
+                </div>
+                {readyWord && (
+                  <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                    <span
+                      key={readyWord}
+                      className="word-pop font-display font-black select-none"
+                      style={{
+                        fontSize: 'clamp(2.8rem, 11vw, 5.5rem)',
+                        color: readyWord === 'READY' ? '#06b6d4' : readyWord === 'SET' ? '#eab308' : '#22c55e',
+                        textShadow: `0 0 40px ${readyWord === 'READY' ? 'rgba(6,182,212,0.5)' : readyWord === 'SET' ? 'rgba(234,179,8,0.5)' : 'rgba(34,197,94,0.6)'}`,
+                        letterSpacing: '-0.02em',
+                      }}
+                    >
+                      {readyWord}
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* 1. MEMORIZE — shape flies from center to target, then stays for the timer.
+                 Renders at CENTER on the first commit, then animates to the target. */}
             {phase === 'MEMORIZE' && (
               <ShapeRenderer
                 type={shapeType}
-                transform={targetTransform}
+                transform={introStarted ? targetTransform : CENTER_XFORM}
                 styleMode="GRADIENT"
                 isEditable={false}
+                withTransition={true}
                 idPrefix="target-memorize"
               />
             )}
@@ -455,6 +518,20 @@ export default function PlayCanvas({
         style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
       >
         <div className="mx-auto flex min-h-[136px] w-full max-w-2xl flex-col justify-center sm:min-h-[148px]">
+
+          {/* READY console */}
+          {phase === 'READY' && (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <div className="font-mono text-[10px] font-semibold uppercase tracking-widest text-zinc-500 sm:text-xs">
+                  Round {roundNumber} of 5 &nbsp;·&nbsp; {shapeType}
+                </div>
+                <div className="mt-2 font-display text-lg font-bold text-zinc-400 sm:text-xl">
+                  Prepare to memorize
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* MEMORIZE console */}
           {phase === 'MEMORIZE' && (

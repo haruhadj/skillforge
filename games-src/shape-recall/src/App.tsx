@@ -102,36 +102,38 @@ export default function App() {
     setRoundScore(undefined);
     setCurrentRound(1);
     setTimerCount(3.00);
-    setGamePhase('MEMORIZE');
+    setGamePhase('READY');
     setHasStarted(true);
   };
 
-  // High-frequency TIMER Countdown hook
+  // READY → MEMORIZE after the countdown animation completes (~1.8 s).
   useEffect(() => {
-    if (gamePhase === 'MEMORIZE' && hasStarted) {
-      const startTime = Date.now();
-      const timerDuration = 3000; // 3 seconds in ms
+    if (gamePhase !== 'READY' || !hasStarted) return;
+    const t = setTimeout(() => setGamePhase('MEMORIZE'), 1800);
+    return () => clearTimeout(t);
+  }, [gamePhase, hasStarted, currentRound]);
 
+  // High-frequency TIMER Countdown hook — delayed 1400 ms so the shape finishes flying before memorize starts.
+  useEffect(() => {
+    if (gamePhase !== 'MEMORIZE' || !hasStarted) return;
+    const timerDuration = 3000;
+
+    const animDelay = setTimeout(() => {
+      const startTime = Date.now();
       timerIntervalRef.current = setInterval(() => {
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, (timerDuration - elapsed) / 1000);
-        
         setTimerCount(remaining);
-
         if (remaining <= 0) {
-          if (timerIntervalRef.current) {
-            clearInterval(timerIntervalRef.current);
-          }
-          // Automatically cycle to manipulation phase
+          if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
           setGamePhase('MANIPULATE');
         }
-      }, 16); // ~60fps grid tick rate
-    }
+      }, 16);
+    }, 1400);
 
     return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
+      clearTimeout(animDelay);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
     };
   }, [gamePhase, hasStarted, currentRound]);
 
@@ -169,7 +171,7 @@ export default function App() {
       setRoundScore(undefined);
       setTimerCount(3.00);
       setCurrentRound((prev) => prev + 1);
-      setGamePhase('MEMORIZE');
+      setGamePhase('READY');
     } else {
       setGamePhase('SUMMARY');
     }
