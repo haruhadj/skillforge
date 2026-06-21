@@ -389,7 +389,7 @@ export default function LibraryPage() {
                           className="w-full h-8 text-xs font-semibold"
                           onClick={() => trackGamePlay(game.id)}
                         >
-                          <Link href={`/play/${game.id}`}>Play Now</Link>
+                          <Link href={`/games/${game.id}`}>Play Now</Link>
                         </Button>
                       ) : (
                         <Button size="sm" variant="secondary" className="w-full h-8 text-xs" disabled>

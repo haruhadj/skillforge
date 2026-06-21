@@ -8,13 +8,11 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { getUserProfile } from '@/app/services/userProfileService'
 import { defaultGames } from '@/app/games/games'
 import ThemeToggle from '@/app/components/ThemeToggle'
-import { LeaderboardEntry, GlobalLeaderboardEntry, UserProfile } from '@/app/types'
+import { GlobalLeaderboardEntry, UserProfile } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 
 const TOP_COUNT = 50
@@ -75,7 +73,7 @@ function SkeletonRow() {
   )
 }
 
-const PODIUM_ORDER = [1, 0, 2] // left=2nd, center=1st, right=3rd
+const PODIUM_ORDER = [1, 0, 2]
 const PODIUM_PROPS = [
   { barH: 'h-20', avatarSize: 'h-12 w-12', ring: 'ring-slate-400', label: '2nd', glow: '' },
   { barH: 'h-28', avatarSize: 'h-16 w-16', ring: 'ring-yellow-400', label: '1st', glow: 'drop-shadow-[0_0_12px_rgba(250,204,21,0.5)]' },
@@ -87,10 +85,9 @@ const PODIUM_GRADIENTS = [
   'from-amber-400/25 to-orange-400/35 dark:from-amber-700/30 dark:to-orange-700/40 border-amber-400/30 dark:border-amber-700/20',
 ]
 
-function Podium({ top3, profiles, viewMode, currentUser }: {
-  top3: (LeaderboardEntry | GlobalLeaderboardEntry)[]
+function Podium({ top3, profiles, currentUser }: {
+  top3: GlobalLeaderboardEntry[]
   profiles: Record<string, UserProfile>
-  viewMode: 'global' | 'game'
   currentUser: FirebaseUser | null
 }) {
   return (
@@ -104,10 +101,7 @@ function Podium({ top3, profiles, viewMode, currentUser }: {
           const profile = profiles[row.uid]
           const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
           const isMe = row.uid === currentUser?.uid
-          const score = viewMode === 'global'
-            ? (row as GlobalLeaderboardEntry).compositeScore ?? 0
-            : (row as LeaderboardEntry).bestScore ?? 0
-          const tier = viewMode === 'global' ? (row as GlobalLeaderboardEntry).tier : null
+          const score = row.compositeScore ?? 0
           const pp = PODIUM_PROPS[i]
 
           return (
@@ -125,7 +119,7 @@ function Podium({ top3, profiles, viewMode, currentUser }: {
                 <div className="text-center space-y-0.5">
                   <p className={`font-semibold truncate ${i === 1 ? 'max-w-[90px] text-sm' : 'max-w-[72px] text-xs'} group-hover:text-primary transition-colors`}>{name}</p>
                   {isMe && <p className="text-[10px] text-primary font-semibold">You</p>}
-                  {tier && <TierBadge tier={tier} />}
+                  <TierBadge tier={row.tier} />
                 </div>
               </Link>
               <div className={`w-[4.5rem] sm:w-20 rounded-t-xl ${pp.barH} bg-gradient-to-t ${PODIUM_GRADIENTS[i]} border flex items-start justify-center pt-2`}>
@@ -144,9 +138,7 @@ function Podium({ top3, profiles, viewMode, currentUser }: {
 export default function LeaderboardPage() {
   const router = useRouter()
   const { currentUser } = useAuth()
-  const [viewMode, setViewMode] = useState<'global' | 'game'>('global')
-  const [selectedGameId, setSelectedGameId] = useState(defaultGames[0]?.id || '')
-  const [rows, setRows] = useState<(LeaderboardEntry | GlobalLeaderboardEntry)[]>([])
+  const [rows, setRows] = useState<GlobalLeaderboardEntry[]>([])
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -156,22 +148,16 @@ export default function LeaderboardPage() {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
   }, [currentUser, router])
 
-  const activeGame = useMemo(() => defaultGames.find((g) => g.id === selectedGameId) || null, [selectedGameId])
-
   useEffect(() => {
     let cancelled = false
     setLoading(true); setError(null); setRows([]); setProfiles({}); setSearch('')
 
-    const url = viewMode === 'global'
-      ? '/api/leaderboard?mode=global'
-      : `/api/leaderboard?mode=game&gameId=${encodeURIComponent(selectedGameId)}`
-
-    fetch(url)
+    fetch('/api/leaderboard?mode=global')
       .then(async (res) => {
         const payload = await res.json().catch(() => ({}))
         if (!res.ok) throw new Error(payload.error || 'Failed to load leaderboard')
         if (cancelled) return
-        const entries = (payload.entries ?? []) as (LeaderboardEntry | GlobalLeaderboardEntry)[]
+        const entries = (payload.entries ?? []) as GlobalLeaderboardEntry[]
         const top = entries.slice(0, TOP_COUNT)
         setRows(top)
         const profileMap = await fetchProfiles(top.map((r) => r.uid))
@@ -181,7 +167,7 @@ export default function LeaderboardPage() {
       .finally(() => { if (!cancelled) setLoading(false) })
 
     return () => { cancelled = true }
-  }, [selectedGameId, viewMode])
+  }, [])
 
   const filteredRows = useMemo(() => {
     if (!search.trim()) return rows
@@ -196,12 +182,7 @@ export default function LeaderboardPage() {
   if (!currentUser) return null
 
   const myRank = rows.findIndex((r) => r.uid === currentUser.uid) + 1
-  const metricLabel = viewMode === 'global' ? 'Skill Score' : 'Best Score'
-  const maxScore = rows[0]
-    ? viewMode === 'global'
-      ? (rows[0] as GlobalLeaderboardEntry).compositeScore ?? 1
-      : (rows[0] as LeaderboardEntry).bestScore ?? 1
-    : 1
+  const maxScore = rows[0]?.compositeScore ?? 1
 
   return (
     <div className="min-h-screen gradient-bg">
@@ -217,23 +198,15 @@ export default function LeaderboardPage() {
           </Button>
           <div className="flex-1 flex items-center justify-center gap-2">
             <span className="text-lg select-none">🏆</span>
-            <h1 className="text-lg font-bold tracking-tight">Leaderboard</h1>
+            <h1 className="text-lg font-bold tracking-tight">Global Leaderboard</h1>
           </div>
           <ThemeToggle />
         </div>
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 pb-3 flex items-center justify-between gap-4">
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as typeof viewMode)}>
-            <TabsList className="h-8">
-              <TabsTrigger value="global" className="text-xs px-4">All Games</TabsTrigger>
-              <TabsTrigger value="game" className="text-xs px-4">By Game</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          {!loading && rows.length > 0 && (
-            <span className="text-xs text-muted-foreground tabular-nums hidden sm:block">
-              {rows.length} players ranked
-            </span>
-          )}
-        </div>
+        {!loading && rows.length > 0 && (
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 pb-3 flex items-center justify-end">
+            <span className="text-xs text-muted-foreground tabular-nums">{rows.length} players ranked</span>
+          </div>
+        )}
       </header>
 
       <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-12">
@@ -243,183 +216,129 @@ export default function LeaderboardPage() {
           </div>
         )}
 
-        <div className="flex gap-5">
-          {viewMode === 'game' && (
-            <aside className="hidden lg:block w-56 shrink-0">
-              <div className="surface sticky top-28 overflow-hidden">
-                <div className="px-4 py-3 border-b border-border">
-                  <p className="text-sm font-semibold">Select Game</p>
-                </div>
-                <div className="max-h-[calc(100vh-12rem)] overflow-y-auto">
-                  {defaultGames.map((game) => (
-                    <button
-                      key={game.id}
-                      type="button"
-                      onClick={() => setSelectedGameId(game.id)}
-                      className={`w-full text-left px-4 py-2.5 text-sm transition-colors border-l-2 ${
-                        selectedGameId === game.id
-                          ? 'bg-accent text-accent-foreground border-primary font-medium'
-                          : 'border-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
-                      }`}
-                    >
-                      {game.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </aside>
-          )}
-
-          <div className="flex-1 min-w-0 space-y-4">
-            {viewMode === 'game' && (
-              <div className="lg:hidden">
-                <Select value={selectedGameId} onValueChange={setSelectedGameId}>
-                  <SelectTrigger className="w-full h-10 font-medium text-sm">
-                    <SelectValue placeholder="Select a game" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[40vh] overflow-y-auto">
-                    {defaultGames.map((game) => (
-                      <SelectItem key={game.id} value={game.id}>{game.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {loading ? (
-              <div className="surface overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-border">
-                  <Skeleton className="h-5 w-36" />
-                </div>
-                <div className="divide-y divide-border">
-                  {Array.from({ length: 7 }).map((_, i) => <SkeletonRow key={i} />)}
-                </div>
-              </div>
-            ) : (
-              <>
-                {rows.length >= 3 && (
-                  <Podium top3={rows.slice(0, 3)} profiles={profiles} viewMode={viewMode} currentUser={currentUser} />
-                )}
-
-                <div className="surface overflow-hidden animate-fade-in">
-                  <div className="px-5 py-3.5 border-b border-border flex items-center gap-3">
-                    <h2 className="font-semibold text-sm flex-1">
-                      {viewMode === 'global' ? 'Global Rankings' : activeGame?.name}
-                    </h2>
-                    <div className="relative w-36 sm:w-48 shrink-0">
-                      <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
-                      </svg>
-                      <Input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search players…"
-                        className="pl-8 h-8 text-xs bg-muted/50"
-                      />
-                    </div>
-                    <span className="text-xs text-muted-foreground font-medium shrink-0 hidden sm:block">{metricLabel}</span>
-                  </div>
-
-                  <div className="divide-y divide-border/60">
-                    {filteredRows.length === 0 ? (
-                      <div className="py-16 text-center">
-                        <p className="text-4xl mb-3 select-none">{search ? '🔍' : '🏆'}</p>
-                        <p className="font-semibold">{search ? 'No players found' : 'No scores yet'}</p>
-                        <p className="text-sm text-muted-foreground mt-1">{search ? 'Try a different name' : 'Be the first to play!'}</p>
-                      </div>
-                    ) : (
-                      filteredRows.map((row, filteredIdx) => {
-                        const rank = rows.indexOf(row) + 1
-                        const profile = profiles[row.uid]
-                        const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
-                        const isMe = row.uid === currentUser?.uid
-                        const score = viewMode === 'global'
-                          ? (row as GlobalLeaderboardEntry).compositeScore ?? 0
-                          : (row as LeaderboardEntry).bestScore ?? 0
-                        const pct = maxScore > 0 ? (score / maxScore) * 100 : 0
-                        const tier = viewMode === 'global' ? (row as GlobalLeaderboardEntry).tier : null
-                        const gamesPlayed = viewMode === 'global' ? (row as GlobalLeaderboardEntry).gamesPlayed ?? null : null
-                        const ringClass = tier ? TIER_CONFIG[tier].ring : 'ring-border/60'
-
-                        const scoreColor = rank === 1 ? 'text-yellow-600 dark:text-yellow-400'
-                          : rank === 2 ? 'text-slate-500 dark:text-slate-300'
-                          : rank === 3 ? 'text-amber-600 dark:text-amber-400'
-                          : 'text-foreground'
-
-                        const topBarColor = rank === 1 ? 'bg-yellow-400'
-                          : rank === 2 ? 'bg-slate-400'
-                          : rank === 3 ? 'bg-amber-600'
-                          : 'bg-transparent'
-
-                        return (
-                          <div
-                            key={row.uid}
-                            className={`relative flex items-center gap-3 px-5 py-3.5 transition-colors animate-slide-up ${
-                              isMe ? 'bg-primary/5 dark:bg-primary/8' : 'hover:bg-muted/40'
-                            }`}
-                            style={{ animationDelay: `${filteredIdx * 25}ms` }}
-                          >
-                            {/* Side accent for top 3 and current user */}
-                            <div className={`absolute left-0 top-0 bottom-0 w-0.5 rounded-r ${isMe ? 'bg-primary' : topBarColor}`} />
-
-                            <div className="w-8 flex items-center justify-center shrink-0">
-                              <RankChip rank={rank} />
-                            </div>
-
-                            <Link href={isMe ? '/profile' : `/profile/${row.uid}`} className="shrink-0">
-                              <Avatar className={`h-10 w-10 ring-1 ${ringClass} ring-offset-1 ring-offset-background hover:scale-105 transition-transform`}>
-                                <AvatarImage src={profile?.photoThumbURL} />
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                              </Avatar>
-                            </Link>
-
-                            <div className="flex-1 min-w-0 relative overflow-hidden">
-                              {/* Score progress bar */}
-                              <div
-                                className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary/8 to-transparent rounded-r pointer-events-none transition-[width] duration-700"
-                                style={{ width: `${pct}%` }}
-                              />
-                              <div className="relative">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  <Link
-                                    href={isMe ? '/profile' : `/profile/${row.uid}`}
-                                    className="text-sm font-semibold truncate max-w-[130px] sm:max-w-[180px] hover:text-primary transition-colors"
-                                  >
-                                    {name}
-                                  </Link>
-                                  {isMe && <Badge variant="secondary" className="text-[10px] h-4 px-1.5 shrink-0">You</Badge>}
-                                </div>
-                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                  {tier && <TierBadge tier={tier} />}
-                                  {gamesPlayed !== null && (
-                                    <span className="text-[11px] text-muted-foreground">{gamesPlayed} game{gamesPlayed !== 1 ? 's' : ''}</span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-
-                            <span className={`text-sm font-bold tabular-nums shrink-0 ${scoreColor}`}>
-                              {score.toLocaleString()}
-                            </span>
-                          </div>
-                        )
-                      })
-                    )}
-                  </div>
-
-                  {/* Your rank footer — shown when user is outside top 10 */}
-                  {myRank > 10 && !search && (
-                    <div className="border-t border-border/60 bg-primary/5 px-5 py-3 flex items-center gap-2.5">
-                      <span className="text-xs text-muted-foreground">Your rank</span>
-                      <Badge variant="outline" className="text-xs font-bold px-2">#{myRank}</Badge>
-                      <span className="text-xs text-muted-foreground">of {rows.length} players</span>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+        {loading ? (
+          <div className="surface overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-border">
+              <Skeleton className="h-5 w-36" />
+            </div>
+            <div className="divide-y divide-border">
+              {Array.from({ length: 7 }).map((_, i) => <SkeletonRow key={i} />)}
+            </div>
           </div>
-        </div>
+        ) : (
+          <>
+            {rows.length >= 3 && (
+              <Podium top3={rows.slice(0, 3)} profiles={profiles} currentUser={currentUser} />
+            )}
+
+            <div className="surface overflow-hidden animate-fade-in">
+              <div className="px-5 py-3.5 border-b border-border flex items-center gap-3">
+                <h2 className="font-semibold text-sm flex-1">Global Rankings</h2>
+                <div className="relative w-36 sm:w-48 shrink-0">
+                  <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
+                  </svg>
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search players…"
+                    className="pl-8 h-8 text-xs bg-muted/50"
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium shrink-0 hidden sm:block">Skill Score</span>
+              </div>
+
+              <div className="divide-y divide-border/60">
+                {filteredRows.length === 0 ? (
+                  <div className="py-16 text-center">
+                    <p className="text-4xl mb-3 select-none">{search ? '🔍' : '🏆'}</p>
+                    <p className="font-semibold">{search ? 'No players found' : 'No scores yet'}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{search ? 'Try a different name' : 'Be the first to play!'}</p>
+                  </div>
+                ) : (
+                  filteredRows.map((row, filteredIdx) => {
+                    const rank = rows.indexOf(row) + 1
+                    const profile = profiles[row.uid]
+                    const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
+                    const isMe = row.uid === currentUser?.uid
+                    const score = row.compositeScore ?? 0
+                    const pct = maxScore > 0 ? (score / maxScore) * 100 : 0
+                    const ringClass = TIER_CONFIG[row.tier].ring
+
+                    const scoreColor = rank === 1 ? 'text-yellow-600 dark:text-yellow-400'
+                      : rank === 2 ? 'text-slate-500 dark:text-slate-300'
+                      : rank === 3 ? 'text-amber-600 dark:text-amber-400'
+                      : 'text-foreground'
+
+                    const topBarColor = rank === 1 ? 'bg-yellow-400'
+                      : rank === 2 ? 'bg-slate-400'
+                      : rank === 3 ? 'bg-amber-600'
+                      : 'bg-transparent'
+
+                    return (
+                      <div
+                        key={row.uid}
+                        className={`relative flex items-center gap-3 px-5 py-3.5 transition-colors animate-slide-up ${
+                          isMe ? 'bg-primary/5 dark:bg-primary/8' : 'hover:bg-muted/40'
+                        }`}
+                        style={{ animationDelay: `${filteredIdx * 25}ms` }}
+                      >
+                        <div className={`absolute left-0 top-0 bottom-0 w-0.5 rounded-r ${isMe ? 'bg-primary' : topBarColor}`} />
+
+                        <div className="w-8 flex items-center justify-center shrink-0">
+                          <RankChip rank={rank} />
+                        </div>
+
+                        <Link href={isMe ? '/profile' : `/profile/${row.uid}`} className="shrink-0">
+                          <Avatar className={`h-10 w-10 ring-1 ${ringClass} ring-offset-1 ring-offset-background hover:scale-105 transition-transform`}>
+                            <AvatarImage src={profile?.photoThumbURL} />
+                            <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                        </Link>
+
+                        <div className="flex-1 min-w-0 relative overflow-hidden">
+                          <div
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary/8 to-transparent rounded-r pointer-events-none transition-[width] duration-700"
+                            style={{ width: `${pct}%` }}
+                          />
+                          <div className="relative">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <Link
+                                href={isMe ? '/profile' : `/profile/${row.uid}`}
+                                className="text-sm font-semibold truncate max-w-[130px] sm:max-w-[180px] hover:text-primary transition-colors"
+                              >
+                                {name}
+                              </Link>
+                              {isMe && <Badge variant="secondary" className="text-[10px] h-4 px-1.5 shrink-0">You</Badge>}
+                            </div>
+                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                              <TierBadge tier={row.tier} />
+                              {row.gamesPlayed != null && (
+                                <span className="text-[11px] text-muted-foreground">{row.gamesPlayed} game{row.gamesPlayed !== 1 ? 's' : ''}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <span className={`text-sm font-bold tabular-nums shrink-0 ${scoreColor}`}>
+                          {score.toLocaleString()}
+                        </span>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+
+              {myRank > 10 && !search && (
+                <div className="border-t border-border/60 bg-primary/5 px-5 py-3 flex items-center gap-2.5">
+                  <span className="text-xs text-muted-foreground">Your rank</span>
+                  <Badge variant="outline" className="text-xs font-bold px-2">#{myRank}</Badge>
+                  <span className="text-xs text-muted-foreground">of {rows.length} players</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </main>
     </div>
   )
