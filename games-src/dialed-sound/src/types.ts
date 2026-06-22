@@ -1,4 +1,4 @@
-export type GamePhase = 'START' | 'MEMORIZE' | 'GUESS' | 'RESULTS' | 'SUMMARY';
+export type GamePhase = 'START' | 'COUNTDOWN' | 'MEMORIZE' | 'GUESS' | 'RESULTS' | 'SUMMARY';
 
 export interface RoundData {
   targetFreq: number;

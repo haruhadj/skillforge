@@ -17,6 +17,7 @@ function postToParent(event: string, data: unknown) {
 // Import components
 import Waveform from './components/Waveform';
 import PhaseStart from './components/PhaseStart';
+import PhaseCountdown from './components/PhaseCountdown';
 import PhaseMemorize from './components/PhaseMemorize';
 import PhaseInput from './components/PhaseInput';
 import PhaseResults from './components/PhaseResults';
@@ -111,7 +112,10 @@ export default function App() {
 
   // Handle setting appropriate wave theme depending on the active game phase
   useEffect(() => {
-    if (phase === 'MEMORIZE') {
+    if (phase === 'COUNTDOWN') {
+      setWaveTheme('idle');
+      setWaveActive(false);
+    } else if (phase === 'MEMORIZE') {
       setWaveTheme('target');
       if (rounds[currentRoundIndex - 1]) {
         setWaveFreq(rounds[currentRoundIndex - 1].targetFreq);
@@ -143,7 +147,7 @@ export default function App() {
     setPlayCount(0);
     setTimeLeft(GAME_TIME_LIMIT);
     setWaveFreq(newRounds[0].targetFreq);
-    setPhase('MEMORIZE');
+    setPhase('COUNTDOWN');
   };
 
   const handleNextPhase = () => {
@@ -186,13 +190,13 @@ export default function App() {
       setCurrentRoundIndex(nextIdx);
       setPlayCount(0);
       setTimeLeft(GAME_TIME_LIMIT);
-      
+
       const nextRound = rounds[nextIdx - 1];
       if (nextRound) {
         setWaveFreq(nextRound.targetFreq);
       }
-      
-      setPhase('MEMORIZE');
+
+      setPhase('COUNTDOWN');
     } else {
       // Game Over, compile summary
       const totalScore = rounds.reduce((acc, r) => acc + (r.score || 0), 0);
@@ -251,6 +255,19 @@ export default function App() {
                 onStart={handleStartGame}
                 highScore={highScore}
               />
+            </motion.div>
+          )}
+
+          {phase === 'COUNTDOWN' && (
+            <motion.div
+              key="countdown"
+              className="w-full h-full absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <PhaseCountdown onComplete={() => setPhase('MEMORIZE')} />
             </motion.div>
           )}
 

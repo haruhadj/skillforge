@@ -30,8 +30,12 @@ export default function PhaseMemorize({
 
   const durationSecs = 3;
 
+  const MAX_PLAYS = 3;
+
   const handlePlayTone = () => {
-    if (isPlaying) return;
+    if (isPlaying || playCount >= MAX_PLAYS) return;
+
+    const isLastPlay = playCount + 1 >= MAX_PLAYS;
 
     setIsPlaying(true);
     setWaveActive(true);
@@ -42,6 +46,7 @@ export default function PhaseMemorize({
       setIsPlaying(false);
       setWaveActive(false);
       setProgress(0);
+      if (isLastPlay) onNextPhase();
     });
   };
 
@@ -90,9 +95,9 @@ export default function PhaseMemorize({
           </span>
         </div>
         <div className="text-right">
-          <span className="text-xs uppercase font-bold tracking-widest text-zinc-500 block">Focused Time</span>
+          <span className="text-xs uppercase font-bold tracking-widest text-zinc-500 block">Plays Left</span>
           <span className="text-lg font-mono font-bold text-cyan-400">
-            {timeLeft}s To Remember
+            {Math.max(0, 3 - playCount)} / 3
           </span>
         </div>
       </div>
@@ -131,13 +136,15 @@ export default function PhaseMemorize({
           {/* Core Interactive Center Button */}
           <motion.button
             id="btn-play-target"
-            whileHover={{ scale: isPlaying ? 1 : 1.05 }}
-            whileTap={{ scale: isPlaying ? 1 : 0.95 }}
+            whileHover={{ scale: isPlaying || playCount >= 3 ? 1 : 1.05 }}
+            whileTap={{ scale: isPlaying || playCount >= 3 ? 1 : 0.95 }}
             onClick={handlePlayTone}
-            disabled={isPlaying}
+            disabled={isPlaying || playCount >= 3}
             className={`w-48 h-48 rounded-full flex flex-col items-center justify-center border transition-all duration-300 relative cursor-pointer ${
               isPlaying
                 ? 'bg-purple-950/20 border-purple-500/40 shadow-inner'
+                : playCount >= 3
+                ? 'bg-zinc-950/40 border-zinc-800/40 opacity-50 cursor-not-allowed'
                 : 'bg-zinc-950 border-zinc-800 hover:border-purple-500/50 hover:bg-zinc-900/40 shadow-xl shadow-black/80'
             }`}
           >
@@ -157,10 +164,10 @@ export default function PhaseMemorize({
             )}
             
             <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 font-mono">
-              {isPlaying ? "PLAYING TARGET" : "REPLAY TONE"}
+              {isPlaying ? "PLAYING TARGET" : playCount >= 3 ? "MAX PLAYS" : "REPLAY TONE"}
             </span>
             <span className="text-[8px] text-zinc-600 font-mono mt-1 font-bold">
-              3 SECONDS TO MEMORIZE
+              {playCount >= 3 ? "GOING TO GUESS..." : "3 SECONDS TO MEMORIZE"}
             </span>
           </motion.button>
         </div>
