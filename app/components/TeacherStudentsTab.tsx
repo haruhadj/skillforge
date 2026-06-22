@@ -140,43 +140,83 @@ export default function TeacherStudentsTab() {
                       <p className="py-4 text-sm text-center text-slate-400 dark:text-gray-500">
                         This student has not played any games yet.
                       </p>
-                    ) : detail ? (
-                      <div className="overflow-x-auto -mx-4 px-4">
-                        <table className="w-full text-sm min-w-[500px]">
-                          <thead>
-                            <tr className="text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">
-                              <th className="text-left pb-2 pr-4">Game</th>
-                              <th className="text-right pb-2 px-4">Best Score</th>
-                              <th className="text-right pb-2 px-4">Matches</th>
-                              <th className="text-right pb-2 px-4">Avg Score</th>
-                              <th className="text-right pb-2 pl-4">Last Played</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 dark:divide-gray-800">
-                            {Object.entries(detail.scores)
-                              .sort((a, b) => (b[1].updatedAt?.getTime() || 0) - (a[1].updatedAt?.getTime() || 0))
-                              .map(([gameId, score]) => {
-                                const stat = detail.stats[gameId] as Record<string, unknown> | undefined
-                                const matches = Number(stat?.totalMatchCount) || 0
-                                const avg = Number(stat?.combinedAverageScore) || 0
-                                return (
-                                  <tr key={gameId} className="text-slate-700 dark:text-gray-300">
-                                    <td className="py-2 pr-4 font-medium truncate max-w-[160px]">{gameName(gameId)}</td>
+                    ) : detail ? (() => {
+                      const entries = Object.entries(detail.scores)
+                        .sort((a, b) => (b[1].updatedAt?.getTime() || 0) - (a[1].updatedAt?.getTime() || 0))
+                        .map(([gameId, score]) => {
+                          const stat = detail.stats[gameId] as Record<string, unknown> | undefined
+                          return {
+                            gameId,
+                            name: gameName(gameId),
+                            best: score.bestScore,
+                            matches: Number(stat?.totalMatchCount) || 0,
+                            avg: Number(stat?.combinedAverageScore) || 0,
+                            last: formatDate(score.updatedAt),
+                          }
+                        })
+
+                      return (
+                        <>
+                          {/* Mobile: stacked cards */}
+                          <div className="space-y-2 sm:hidden">
+                            {entries.map((e) => (
+                              <div key={e.gameId} className="rounded-xl border border-slate-200/60 dark:border-gray-700/60 p-3">
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className="font-medium text-sm text-slate-800 dark:text-white truncate">{e.name}</p>
+                                  <span className="shrink-0 text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                                    {e.best.toLocaleString()}
+                                  </span>
+                                </div>
+                                <dl className="mt-2 grid grid-cols-3 gap-2 text-center">
+                                  <div>
+                                    <dt className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-gray-500">Matches</dt>
+                                    <dd className="text-sm tabular-nums text-slate-700 dark:text-gray-300">{e.matches}</dd>
+                                  </div>
+                                  <div>
+                                    <dt className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-gray-500">Avg</dt>
+                                    <dd className="text-sm tabular-nums text-slate-700 dark:text-gray-300">{e.avg > 0 ? e.avg.toFixed(0) : '—'}</dd>
+                                  </div>
+                                  <div>
+                                    <dt className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-gray-500">Last</dt>
+                                    <dd className="text-xs text-slate-500 dark:text-gray-400">{e.last}</dd>
+                                  </div>
+                                </dl>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Desktop: table */}
+                          <div className="hidden sm:block overflow-x-auto -mx-4 px-4">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="text-xs font-semibold text-slate-400 dark:text-gray-500 uppercase tracking-wider">
+                                  <th className="text-left pb-2 pr-4">Game</th>
+                                  <th className="text-right pb-2 px-4">Best Score</th>
+                                  <th className="text-right pb-2 px-4">Matches</th>
+                                  <th className="text-right pb-2 px-4">Avg Score</th>
+                                  <th className="text-right pb-2 pl-4">Last Played</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100 dark:divide-gray-800">
+                                {entries.map((e) => (
+                                  <tr key={e.gameId} className="text-slate-700 dark:text-gray-300">
+                                    <td className="py-2 pr-4 font-medium truncate max-w-[160px]">{e.name}</td>
                                     <td className="py-2 px-4 text-right tabular-nums text-emerald-600 dark:text-emerald-400 font-semibold">
-                                      {score.bestScore.toLocaleString()}
+                                      {e.best.toLocaleString()}
                                     </td>
-                                    <td className="py-2 px-4 text-right tabular-nums">{matches}</td>
-                                    <td className="py-2 px-4 text-right tabular-nums">{avg > 0 ? avg.toFixed(0) : '—'}</td>
+                                    <td className="py-2 px-4 text-right tabular-nums">{e.matches}</td>
+                                    <td className="py-2 px-4 text-right tabular-nums">{e.avg > 0 ? e.avg.toFixed(0) : '—'}</td>
                                     <td className="py-2 pl-4 text-right text-xs text-slate-400 dark:text-gray-500">
-                                      {formatDate(score.updatedAt)}
+                                      {e.last}
                                     </td>
                                   </tr>
-                                )
-                              })}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : null}
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </>
+                      )
+                    })() : null}
                   </div>
                 )}
               </div>

@@ -8,6 +8,7 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { getUserProfile } from '@/app/services/userProfileService'
 import { defaultGames } from '@/app/games/games'
 import ThemeToggle from '@/app/components/ThemeToggle'
+import MobileNav from '@/app/components/MobileNav'
 import { GlobalLeaderboardEntry, UserProfile } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -209,7 +210,7 @@ export default function LeaderboardPage() {
         )}
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-12">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-24 md:pb-12">
         {error && (
           <div className="surface border border-destructive/30 p-4 text-destructive text-sm text-center mb-4">
             {error.includes('permission') ? 'Missing Firestore permissions.' : error}
@@ -340,6 +341,8 @@ export default function LeaderboardPage() {
           </>
         )}
       </main>
+
+      <MobileNav />
     </div>
   )
 }

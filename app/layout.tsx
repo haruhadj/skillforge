@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
 import { AuthProvider } from '@/app/contexts/AuthContext'
@@ -18,6 +18,19 @@ export const metadata: Metadata = {
   },
 }
 
+// Mobile-first viewport. `viewportFit: 'cover'` is required for the
+// env(safe-area-inset-*) padding used by the admin/teacher mobile tab bars
+// to resolve to non-zero values on notched devices.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f6f6f7' },
+    { media: '(prefers-color-scheme: dark)', color: '#111114' },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -34,11 +47,16 @@ export default function RootLayout({
             <Footer />
             <Toaster
               position="top-right"
+              containerStyle={{
+                top: 'calc(env(safe-area-inset-top) + 1rem)',
+                right: 'calc(env(safe-area-inset-right) + 1rem)',
+              }}
               toastOptions={{
                 duration: 3500,
                 style: {
                   borderRadius: '12px',
                   fontSize: '14px',
+                  maxWidth: 'calc(100vw - 2rem)',
                 },
               }}
             />

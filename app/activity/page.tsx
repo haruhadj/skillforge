@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { getUserProfile } from '@/app/services/userProfileService'
 import ThemeToggle from '@/app/components/ThemeToggle'
+import MobileNav from '@/app/components/MobileNav'
 import { getRecentActivity, getGlobalRecentActivity } from '@/app/services/gameDataService'
 import { defaultGames } from '@/app/games/games'
 import { RecentActivityItem, UserProfile } from '@/app/types'
@@ -182,7 +183,7 @@ export default function ActivityPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-12 min-h-[calc(100vh-140px)]">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-24 md:pb-12 min-h-[calc(100vh-140px)]">
         {isLoading ? (
           <div className="space-y-0 rounded-lg border border-border overflow-hidden bg-card">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -295,6 +296,8 @@ export default function ActivityPage() {
           </div>
         )}
       </main>
+
+      <MobileNav />
     </>
   )
 }

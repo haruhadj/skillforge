@@ -15,6 +15,14 @@ body {
 
 html {
   scroll-behavior: smooth;
+  /* Stop iOS from inflating text in landscape; keep mobile typography intentional */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Remove the grey tap-flash on touch devices for a native-app feel */
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 button, a, input, select, textarea {

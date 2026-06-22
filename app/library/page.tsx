@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
+import MobileNav from '@/app/components/MobileNav'
 import { getUserProfile, getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
 import { getActiveAnnouncements } from '@/app/services/adminService'
 import { isAdmin } from '@/app/services/adminService'
@@ -284,7 +285,7 @@ export default function LibraryPage() {
       )}
 
       {/* Main content */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-24 md:pb-8">
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
@@ -404,6 +405,8 @@ export default function LibraryPage() {
           </div>
         )}
       </main>
+
+      <MobileNav />
     </div>
   )
 }

@@ -88,16 +88,50 @@ function GameRow({ g, rank }: { g: GameLearningAnalytics; rank: number }) {
         <PerformanceBar score={g.normalizedAvgScore} gapLevel={g.gapLevel} />
       </td>
       <td className="py-3 pr-4">
-        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${GAP_BADGE[g.gapLevel]}`}>
-          {g.gapLevel === 'critical' && (
-            <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-            </svg>
-          )}
-          {g.gapLevel}
-        </span>
+        <GapBadge gapLevel={g.gapLevel} />
       </td>
     </tr>
+  )
+}
+
+function GapBadge({ gapLevel }: { gapLevel: string }) {
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${GAP_BADGE[gapLevel]}`}>
+      {gapLevel === 'critical' && (
+        <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+        </svg>
+      )}
+      {gapLevel}
+    </span>
+  )
+}
+
+function GameCard({ g, rank }: { g: GameLearningAnalytics; rank: number }) {
+  const subjectColor = SUBJECT_COLORS[g.subject] || 'slate'
+  return (
+    <div className="rounded-xl border border-slate-100 dark:border-gray-700/50 p-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 dark:text-gray-500 tabular-nums shrink-0">#{rank}</span>
+            <span className="font-medium text-sm text-slate-800 dark:text-white truncate">{g.gameName}</span>
+          </div>
+          <div className={`mt-0.5 text-[10px] font-medium text-${subjectColor}-600 dark:text-${subjectColor}-400`}>
+            {g.subject}
+          </div>
+        </div>
+        <div className="shrink-0">
+          <GapBadge gapLevel={g.gapLevel} />
+        </div>
+      </div>
+      <div className="mt-2.5 flex items-center gap-3">
+        <span className="text-xs text-slate-500 dark:text-gray-400 shrink-0 tabular-nums">
+          {g.playCount} player{g.playCount !== 1 ? 's' : ''}
+        </span>
+        <PerformanceBar score={g.normalizedAvgScore} gapLevel={g.gapLevel} />
+      </div>
+    </div>
   )
 }
 
@@ -294,7 +328,22 @@ export default function AdminAnalyticsTab() {
             <h3 className="font-semibold text-slate-900 dark:text-white">Learning Gap Matrix</h3>
             <p className="mt-0.5 text-xs text-slate-500 dark:text-gray-400">Ranked by gap severity — click columns to sort</p>
           </div>
-          <div className="overflow-x-auto">
+          {/* Mobile: sort control + stacked cards */}
+          <div className="sm:hidden">
+            <div className="flex items-center justify-end gap-4 px-4 py-2 border-b border-slate-100 dark:border-gray-700/50">
+              <SortBtn k="playCount" label="Players" />
+              <SortBtn k="normalizedAvgScore" label="Avg" />
+              <SortBtn k="gapScore" label="Gap" />
+            </div>
+            <div className="space-y-2 p-3">
+              {sortedGames.map((g, i) => (
+                <GameCard key={g.gameId} g={g} rank={i + 1} />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50/80 dark:bg-gray-800/50">

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
+import MobileNav from '@/app/components/MobileNav'
 import * as gameDataService from '@/app/services/gameDataService'
 import {
   claimUsername,
@@ -219,7 +220,7 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-8 space-y-5">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-8 pb-24 md:pb-8 space-y-5">
         {loading ? (
           <div className="surface p-8">
             <div className="flex items-center gap-6">
@@ -471,6 +472,8 @@ export default function ProfilePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <MobileNav />
     </div>
   )
 }
