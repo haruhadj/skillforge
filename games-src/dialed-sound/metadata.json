@@ -1,0 +1,6 @@
+{
+  "name": "Dialed Sound",
+  "description": "An interactive audio pitch training game where you listen to a target tone and tune a vertical slider to recreate it exactly.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -201,10 +201,10 @@ export const defaultGames: Game[] = [
     category: 'Memory',
   },
   {
-    id: 'pitch-perfect',
-    name: 'Pitch Perfect',
-    iframePath: '/games/pitch-perfect/index.html',
-    description: 'Listen to a mystery tone (80–1200 Hz) then tune a logarithmic slider to match it exactly. Score up to 50 points per round across 5 rounds — under 2 cents earns a perfect score.',
+    id: 'dialed-sound',
+    name: 'Dialed Sound',
+    iframePath: '/games/dialed-sound/index.html',
+    description: 'Hear a target pitch, then drag a tactile slider to recreate it exactly. Score up to 10 points per round across 5 rounds — precision under 2 cents earns a perfect match.',
     category: 'Music',
   },
 ]
