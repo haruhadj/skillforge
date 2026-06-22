@@ -11,6 +11,7 @@ import {
 import { User as FirebaseUser } from 'firebase/auth'
 import { UserProfile } from '@/app/types'
 import { FieldValue } from 'firebase/firestore'
+import type { DeviceInfo } from '@/app/lib/deviceInfo'
 
 export const USERNAME_REGEX = /^[A-Za-z0-9_]{3,20}$/
 
@@ -242,9 +243,13 @@ interface EnsureProfilePayload {
   username?: string
   usernameNormalized?: string
   profileCompleted?: boolean
+  deviceType?: string
+  deviceOs?: string
+  deviceBrowser?: string
+  deviceLastSeen?: ReturnType<typeof serverTimestamp>
 }
 
-export async function ensureUserProfileDocument(user: FirebaseUser | null): Promise<FirestoreUserProfile | null> {
+export async function ensureUserProfileDocument(user: FirebaseUser | null, deviceInfo?: DeviceInfo): Promise<FirestoreUserProfile | null> {
   if (!user?.uid) {
     return null
   }
@@ -255,6 +260,13 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null): Prom
     email: user.email || null,
     authProvider: resolveAuthProvider(user),
     updatedAt: serverTimestamp(),
+  }
+
+  if (deviceInfo) {
+    payload.deviceType = deviceInfo.deviceType
+    payload.deviceOs = deviceInfo.os
+    payload.deviceBrowser = deviceInfo.browser
+    payload.deviceLastSeen = serverTimestamp()
   }
 
   // Only seed photo from the provider when the profile doesn't have one yet,

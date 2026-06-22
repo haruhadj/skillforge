@@ -5,6 +5,7 @@ import {
   getLearningGapReport,
   LearningGapReport,
   GameLearningAnalytics,
+  DeviceStats,
   SUBJECT_COLORS,
 } from '@/app/services/analyticsService'
 
@@ -163,6 +164,130 @@ function generateInsights(report: LearningGapReport): string[] {
     insights.push(`${lowEngagementCritical.map((g) => g.gameName).join(', ')} ${lowEngagementCritical.length > 1 ? 'are' : 'is'} widely played but show poor performance — these games may need difficulty calibration or targeted review.`)
   }
   return insights.slice(0, 4)
+}
+
+const DEVICE_COLORS: Record<string, string> = {
+  mobile: 'bg-indigo-500',
+  tablet: 'bg-violet-500',
+  desktop: 'bg-cyan-500',
+}
+
+const DEVICE_TEXT: Record<string, string> = {
+  mobile: 'text-indigo-600 dark:text-indigo-400',
+  tablet: 'text-violet-600 dark:text-violet-400',
+  desktop: 'text-cyan-600 dark:text-cyan-400',
+}
+
+function DeviceUsageCard({ stats }: { stats: DeviceStats }) {
+  if (stats.total === 0) {
+    return (
+      <div className="glass p-5">
+        <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+          <svg className="h-4 w-4 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm10 0a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+          </svg>
+          Device Usage
+        </h3>
+        <p className="text-sm text-slate-500 dark:text-gray-400">No device data yet — will populate as users sign in.</p>
+      </div>
+    )
+  }
+
+  const deviceOrder = ['mobile', 'tablet', 'desktop']
+  const sortedDevices = deviceOrder
+    .filter((d) => stats.deviceTypes[d] !== undefined)
+    .concat(Object.keys(stats.deviceTypes).filter((d) => !deviceOrder.includes(d)))
+
+  const topOses = Object.entries(stats.oses).sort((a, b) => b[1] - a[1]).slice(0, 5)
+  const topBrowsers = Object.entries(stats.browsers).sort((a, b) => b[1] - a[1]).slice(0, 5)
+
+  return (
+    <div className="glass p-5 space-y-5">
+      <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+        <svg className="h-4 w-4 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm10 0a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+        </svg>
+        Device Usage
+        <span className="ml-auto text-xs font-normal text-slate-400 dark:text-gray-500">{stats.total} users tracked</span>
+      </h3>
+
+      {/* Device type segmented bar */}
+      <div>
+        <p className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-2">Device Type</p>
+        <div className="flex h-3 w-full rounded-full overflow-hidden gap-0.5">
+          {sortedDevices.map((d) => {
+            const pct = (stats.deviceTypes[d] / stats.total) * 100
+            return (
+              <div
+                key={d}
+                className={`${DEVICE_COLORS[d] ?? 'bg-slate-400'} transition-all duration-700`}
+                style={{ width: `${pct}%` }}
+                title={`${d}: ${stats.deviceTypes[d]} (${pct.toFixed(1)}%)`}
+              />
+            )
+          })}
+        </div>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+          {sortedDevices.map((d) => {
+            const pct = ((stats.deviceTypes[d] / stats.total) * 100).toFixed(1)
+            return (
+              <div key={d} className="flex items-center gap-1.5">
+                <div className={`h-2 w-2 rounded-full ${DEVICE_COLORS[d] ?? 'bg-slate-400'}`} />
+                <span className={`text-xs font-medium capitalize ${DEVICE_TEXT[d] ?? 'text-slate-600 dark:text-gray-300'}`}>
+                  {d}
+                </span>
+                <span className="text-xs text-slate-400 dark:text-gray-500 tabular-nums">
+                  {pct}% ({stats.deviceTypes[d]})
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* OS + Browser side by side */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-2">Operating System</p>
+          <div className="space-y-2">
+            {topOses.map(([os, count]) => {
+              const pct = (count / stats.total) * 100
+              return (
+                <div key={os}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs text-slate-700 dark:text-gray-200 truncate max-w-[120px]">{os}</span>
+                    <span className="text-xs tabular-nums text-slate-500 dark:text-gray-400 ml-2">{pct.toFixed(1)}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-slate-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-indigo-400 dark:bg-indigo-500 rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 2)}%` }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        <div>
+          <p className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-2">Browser</p>
+          <div className="space-y-2">
+            {topBrowsers.map(([browser, count]) => {
+              const pct = (count / stats.total) * 100
+              return (
+                <div key={browser}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs text-slate-700 dark:text-gray-200 truncate max-w-[120px]">{browser}</span>
+                    <span className="text-xs tabular-nums text-slate-500 dark:text-gray-400 ml-2">{pct.toFixed(1)}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-slate-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-violet-400 dark:bg-violet-500 rounded-full transition-all duration-700" style={{ width: `${Math.max(pct, 2)}%` }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function AdminAnalyticsTab() {
@@ -411,6 +536,9 @@ export default function AdminAnalyticsTab() {
           </div>
         </div>
       </div>
+
+      {/* Device Usage */}
+      <DeviceUsageCard stats={report.deviceStats} />
 
       {/* Insights + At-Risk */}
       <div className="grid gap-6 sm:grid-cols-2">

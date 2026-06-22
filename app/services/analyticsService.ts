@@ -76,12 +76,20 @@ export interface StudentRiskProfile {
   riskLevel: 'high' | 'medium' | 'low'
 }
 
+export interface DeviceStats {
+  total: number
+  deviceTypes: Record<string, number>
+  oses: Record<string, number>
+  browsers: Record<string, number>
+}
+
 export interface LearningGapReport {
   gameAnalytics: GameLearningAnalytics[]
   subjectAnalytics: SubjectAnalytics[]
   atRiskStudents: StudentRiskProfile[]
   totalStudents: number
   platformAvgScore: number
+  deviceStats: DeviceStats
   generatedAt: Date
 }
 
@@ -93,12 +101,19 @@ export async function getLearningGapReport(): Promise<LearningGapReport> {
 
   const usersSnap = await getDocs(collection(db, 'users'))
   const userProfiles: Record<string, { username: string; email: string | null; role?: string }> = {}
+  const deviceStats: DeviceStats = { total: 0, deviceTypes: {}, oses: {}, browsers: {} }
   usersSnap.forEach((d: QueryDocumentSnapshot<DocumentData>) => {
     const data = d.data()
     userProfiles[d.id] = {
       username: data.username || data.email?.split('@')[0] || 'Student',
       email: data.email || null,
       role: data.role,
+    }
+    if (data.deviceType) {
+      deviceStats.total++
+      deviceStats.deviceTypes[data.deviceType] = (deviceStats.deviceTypes[data.deviceType] || 0) + 1
+      if (data.deviceOs) deviceStats.oses[data.deviceOs] = (deviceStats.oses[data.deviceOs] || 0) + 1
+      if (data.deviceBrowser) deviceStats.browsers[data.deviceBrowser] = (deviceStats.browsers[data.deviceBrowser] || 0) + 1
     }
   })
   const studentCount = Object.values(userProfiles).filter(
@@ -227,6 +242,7 @@ export async function getLearningGapReport(): Promise<LearningGapReport> {
     atRiskStudents,
     totalStudents,
     platformAvgScore,
+    deviceStats,
     generatedAt: new Date(),
   }
 }

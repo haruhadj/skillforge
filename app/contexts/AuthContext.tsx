@@ -14,6 +14,7 @@ import {
 import { auth } from '@/app/lib/firebase'
 import { AuthContextType } from '@/app/types'
 import { ensureUserProfileDocument } from '@/app/services/userProfileService'
+import { detectDevice } from '@/app/lib/deviceInfo'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -52,7 +53,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Ensure Firestore profile exists (creates if missing - fixes orphaned auth users)
       if (user) {
         try {
-          await ensureUserProfileDocument(user)
+          const deviceInfo = detectDevice()
+          await ensureUserProfileDocument(user, deviceInfo)
         } catch (err) {
           console.error('Failed to ensure user profile:', err)
         }
