@@ -117,7 +117,7 @@ export async function getLearningGapReport(): Promise<LearningGapReport> {
     }
   })
   const studentCount = Object.values(userProfiles).filter(
-    (u) => u.role !== 'admin' && u.role !== 'teacher'
+    (u) => u.role !== 'admin'
   ).length
   const totalStudents = Math.max(studentCount, 1)
 
@@ -207,7 +207,7 @@ export async function getLearningGapReport(): Promise<LearningGapReport> {
   for (const [gameId, scores] of Object.entries(scoresByGame)) {
     const maxScore = maxScoreByGame[gameId] || 1
     for (const { uid, bestScore } of scores) {
-      if (userProfiles[uid]?.role === 'admin' || userProfiles[uid]?.role === 'teacher') continue
+      if (userProfiles[uid]?.role === 'admin') continue
       if (!studentScoreMap[uid]) studentScoreMap[uid] = []
       studentScoreMap[uid].push((bestScore / maxScore) * 100)
     }

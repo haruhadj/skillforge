@@ -23,15 +23,9 @@ export async function isAdmin(uid: string): Promise<boolean> {
   return snap.exists() && snap.data().role === 'admin'
 }
 
-export async function isTeacher(uid: string): Promise<boolean> {
-  if (!uid) return false
-  const snap = await getDoc(doc(db, 'users', uid))
-  return snap.exists() && snap.data().role === 'teacher'
-}
-
-export async function setUserRole(uid: string, role: 'admin' | 'teacher' | 'user'): Promise<void> {
+export async function setUserRole(uid: string, role: 'admin' | 'user'): Promise<void> {
   if (!uid) throw new Error('Missing user id')
-  if (!['admin', 'teacher', 'user'].includes(role)) throw new Error('Invalid role')
+  if (!['admin', 'user'].includes(role)) throw new Error('Invalid role')
 
   await setDoc(doc(db, 'users', uid), { role, updatedAt: serverTimestamp() }, { merge: true })
 }

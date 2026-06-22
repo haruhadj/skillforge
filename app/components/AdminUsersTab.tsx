@@ -108,12 +108,11 @@ export default function AdminUsersTab() {
       toast.error('You cannot change your own role')
       return
     }
-    const cycle: Record<string, 'teacher' | 'admin' | 'user'> = {
-      user: 'teacher',
-      teacher: 'admin',
+    const cycle: Record<string, 'admin' | 'user'> = {
+      user: 'admin',
       admin: 'user',
     }
-    const newRole = cycle[user.role ?? 'user'] ?? 'teacher'
+    const newRole = cycle[user.role ?? 'user'] ?? 'admin'
     try {
       await setUserRole(user.uid, newRole)
       toast.success(`${user.username || user.email} is now ${newRole}`)
@@ -125,8 +124,7 @@ export default function AdminUsersTab() {
 
   const nextRoleLabel = (role: UserProfile['role']) => {
     if (role === 'admin') return 'Demote to User'
-    if (role === 'teacher') return 'Make Admin'
-    return 'Make Teacher'
+    return 'Make Admin'
   }
 
   const handleResetData = async (uid: string) => {
@@ -289,14 +287,12 @@ export default function AdminUsersTab() {
                   <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
                     user.role === 'admin'
                       ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400'
-                      : user.role === 'teacher'
-                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400'
-                        : 'bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-gray-400'
+                      : 'bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-gray-400'
                   }`}>
                     <span className={`h-1.5 w-1.5 rounded-full ${
-                      user.role === 'admin' ? 'bg-amber-500' : user.role === 'teacher' ? 'bg-emerald-500' : 'bg-slate-400'
+                      user.role === 'admin' ? 'bg-amber-500' : 'bg-slate-400'
                     }`} />
-                    {user.role === 'admin' ? 'Admin' : user.role === 'teacher' ? 'Teacher' : 'User'}
+                    {user.role === 'admin' ? 'Admin' : 'User'}
                   </span>
                   {(() => {
                     const methods = getProfileSignInMethods(user)

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 }
 
 // Mobile-first viewport. `viewportFit: 'cover'` is required for the
-// env(safe-area-inset-*) padding used by the admin/teacher mobile tab bars
+// env(safe-area-inset-*) padding used by the admin mobile tab bar
 // to resolve to non-zero values on notched devices.
 export const viewport: Viewport = {
   width: 'device-width',

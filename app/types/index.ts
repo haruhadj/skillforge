@@ -17,7 +17,7 @@ export interface UserProfile {
     facebook?: { email: string | null; linkedAt?: Date }
   }
   profileCompleted?: boolean
-  role?: 'admin' | 'teacher' | 'user'
+  role?: 'admin' | 'user'
   createdAt?: Date
   updatedAt?: Date
 }
