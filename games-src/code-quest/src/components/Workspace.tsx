@@ -85,8 +85,11 @@ export default function Workspace({
           <Code className="h-5 w-5 text-indigo-400" />
           <h3 className="text-sm font-display font-bold text-slate-100 tracking-wide">ACTIVE WORKSPACE</h3>
         </div>
-        <span className="text-[10px] font-mono bg-slate-800 text-slate-400 px-2.5 py-1 rounded-md border border-slate-700/50">
+        <span className="text-[10px] font-mono bg-slate-800 text-slate-400 px-2 py-1 rounded-md border border-slate-700/50 hidden sm:inline">
           SELECT WRITER CONTAINER TO TARGET
+        </span>
+        <span className="text-[10px] font-mono bg-indigo-950 text-indigo-300 px-2 py-1 rounded-md border border-indigo-500/30 sm:hidden">
+          TAP PANEL BELOW
         </span>
       </div>
 
@@ -127,7 +130,7 @@ export default function Workspace({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 min-h-[70px] bg-slate-950/40 p-2 rounded-lg border border-slate-900">
+          <div className="grid grid-cols-2 gap-2 min-h-[60px] bg-slate-950/40 p-2 rounded-lg border border-slate-900">
             {mainProgram.map((cmd, idx) => (
               <CommandBlockItem
                 key={cmd.id}
@@ -144,7 +147,7 @@ export default function Workspace({
             {Array.from({ length: Math.max(0, maxMainSlots - mainProgram.length) }).map((_, idx) => (
               <div
                 key={`empty-main-${idx}`}
-                className="border border-dashed border-slate-800 rounded-xl flex items-center justify-center py-5 px-3 text-[10px] text-slate-600 font-mono"
+                className="border border-dashed border-slate-800 rounded-xl flex items-center justify-center py-3 sm:py-5 px-3 text-[10px] text-slate-600 font-mono"
               >
                 Slot {mainProgram.length + idx + 1}
               </div>
@@ -188,7 +191,7 @@ export default function Workspace({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 min-h-[70px] bg-slate-950/40 p-2 rounded-lg border border-slate-900">
+            <div className="grid grid-cols-2 gap-2 min-h-[60px] bg-slate-950/40 p-2 rounded-lg border border-slate-900">
               {f1Program.map((cmd, idx) => (
                 <CommandBlockItem
                   key={cmd.id}
@@ -201,11 +204,10 @@ export default function Workspace({
                 />
               ))}
 
-              {/* Empty function slots indicators */}
               {Array.from({ length: Math.max(0, maxFuncSlots[0] - f1Program.length) }).map((_, idx) => (
                 <div
                   key={`empty-f1-${idx}`}
-                  className="border border-dashed border-slate-800 rounded-xl flex items-center justify-center py-5 px-3 text-[10px] text-slate-600 font-mono"
+                  className="border border-dashed border-slate-800 rounded-xl flex items-center justify-center py-3 sm:py-5 px-3 text-[10px] text-slate-600 font-mono"
                 >
                   F1 Slot {f1Program.length + idx + 1}
                 </div>
@@ -250,7 +252,7 @@ export default function Workspace({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 min-h-[70px] bg-slate-950/40 p-2 rounded-lg border border-slate-900">
+            <div className="grid grid-cols-2 gap-2 min-h-[60px] bg-slate-950/40 p-2 rounded-lg border border-slate-900">
               {f2Program.map((cmd, idx) => (
                 <CommandBlockItem
                   key={cmd.id}
@@ -266,7 +268,7 @@ export default function Workspace({
               {Array.from({ length: Math.max(0, maxFuncSlots[1] - f2Program.length) }).map((_, idx) => (
                 <div
                   key={`empty-f2-${idx}`}
-                  className="border border-dashed border-slate-800 rounded-xl flex items-center justify-center py-5 px-3 text-[10px] text-slate-600 font-mono"
+                  className="border border-dashed border-slate-800 rounded-xl flex items-center justify-center py-3 sm:py-5 px-3 text-[10px] text-slate-600 font-mono"
                 >
                   F2 Slot {f2Program.length + idx + 1}
                 </div>

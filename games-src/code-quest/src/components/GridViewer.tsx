@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bot, ArrowUp, Sparkles, AlertCircle } from 'lucide-react';
 import { Level, Position, Direction, GridMap, TileColor } from '../types';
@@ -27,8 +27,16 @@ export default function GridViewer({
   isSuccess,
   isFailure
 }: GridViewerProps) {
-  const [viewMode, setViewMode] = useState<'3d' | '2d'>('3d');
+  const isMobileInit = typeof window !== 'undefined' && window.innerWidth < 1024;
+  const [viewMode, setViewMode] = useState<'3d' | '2d'>(isMobileInit ? '2d' : '3d');
+  const [isMobile, setIsMobile] = useState(isMobileInit);
   const { width, height } = level.dimensions;
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   // Map direction to rotation angle in degrees
   const getDirAngle = (dir: Direction): number => {
@@ -106,8 +114,8 @@ export default function GridViewer({
       </div>
 
       {/* Primary Simulator Canvas Area */}
-      <div className="relative flex-1 flex items-center justify-center w-full min-h-[340px] select-none py-6">
-        
+      <div className="relative flex-1 flex items-center justify-center w-full min-h-[260px] lg:min-h-[340px] select-none py-4 lg:py-6 overflow-auto">
+
         {/* Ambient grid lines in 3D background */}
         <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" />
 
@@ -115,20 +123,20 @@ export default function GridViewer({
         <div
           className="transition-all duration-700 ease-out flex items-center justify-center"
           style={{
-            transform: viewMode === '3d' 
-              ? 'rotateX(55deg) rotateZ(-45deg) scale(0.95)' 
+            transform: viewMode === '3d'
+              ? 'rotateX(55deg) rotateZ(-45deg) scale(0.95)'
               : 'rotateX(0deg) rotateZ(0deg) scale(1.0)',
             perspective: viewMode === '3d' ? '1200px' : 'none',
           }}
         >
           {/* Real 2D/3D Render Engine */}
           <div
-            className="relative grid bg-slate-900/40 p-4 rounded-2xl border border-slate-800/80 shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-all duration-300"
+            className="relative grid bg-slate-900/40 p-3 lg:p-4 rounded-2xl border border-slate-800/80 shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-all duration-300"
             style={{
               gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
-              gap: viewMode === '3d' ? '14px' : '6px',
-              width: `${Math.min(width * (viewMode === '3d' ? 62 : 46), 460)}px`,
-              height: `${Math.min(height * (viewMode === '3d' ? 62 : 46), 430)}px`,
+              gap: viewMode === '3d' ? (isMobile ? '10px' : '14px') : (isMobile ? '5px' : '6px'),
+              width: `${Math.min(width * (viewMode === '3d' ? (isMobile ? 50 : 62) : (isMobile ? 40 : 46)), isMobile ? 340 : 460)}px`,
+              height: `${Math.min(height * (viewMode === '3d' ? (isMobile ? 50 : 62) : (isMobile ? 40 : 46)), isMobile ? 340 : 430)}px`,
             }}
           >
             {cells.map(({ x, y, key }) => {

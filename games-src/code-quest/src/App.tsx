@@ -4,19 +4,22 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Trophy, 
-  Sparkles, 
-  Trash2, 
-  HelpCircle, 
-  X, 
-  Settings, 
-  RotateCcw, 
-  Volume2, 
-  VolumeX, 
-  CheckCircle2, 
+import {
+  Trophy,
+  Sparkles,
+  Trash2,
+  HelpCircle,
+  X,
+  Settings,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+  CheckCircle2,
   ExternalLink,
-  GraduationCap
+  GraduationCap,
+  Layers,
+  Bot,
+  Code
 } from 'lucide-react';
 import { Level, Command, CommandType, ExecutionFrame, TileState } from './types';
 import { LEVELS } from './levels';
@@ -54,6 +57,9 @@ export default function App() {
   const [speedMs, setSpeedMs] = useState<number>(450);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
+
+  // Mobile tab navigation
+  const [mobileTab, setMobileTab] = useState<'toolbox' | 'grid' | 'code'>('grid');
 
   // Help / Onboarding modals
   const [showHelp, setShowHelp] = useState<boolean>(true);
@@ -343,24 +349,24 @@ export default function App() {
       )}
 
       {/* Main Game Executive Header Navigation row */}
-      <header className="bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-4 py-3.5 flex items-center justify-between sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <div className="h-3 w-3 bg-indigo-500 rounded-full animate-ping" />
-          <h2 className="text-sm font-display font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-purple-300 to-rose-300">
-            CODE QUEST / LOGIC BLOCKS
+      <header className="bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-4 py-2.5 sm:py-3.5 flex items-center justify-between sticky top-0 z-20">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="h-2.5 w-2.5 sm:h-3 sm:w-3 bg-indigo-500 rounded-full animate-ping shrink-0" />
+          <h2 className="text-xs sm:text-sm font-display font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-purple-300 to-rose-300 truncate">
+            <span className="hidden sm:inline">CODE QUEST / LOGIC BLOCKS</span>
+            <span className="sm:hidden">CODE QUEST</span>
           </h2>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Dashboard action utilities */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
             id="help_guide_btn"
             onClick={() => setShowHelp(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700/80 border border-slate-700/60 text-slate-300 hover:text-white transition text-xs font-mono"
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700/80 border border-slate-700/60 text-slate-300 hover:text-white transition text-xs font-mono"
             title="Read computational thinking tutorial guide"
           >
             <HelpCircle className="h-4 w-4 text-purple-400" />
-            LESSON COMPANION
+            <span className="hidden sm:inline">LESSON COMPANION</span>
           </button>
 
           <button
@@ -375,22 +381,22 @@ export default function App() {
       </header>
 
       {/* Main Game Interface Board Grid layout */}
-      <main className="flex-1 p-4 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-4">
-        
+      <main className="flex-1 p-3 sm:p-4 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-4 pb-20 lg:pb-4">
+
         {/* Left Bento: Code Lesson, Roadmap, & Command Toolbox */}
-        <div className="lg:col-span-4 h-full flex flex-col gap-4">
+        <div className={`lg:col-span-4 h-full flex flex-col gap-4 ${mobileTab === 'toolbox' ? 'block' : 'hidden'} lg:block`}>
           <Sidebar
             levels={LEVELS}
             activeLevelId={activeLevelId}
-            onSelectLevel={setActiveLevelId}
+            onSelectLevel={(id) => { setActiveLevelId(id); setMobileTab('grid'); }}
             completedLevelIds={completedLevels}
             selectedContainer={selectedContainer}
-            onAddBlockToWorkspace={handleAddBlockToWorkspace}
+            onAddBlockToWorkspace={(type) => { handleAddBlockToWorkspace(type); setMobileTab('code'); }}
           />
         </div>
 
         {/* Center Bento: Simulator Grid Canvas viewport */}
-        <div className="lg:col-span-4 flex flex-col gap-4 h-full min-h-[460px]">
+        <div className={`lg:col-span-4 flex flex-col gap-4 h-full min-h-0 lg:min-h-[460px] ${mobileTab === 'grid' ? 'flex' : 'hidden'} lg:flex`}>
           <GridViewer
             level={activeLevel}
             robotPos={activeFrame.robotPos}
@@ -400,11 +406,28 @@ export default function App() {
             isSuccess={isRunSuccess}
             isFailure={isRunFailure}
           />
+          {/* Execution controls shown on the Grid tab on mobile */}
+          <div className="shrink-0 lg:hidden">
+            <ExecutionControls
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onReset={handleReset}
+              onStepForward={handleStepForward}
+              onStepBackward={handleStepBackward}
+              isPlaying={isPlaying}
+              speedMs={speedMs}
+              setSpeedMs={setSpeedMs}
+              currentFrameIndex={currentFrameIndex}
+              totalFramesCount={compiledFrames.length}
+              logMessage={activeFrame.message}
+              hasProgram={compiledFrames.length > 1}
+            />
+          </div>
         </div>
 
         {/* Right Bento: Target Program Editor workspace & Playback details */}
-        <div className="lg:col-span-4 flex flex-col gap-4 h-full">
-          
+        <div className={`lg:col-span-4 flex flex-col gap-4 h-full ${mobileTab === 'code' ? 'flex' : 'hidden'} lg:flex`}>
+
           <div className="flex-1">
             <Workspace
               level={activeLevel}
@@ -441,6 +464,43 @@ export default function App() {
         </div>
 
       </main>
+
+      {/* Mobile Bottom Tab Navigation */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex safe-area-inset-bottom" id="mobile_tab_bar">
+        <button
+          onClick={() => setMobileTab('toolbox')}
+          className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-all ${
+            mobileTab === 'toolbox'
+              ? 'text-indigo-400 bg-indigo-950/30'
+              : 'text-slate-500 hover:text-slate-300'
+          }`}
+        >
+          <Layers className="h-5 w-5" />
+          <span className="text-[9px] font-mono font-bold tracking-wider uppercase">Toolbox</span>
+        </button>
+        <button
+          onClick={() => setMobileTab('grid')}
+          className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-all ${
+            mobileTab === 'grid'
+              ? 'text-emerald-400 bg-emerald-950/30'
+              : 'text-slate-500 hover:text-slate-300'
+          }`}
+        >
+          <Bot className="h-5 w-5" />
+          <span className="text-[9px] font-mono font-bold tracking-wider uppercase">World</span>
+        </button>
+        <button
+          onClick={() => setMobileTab('code')}
+          className={`flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-all ${
+            mobileTab === 'code'
+              ? 'text-purple-400 bg-purple-950/30'
+              : 'text-slate-500 hover:text-slate-300'
+          }`}
+        >
+          <Code className="h-5 w-5" />
+          <span className="text-[9px] font-mono font-bold tracking-wider uppercase">Code</span>
+        </button>
+      </nav>
 
       {/* Core Onboarding Interactive Lesson Modal */}
       {showHelp && (
