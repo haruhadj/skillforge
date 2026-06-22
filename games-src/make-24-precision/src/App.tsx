@@ -370,50 +370,50 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col relative bg-grid-overlay overflow-x-hidden">
       
       {/* Top Header Row */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-4 py-3.5 sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          
+      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3.5 sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
+
           {/* Logo Title section */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-              <Binary className="h-5.5 w-5.5" />
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-xl bg-gradient-to-tr from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+              <Binary className="h-4.5 w-4.5 sm:h-5.5 sm:w-5.5" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h1 className="text-xl font-extrabold tracking-tight text-white leading-none">Make 24</h1>
-                <span className="text-[10px] bg-slate-800 text-indigo-400 font-mono px-1.5 py-0.5 rounded border border-slate-700 font-semibold uppercase">
+                <h1 className="text-base sm:text-xl font-extrabold tracking-tight text-white leading-none">Make 24</h1>
+                <span className="hidden sm:inline text-[10px] bg-slate-800 text-indigo-400 font-mono px-1.5 py-0.5 rounded border border-slate-700 font-semibold uppercase">
                   Fraction Engine
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">Combine four tiles perfectly with math</p>
+              <p className="hidden sm:block text-[11px] text-slate-400 mt-0.5">Combine four tiles with math to reach 24</p>
             </div>
           </div>
 
           {/* Stats Badges Dashboard */}
-          <div className="flex items-center justify-center gap-2">
-            
+          <div className="flex items-center gap-1.5 sm:gap-2">
+
             {/* Streak Badge */}
-            <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-1.5">
-              <Flame className="h-4 w-4 text-orange-400 fill-orange-500/10" />
+            <div className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5">
+              <Flame className="h-4 w-4 text-orange-400 fill-orange-500/10 shrink-0" />
               <div className="text-left">
-                <span className="text-[9px] text-slate-400 uppercase tracking-widest font-mono block leading-none">Streak</span>
+                <span className="hidden sm:block text-[9px] text-slate-400 uppercase tracking-widest font-mono leading-none">Streak</span>
                 <span className="text-sm font-bold text-orange-400 leading-none">{streak}</span>
               </div>
             </div>
 
             {/* Score Badge */}
-            <div className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-1.5">
-              <Trophy className="h-4 w-4 text-amber-500 fill-amber-500/10" />
+            <div className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5">
+              <Trophy className="h-4 w-4 text-amber-500 fill-amber-500/10 shrink-0" />
               <div className="text-left">
-                <span className="text-[9px] text-slate-400 uppercase tracking-widest font-mono block leading-none">Score</span>
+                <span className="hidden sm:block text-[9px] text-slate-400 uppercase tracking-widest font-mono leading-none">Score</span>
                 <span className="text-sm font-bold text-emerald-400 leading-none">{score}</span>
               </div>
             </div>
 
             {/* Rules Button */}
-            <button 
+            <button
               onClick={() => setShowRulesDrawer(true)}
-              className="p-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-xl transition duration-150"
+              className="p-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 border border-slate-700 text-slate-300 rounded-xl transition duration-150"
               title="How to Play"
             >
               <BookOpen className="h-4 w-4" />
@@ -424,20 +424,20 @@ export default function App() {
       </header>
 
       {/* Main Playing Area Container */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-8 flex flex-col justify-between items-center gap-8">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 flex flex-col justify-between items-center gap-4 sm:gap-6">
         
         {/* Row of Difficulty sliders/tabs */}
         <section className="w-full flex justify-center">
-          <div className="bg-slate-900 border border-slate-800 p-1 rounded-2xl flex w-full max-w-sm relative">
+          <div className="bg-slate-900 border border-slate-800 p-1 rounded-2xl flex w-full max-w-sm">
             {(['easy', 'medium', 'hard', 'expert'] as const).map(diff => (
               <button
                 key={diff}
                 onClick={() => handleDifficultyChange(diff)}
                 className={`
-                  flex-1 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 capitalize
-                  ${difficulty === diff 
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' 
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                  flex-1 py-2 sm:py-1.5 text-xs font-bold rounded-xl transition-all duration-200 capitalize
+                  ${difficulty === diff
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 active:bg-slate-800'
                   }
                 `}
               >
@@ -448,30 +448,30 @@ export default function App() {
         </section>
 
         {/* Board Tiles Container */}
-        <section className="w-full flex-1 flex flex-col items-center justify-center gap-6">
-          
-          <div className="w-full max-w-2xl py-2 flex items-center justify-between px-2">
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+        <section className="w-full flex-1 flex flex-col items-center justify-center gap-3 sm:gap-6">
+
+          <div className="w-full max-w-2xl flex items-center justify-between px-1">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400">
               <TrendingUp className="h-3.5 w-3.5 text-indigo-400" />
-              <span>Goal: Combine remaining tiles to make <strong className="text-indigo-300">24</strong></span>
+              <span>Goal: Combine tiles to make <strong className="text-indigo-300">24</strong></span>
             </div>
             {currentPuzzle && (
               <span className="text-[10px] font-mono uppercase bg-slate-900 border border-slate-800 text-indigo-400 px-2 py-0.5 rounded-lg font-bold">
-                Level Difficulty: {currentPuzzle.difficulty}
+                {currentPuzzle.difficulty}
               </span>
             )}
           </div>
 
           {/* Alert Message row */}
           {alertMessage && (
-            <div className="w-full max-w-md bg-indigo-950/40 border border-indigo-800/50 px-4 py-2.5 rounded-xl text-center text-xs text-indigo-300 flex items-center justify-center gap-2 animate-[shake_0.4s_ease-in-out]">
+            <div className="w-full max-w-md bg-indigo-950/40 border border-indigo-800/50 px-4 py-3 rounded-xl text-center text-xs text-indigo-300 flex items-center justify-center gap-2 animate-[shake_0.4s_ease-in-out]">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{alertMessage}</span>
             </div>
           )}
 
           {/* Cards grid system */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl justify-items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full max-w-3xl">
             {cards.map((card) => (
               <CardTile
                 key={card.id}
@@ -485,9 +485,9 @@ export default function App() {
 
             {/* Virtual ghost slots to maintain layout stability as cards decrease */}
             {Array.from({ length: 4 - cards.length }).map((_, index) => (
-              <div 
+              <div
                 key={`empty-slot-${index}`}
-                className="h-44 w-full md:w-40 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/20 flex items-center justify-center opacity-40 select-none hidden sm:flex"
+                className="h-36 sm:h-44 rounded-2xl border-2 border-dashed border-slate-800 bg-slate-950/20 items-center justify-center opacity-40 select-none hidden sm:flex"
               >
                 <div className="h-3 w-3 bg-slate-800 rounded-full" />
               </div>
@@ -497,21 +497,21 @@ export default function App() {
         </section>
 
         {/* Dynamic Operator Choice Console */}
-        <section className="w-full max-w-xl flex flex-col gap-3">
-          <span className="text-[10px] text-center text-slate-500 uppercase tracking-widest font-mono">
-            {selectedCardId 
-              ? `Select algebra operator to combine code '${cards.find(c => c.id === selectedCardId)?.value.n}'...` 
-              : 'Select a structural tile first above'
+        <section className="w-full max-w-xl flex flex-col gap-2.5 sm:gap-3">
+          <span className="text-xs text-center text-slate-500 font-mono">
+            {selectedCardId
+              ? `Tile ${cards.find(c => c.id === selectedCardId)?.value.n} selected — pick an operator`
+              : 'Tap a tile above, then choose an operator'
             }
           </span>
-          
-          <div className="grid grid-cols-4 gap-2.5 bg-slate-900 p-2.5 rounded-3xl border border-slate-800">
+
+          <div className="grid grid-cols-4 gap-2 sm:gap-2.5 bg-slate-900 p-2 sm:p-2.5 rounded-3xl border border-slate-800">
             {([
-              { type: '+', label: 'Addition', icon: <Plus className="h-4 w-4 md:h-5 md:w-5" />, color: 'hover:border-emerald-500 selected:bg-emerald-600 border-slate-800' },
-              { type: '-', label: 'Subtraction', icon: <Minus className="h-4 w-4 md:h-5 md:w-5" />, color: 'hover:border-amber-500 selected:bg-amber-600 border-slate-800' },
-              { type: '*', label: 'Multiplication', icon: <X className="h-4 w-4 md:h-5 md:w-5" />, color: 'hover:border-purple-500 selected:bg-purple-600 border-slate-800' },
-              { type: '/', label: 'Division', icon: <span className="text-base md:text-lg font-bold">÷</span>, color: 'hover:border-cyan-500 selected:bg-cyan-600 border-slate-800' }
-            ] as const).map(({ type, icon, color }) => {
+              { type: '+', symbol: '+', color: 'hover:border-emerald-500' },
+              { type: '-', symbol: '−', color: 'hover:border-amber-500' },
+              { type: '*', symbol: '×', color: 'hover:border-purple-500' },
+              { type: '/', symbol: '÷', color: 'hover:border-cyan-500' },
+            ] as const).map(({ type, symbol, color }) => {
               const isChosen = selectedOperator === type;
               return (
                 <button
@@ -520,15 +520,15 @@ export default function App() {
                   disabled={selectedCardId === null || isWon}
                   onClick={() => setSelectedOperator(type)}
                   className={`
-                    h-14 md:h-16 rounded-2xl flex flex-col items-center justify-center transition-all duration-200 border-2 text-slate-350 cursor-pointer
+                    h-14 sm:h-16 rounded-2xl flex items-center justify-center transition-all duration-200 border-2 cursor-pointer
                     disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-slate-800
-                    ${isChosen 
-                      ? 'bg-indigo-600 text-white border-indigo-400 scale-102 font-bold shadow-[0_0_15px_rgba(99,102,241,0.4)]' 
-                      : `bg-slate-950 border-slate-850 hover:bg-slate-900 hover:text-white ${color}`
+                    ${isChosen
+                      ? 'bg-indigo-600 text-white border-indigo-400 scale-105 font-bold shadow-[0_0_15px_rgba(99,102,241,0.4)]'
+                      : `bg-slate-950 border-slate-800 hover:bg-slate-900 hover:text-white text-slate-300 ${color}`
                     }
                   `}
                 >
-                  {icon}
+                  <span className="text-2xl sm:text-3xl font-bold leading-none">{symbol}</span>
                 </button>
               );
             })}
@@ -536,71 +536,57 @@ export default function App() {
         </section>
 
         {/* Footer QoL controls (Undo, Reset, Hint, Skip) */}
-        <section className="w-full max-w-2xl flex flex-col sm:flex-row items-center gap-3 mt-4">
-          
-          {/* Main system controls */}
-          <div className="flex w-full sm:flex-1 gap-2">
-            
-            {/* Undo */}
-            <button
-              onClick={handleUndo}
-              disabled={history.length === 0 || isWon}
-              className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 active:scale-98 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition duration-150 flex items-center justify-center gap-1.5"
-              title="Undo Last Operation"
-            >
-              <Undo className="h-3.5 w-3.5" /> Undo
-            </button>
+        <section className="w-full max-w-2xl grid grid-cols-2 gap-2 sm:gap-3">
 
-            {/* Reset */}
-            <button
-              onClick={handleResetLevel}
-              disabled={history.length === 0 && selectedCardId === null && selectedOperator === null}
-              className="flex-1 py-3 bg-slate-900 hover:bg-slate-800 active:scale-98 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 disabled:opacity-35 disabled:pointer-events-none transition duration-150 flex items-center justify-center gap-1.5"
-              title="Reset Cards to Initial"
-            >
-              <RotateCcw className="h-3.5 w-3.5" /> Reset
-            </button>
-            
-          </div>
+          {/* Undo */}
+          <button
+            onClick={handleUndo}
+            disabled={history.length === 0 || isWon}
+            className="py-3.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-700 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition duration-150 flex items-center justify-center gap-1.5"
+            title="Undo Last Operation"
+          >
+            <Undo className="h-3.5 w-3.5" /> Undo
+          </button>
 
-          <div className="flex w-full sm:flex-1 gap-2">
-            
-            {/* Hint */}
-            <button
-              onClick={() => setShowHintModal(true)}
-              className="flex-1 py-3 bg-indigo-950 hover:bg-indigo-900 border border-indigo-800 text-indigo-300 rounded-xl text-xs font-bold transition duration-150 flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-950/20"
-              title="Get mathematically correct strategy solver step suggestions"
-            >
-              <HelpCircle className="h-3.5 w-3.5" /> Strategy Hint
-            </button>
+          {/* Reset */}
+          <button
+            onClick={handleResetLevel}
+            disabled={history.length === 0 && selectedCardId === null && selectedOperator === null}
+            className="py-3.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-700 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition duration-150 flex items-center justify-center gap-1.5"
+            title="Reset Cards to Initial"
+          >
+            <RotateCcw className="h-3.5 w-3.5" /> Reset
+          </button>
 
-            {/* Skip */}
-            <button
-              onClick={handleNextPuzzle}
-              className="flex-1 py-3 bg-slate-850 hover:bg-slate-750 text-slate-200 border border-slate-700/60 rounded-xl text-xs font-bold transition duration-150 flex items-center justify-center gap-1.5"
-              title="Skip this puzzle"
-            >
-              <Dices className="h-3.5 w-3.5 text-indigo-400" /> New Deck
-            </button>
+          {/* Hint */}
+          <button
+            onClick={() => setShowHintModal(true)}
+            className="py-3.5 bg-indigo-950 hover:bg-indigo-900 active:bg-indigo-800 border border-indigo-800 text-indigo-300 rounded-xl text-xs font-bold transition duration-150 flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-950/20"
+            title="Get a strategy hint"
+          >
+            <HelpCircle className="h-3.5 w-3.5" /> Hint
+          </button>
 
-          </div>
+          {/* Skip */}
+          <button
+            onClick={handleNextPuzzle}
+            className="py-3.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-700 text-slate-200 border border-slate-700/60 rounded-xl text-xs font-bold transition duration-150 flex items-center justify-center gap-1.5"
+            title="Skip this puzzle"
+          >
+            <Dices className="h-3.5 w-3.5 text-indigo-400" /> New Deck
+          </button>
 
         </section>
 
         {/* Custom Deck Trigger Link */}
         <button
           onClick={() => setShowCustomDeckBuilder(true)}
-          className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-4 cursor-pointer mt-2"
+          className="text-xs text-indigo-400 hover:text-indigo-300 active:text-indigo-200 underline underline-offset-4 cursor-pointer py-2"
         >
-          Check or play with custom target deck numbers
+          Use custom numbers
         </button>
 
       </main>
-
-      {/* Persistent Legal/Footer notes */}
-      <footer className="py-6 border-t border-slate-900/60 text-slate-500 text-center text-xs mt-12 bg-slate-950/80">
-        <p className="font-mono">Make 24 Engine verified on UTC 2026-06-20. Client-side analytical math solver.</p>
-      </footer>
 
       {/* WIN STATE OVERLAY PANEL */}
       {isWon && currentPuzzle && (
@@ -626,12 +612,12 @@ export default function App() {
 
       {/* HOW TO PLAY rules drawer dialog */}
       {showRulesDrawer && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto">
-            
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-lg bg-slate-900 border border-slate-800 rounded-t-2xl sm:rounded-2xl p-5 sm:p-8 shadow-2xl relative max-h-[88vh] overflow-y-auto">
+
             <button
               onClick={() => setShowRulesDrawer(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white rounded-lg p-1.5 hover:bg-slate-800 transition"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white rounded-lg p-2 hover:bg-slate-800 transition"
             >
               <X className="h-4 w-4" />
             </button>
@@ -672,7 +658,7 @@ export default function App() {
 
               <button
                 onClick={() => setShowRulesDrawer(false)}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-bold text-white text-xs rounded-xl transition duration-150 mt-2"
+                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-400 font-bold text-white text-xs rounded-xl transition duration-150 mt-2"
               >
                 Let&apos;s Play!
               </button>
@@ -683,15 +669,15 @@ export default function App() {
 
       {/* CUSTOM CARDS DECK DRAW-IN GENERATOR PANEL */}
       {showCustomDeckBuilder && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <form 
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <form
             onSubmit={handleCustomDeckSubmit}
-            className="w-full max-w-md bg-slate-900 border border-slate-850 rounded-3xl p-6 shadow-2xl relative"
+            className="w-full sm:max-w-md bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl relative"
           >
             <button
               type="button"
               onClick={() => setShowCustomDeckBuilder(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white rounded-lg p-1.5 hover:bg-slate-800 transition"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white rounded-lg p-2 hover:bg-slate-800 transition"
             >
               <X className="h-4 w-4" />
             </button>
@@ -757,14 +743,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setShowCustomDeckBuilder(false)}
-                  className="flex-1 py-3 bg-slate-800 hover:bg-slate-750 text-slate-300 font-medium text-xs rounded-xl transition duration-150"
+                  className="flex-1 py-3.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-300 font-medium text-xs rounded-xl transition duration-150"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={customSolverResult === null || customSolverResult.solutions.length === 0}
-                  className="flex-1.5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl disabled:opacity-30 disabled:pointer-events-none transition duration-150 flex items-center justify-center gap-1 shadow-lg shadow-indigo-600/10"
+                  className="flex-[1.5] py-3.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-400 text-white font-bold text-xs rounded-xl disabled:opacity-30 disabled:pointer-events-none transition duration-150 flex items-center justify-center gap-1 shadow-lg shadow-indigo-600/10"
                 >
                   Load to Board <Check className="h-4 w-4" />
                 </button>

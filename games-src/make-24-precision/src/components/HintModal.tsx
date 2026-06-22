@@ -66,12 +66,12 @@ export const HintModal: React.FC<HintModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-700/60 rounded-2xl p-6 shadow-2xl relative">
+    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="w-full sm:max-w-md bg-slate-900 border border-slate-700/60 rounded-t-2xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl relative max-h-[85vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white rounded-lg p-1.5 hover:bg-slate-800 transition-colors"
+          className="absolute top-4 right-4 text-slate-400 hover:text-white rounded-lg p-2 hover:bg-slate-800 transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -91,7 +91,7 @@ export const HintModal: React.FC<HintModalProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition duration-155"
+              className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-300 text-xs font-semibold rounded-xl transition duration-150"
             >
               Dismiss
             </button>
@@ -141,9 +141,9 @@ export const HintModal: React.FC<HintModalProps> = ({
 
             <button
               onClick={onClose}
-              className="w-full py-2.5 bg-slate-800 hover:bg-slate-705 text-slate-300 text-xs font-semibold rounded-xl transition duration-150"
+              className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-300 text-xs font-semibold rounded-xl transition duration-150"
             >
-              Dismiss Strategy Overlay
+              Dismiss
             </button>
           </div>
         )}

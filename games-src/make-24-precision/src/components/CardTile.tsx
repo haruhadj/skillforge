@@ -26,35 +26,35 @@ export const CardTile: React.FC<CardTileProps> = ({
       onClick={onClick}
       disabled={isDisabled}
       className={`
-        relative h-44 w-full md:w-40 flex flex-col items-center justify-between p-4 rounded-2xl
+        relative h-36 sm:h-44 w-full flex flex-col items-center justify-between p-3 sm:p-4 rounded-2xl
         transition-all duration-300 transform select-none cursor-pointer
         ${
           isSelected
             ? 'bg-gradient-to-br from-indigo-900 to-indigo-950 border-2 border-indigo-400 shadow-[0_0_25px_rgba(99,102,241,0.5)] scale-105 z-10'
-            : 'bg-slate-800 border-2 border-slate-700 hover:border-indigo-500/50 hover:bg-slate-800/90 hover:scale-102 shadow-lg active:scale-98'
+            : 'bg-slate-800 border-2 border-slate-700 hover:border-indigo-500/50 hover:bg-slate-800/90 hover:scale-102 shadow-lg active:scale-95'
         }
         ${isDisabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}
         ${shakeTrigger ? 'animate-[shake_0.5s_ease-in-out]' : ''}
       `}
     >
       {/* Expression header */}
-      <div className="text-[10px] font-mono text-slate-400 max-w-full truncate px-1 py-0.5 bg-slate-900/60 rounded border border-slate-700/50 w-full text-center">
+      <div className="text-[10px] sm:text-[11px] font-mono text-slate-400 max-w-full truncate px-1 py-0.5 bg-slate-900/60 rounded border border-slate-700/50 w-full text-center">
         {card.expression}
       </div>
 
       {/* Main value display */}
-      <div className="flex-1 flex items-center justify-center my-2">
+      <div className="flex-1 flex items-center justify-center my-1 sm:my-2">
         {isFractional ? (
           <div className="flex flex-col items-center justify-center font-serif leading-none">
-            <span className="text-3xl font-bold text-indigo-100 border-b-2 border-slate-400 pb-1 px-1">
+            <span className="text-2xl sm:text-3xl font-bold text-indigo-100 border-b-2 border-slate-400 pb-1 px-1">
               {card.value.n}
             </span>
-            <span className="text-3xl font-bold text-indigo-100 pt-1 px-1">
+            <span className="text-2xl sm:text-3xl font-bold text-indigo-100 pt-1 px-1">
               {card.value.d}
             </span>
           </div>
         ) : (
-          <span className="text-5xl font-black text-white tracking-tight font-sans">
+          <span className="text-4xl sm:text-5xl font-black text-white tracking-tight font-sans">
             {card.value.n}
           </span>
         )}
