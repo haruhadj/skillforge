@@ -1,5 +1,6 @@
 import { Volume2, Zap } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
 import { AudioService } from '../services/AudioService';
 
 interface PhaseStartProps {
@@ -8,15 +9,39 @@ interface PhaseStartProps {
 }
 
 export default function PhaseStart({ onStart, highScore }: PhaseStartProps) {
+  const [countdownStep, setCountdownStep] = useState<0 | 1 | 2 | 3>(0);
+
   const handleStartClick = () => {
-    // Unlock Audio Context explicitly on click
+    if (countdownStep > 0) return;
     AudioService.init();
     AudioService.resume();
-    onStart();
+    setCountdownStep(1);
+    AudioService.playTone(330, 'target', 0.15);
+
+    setTimeout(() => {
+      setCountdownStep(2);
+      AudioService.playTone(440, 'target', 0.15);
+    }, 1000);
+
+    setTimeout(() => {
+      setCountdownStep(3);
+      AudioService.playTone(660, 'target', 0.3);
+    }, 2000);
+
+    setTimeout(() => {
+      setCountdownStep(0);
+      onStart();
+    }, 2700);
   };
 
+  // Clean up any leaked timeout on unmount
+  useEffect(() => () => { setCountdownStep(0); }, []);
+
+  const countdownLabel = countdownStep === 1 ? 'READY' : countdownStep === 2 ? 'SET' : 'GO!';
+  const countdownColor = countdownStep === 3 ? 'text-emerald-400' : countdownStep === 2 ? 'text-cyan-400' : 'text-purple-400';
+
   return (
-    <div className="flex flex-col items-center justify-between text-center h-full px-6 py-12 z-10 max-w-md mx-auto">
+    <div className="flex flex-col items-center justify-between text-center h-full px-6 py-12 z-10 max-w-md mx-auto relative">
       {/* Title Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -97,11 +122,38 @@ export default function PhaseStart({ onStart, highScore }: PhaseStartProps) {
         <button
           id="btn-start"
           onClick={handleStartClick}
-          className="w-full py-4 px-6 rounded-2xl bg-white text-black hover:bg-zinc-200 font-bold text-base tracking-tight transition-all duration-300 shadow-xl border border-white hover:shadow-cyan-500/10 hover:border-cyan-400 cursor-pointer flex items-center justify-center gap-2"
+          disabled={countdownStep > 0}
+          className="w-full py-4 px-6 rounded-2xl bg-white text-black hover:bg-zinc-200 font-bold text-base tracking-tight transition-all duration-300 shadow-xl border border-white hover:shadow-cyan-500/10 hover:border-cyan-400 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           START CHALLENGE
         </button>
       </motion.div>
+
+      {/* Countdown overlay */}
+      <AnimatePresence mode="wait">
+        {countdownStep > 0 && (
+          <motion.div
+            key="countdown-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm rounded-[inherit]"
+          >
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={countdownStep}
+                initial={{ scale: 0.4, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 1.6, opacity: 0, y: -20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className={`text-8xl font-black tracking-tighter select-none ${countdownColor}`}
+              >
+                {countdownLabel}
+              </motion.span>
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

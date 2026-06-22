@@ -28,7 +28,7 @@ export default function PhaseMemorize({
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const durationSecs = 2.5;
+  const durationSecs = 3;
 
   const handlePlayTone = () => {
     if (isPlaying) return;
@@ -38,7 +38,6 @@ export default function PhaseMemorize({
     setProgress(100);
     incrementPlayCount();
 
-    // Play target pitch
     AudioService.playTone(targetFreq, 'target', durationSecs, () => {
       setIsPlaying(false);
       setWaveActive(false);
@@ -46,7 +45,24 @@ export default function PhaseMemorize({
     });
   };
 
-  // Animate the progression outline ring during the 2.5s sound playing window
+  // Auto-play the target tone on mount
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setIsPlaying(true);
+      setWaveActive(true);
+      setProgress(100);
+      incrementPlayCount();
+      AudioService.playTone(targetFreq, 'target', durationSecs, () => {
+        setIsPlaying(false);
+        setWaveActive(false);
+        setProgress(0);
+      });
+    }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Animate the progression outline ring during the 3s sound playing window
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -141,10 +157,10 @@ export default function PhaseMemorize({
             )}
             
             <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 font-mono">
-              {isPlaying ? "PLAYING TARGET" : "HEAR TONE"}
+              {isPlaying ? "PLAYING TARGET" : "REPLAY TONE"}
             </span>
             <span className="text-[8px] text-zinc-600 font-mono mt-1 font-bold">
-              {durationSecs} SECONDS PITCH
+              3 SECONDS TO MEMORIZE
             </span>
           </motion.button>
         </div>
@@ -152,11 +168,11 @@ export default function PhaseMemorize({
         {/* Text Guidelines */}
         <div className="mt-8 text-center px-4 max-w-xs">
           <p className="text-sm font-semibold text-zinc-300 mb-1">
-            {isPlaying ? "Focusing sound waves..." : "Listen carefully to the pitch"}
+            {isPlaying ? "Memorize this pitch for 3 seconds..." : "Listen carefully to the pitch"}
           </p>
           <p className="text-xs text-zinc-500">
-            {playCount === 0 
-              ? "Press the button above to play the reference sound." 
+            {playCount === 0
+              ? "Playing the reference tone automatically..."
               : `You have listened ${playCount} ${playCount === 1 ? 'time' : 'times'}. Ready to guess?`}
           </p>
         </div>

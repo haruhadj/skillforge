@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Check, Music, HelpCircle } from 'lucide-react';
+import { Check, HelpCircle } from 'lucide-react';
 import { MIN_FREQ, MAX_FREQ, frequencyToPosition, positionToFrequency } from '../utils';
 import { AudioService } from '../services/AudioService';
 
@@ -82,8 +82,6 @@ export default function PhaseInput({
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      setWaveActive(false);
-      AudioService.stopTone();
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -126,8 +124,6 @@ export default function PhaseInput({
 
   const handleTouchEnd = () => {
     setIsDragging(false);
-    setWaveActive(false);
-    AudioService.stopTone();
   };
 
   const sliderRatio = frequencyToPosition(freq);
@@ -139,13 +135,6 @@ export default function PhaseInput({
     if (f < 500) return "Low Midrange";
     if (f < 800) return "Midrange";
     return "Upper Midrange";
-  };
-
-  const handleTestToneClick = () => {
-    AudioService.playTone(freq, 'guess', 1.5, () => {
-      setWaveActive(false);
-    });
-    setWaveActive(true);
   };
 
   return (
@@ -275,15 +264,6 @@ export default function PhaseInput({
 
       {/* Buttons / Options panel */}
       <div className="space-y-3 w-full relative z-20">
-        {/* Tap testing tone auxiliary button */}
-        <button
-          onClick={handleTestToneClick}
-          disabled={isDragging}
-          className="w-full py-3 px-4 rounded-xl font-bold bg-zinc-900/60 hover:bg-zinc-900 hover:text-white border border-zinc-900 text-zinc-400 text-xs tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 uppercase tracking-widest shadow-lg backdrop-blur-sm"
-        >
-          <Music className="w-3.5 h-3.5 text-cyan-500" /> Play Selected Tone (1.5s)
-        </button>
-
         {/* Central Lock In Button */}
         <button
           id="btn-submit-guess"
