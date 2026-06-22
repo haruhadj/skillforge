@@ -1,121 +1,32 @@
 import 'dotenv/config';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import path from 'path';
-import { readFileSync } from 'fs';
 import express from 'express';
-import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import NodeCache from 'node-cache';
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
+import { getWordsByDifficulty, isWordNetAvailable, getStats } from './wordnet.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-app.use(cors());
-
 const PORT = Number(process.env.PORT) || 8787;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Load hardcoded word bank (used as fallback)
+import { readFileSync } from 'fs';
 const wordBank = JSON.parse(readFileSync(path.join(__dirname, 'data', 'wordBank.json'), 'utf8'));
 
-// ── WordNet integration ───────────────────────────────────────────────────
-// Maps spelling-bee difficulty names to WordNet tagcount-based difficulty keys
-const DIFFICULTY_MAP = {
-  easy:   'light',
-  medium: 'medium',
-  hard:   'hard',
-};
-
-let wordnetGetWords = null;
-try {
-  const wordnetPath = pathToFileURL(path.join(__dirname, '..', '..', 'wordnet', 'service.js')).href;
-  const wordnetService = await import(wordnetPath);
-  wordnetGetWords = wordnetService.getWordsByDifficulty;
-  console.log('[SpellingBee] WordNet service loaded — will use as primary word source.');
-} catch (err) {
-  console.warn('[SpellingBee] WordNet service unavailable, falling back to word bank:', err.message);
-}
-
-/**
- * Fetch words from WordNet and normalise to spelling-bee word shape.
- * Returns null if WordNet is unavailable or returns no results.
- */
-function getWordNetWords(difficulty, limit) {
-  if (!wordnetGetWords) return null;
-  const mappedDiff = DIFFICULTY_MAP[difficulty] || 'medium';
-  try {
-    const rows = wordnetGetWords(mappedDiff, limit * 3); // fetch extra for filtering
-    if (!rows || rows.length === 0) return null;
-
-    // Normalise to spelling-bee shape; skip abbreviations, acronyms, junk
-    const hasVowel = /[aeiou]/i;
-    const alphaOnly = /^[a-z]+$/;
-    const words = rows
-      .filter(r =>
-        r.word &&
-        r.definition &&
-        r.word.length >= 4 &&           // no 3-letter abbreviations
-        alphaOnly.test(r.word) &&        // no digits, underscores, etc.
-        hasVowel.test(r.word)            // must contain a vowel (filters tsh, ldl, etc.)
-      )
-      .map(r => ({
-        word:         r.word,
-        definition:   r.definition,
-        partOfSpeech: r.partOfSpeech || 'noun',
-        example:      '',        // WordNet has no example sentences
-        topic:        (r.topic || 'general').split('.')[0],
-        freq:         r.freq ?? null,
-      }))
-      .slice(0, limit);
-
-    return words.length > 0 ? words : null;
-  } catch (err) {
-    console.error('[SpellingBee] WordNet query failed:', err.message);
-    return null;
-  }
+// Check WordNet availability on startup
+const wordnetAvailable = isWordNetAvailable();
+if (wordnetAvailable) {
+  const stats = getStats();
+  console.log(`[WordNet] Connected: ${stats.totalWords.toLocaleString()} words available`);
+  console.log(`[WordNet] By difficulty:`, stats.byDifficulty);
+} else {
+  console.log('[WordNet] Not available, using local wordBank fallback');
 }
 
 const ttsCache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
-
-// ── Microsoft Edge TTS ───────────────────────────────────────────────────
-function streamToBuffer(readable) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    readable.on('data', c => chunks.push(c));
-    readable.on('end', () => resolve(Buffer.concat(chunks)));
-    readable.on('error', reject);
-  });
-}
-
-async function synthesizeSpeech(text, mode) {
-  // Edge TTS WS closes after each turn — create a fresh client per request
-  const client = new MsEdgeTTS();
-  await client.setMetadata('en-US-AriaNeural', OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
-
-  const esc = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-
-  let ssml;
-  if (mode === 'word') {
-    // Repeat the word with a natural pause (<break> tags unsupported by Edge TTS ws protocol)
-    ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-AriaNeural'><prosody rate="-15%">${esc} ... ${esc}</prosody></voice></speak>`;
-  } else if (mode === 'definition') {
-    ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-AriaNeural'><prosody rate="-8%">${esc}</prosody></voice></speak>`;
-  } else {
-    ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-AriaNeural'>${esc}</voice></speak>`;
-  }
-
-  try {
-    const { audioStream } = client.rawToStream(ssml);
-    return await streamToBuffer(audioStream);
-  } finally {
-    client.close();
-  }
-}
 
 // ── Utility: Shuffle helper ──────────────────────────────────────────────
 function shuffle(array) {
@@ -127,6 +38,35 @@ function shuffle(array) {
   return shuffled;
 }
 
+// Microsoft Edge TTS — free, no credentials required
+function streamToBuffer(readable) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    readable.on('data', c => chunks.push(c));
+    readable.on('end', () => resolve(Buffer.concat(chunks)));
+    readable.on('error', reject);
+  });
+}
+
+async function synthesizeSpeech(text, mode) {
+  const client = new MsEdgeTTS();
+  await client.setMetadata('en-US-AriaNeural', OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3);
+  const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  let ssml;
+  if (mode === 'word') {
+    ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-AriaNeural'><prosody rate="-15%">${esc} ... ${esc}</prosody></voice></speak>`;
+  } else if (mode === 'definition') {
+    ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-AriaNeural'><prosody rate="-8%">${esc}</prosody></voice></speak>`;
+  } else {
+    ssml = `<speak version='1.0' xml:lang='en-US'><voice name='en-US-AriaNeural'>${esc}</voice></speak>`;
+  }
+  try {
+    const { audioStream } = client.rawToStream(ssml);
+    return await streamToBuffer(audioStream);
+  } finally {
+    client.close();
+  }
+}
 
 app.disable('x-powered-by');
 
@@ -168,7 +108,7 @@ app.use('/api', apiLimiter);
 app.use(express.json({ limit: '16kb' }));
 
 // ── Serve static frontend in production ─────────────────────────────────
-const distPath = path.join(__dirname, '..', '..', '..', 'public', 'games', 'spelling-bee');
+const distPath = path.join(__dirname, '..', 'dist');
 if (NODE_ENV === 'production') {
   app.use(express.static(distPath, {
     maxAge: '7d',
@@ -177,7 +117,19 @@ if (NODE_ENV === 'production') {
 }
 
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true });
+  const stats = wordnetAvailable ? getStats() : null;
+  res.json({ 
+    ok: true,
+    wordnet: {
+      available: wordnetAvailable,
+      stats: stats
+    },
+    wordBank: {
+      easy: wordBank.easy.length,
+      medium: wordBank.medium.length,
+      hard: wordBank.hard.length
+    }
+  });
 });
 
 app.post('/api/log-current-word', (req, res) => {
@@ -216,40 +168,62 @@ app.get('/api/words', async (req, res) => {
     .map(s => s.trim().toLowerCase())
     .filter(s => s.length > 0);
 
-  // ── Try WordNet first ────────────────────────────────────────────────────
-  let wordnetWords = getWordNetWords(difficulty, limit);
+  let words = [];
+  let source = 'local';
 
-  if (wordnetWords) {
-    // Apply filters to WordNet results
+  // Try WordNet first if available
+  if (wordnetAvailable) {
+    try {
+      words = getWordsByDifficulty(difficulty, limit, posFilter);
+      if (words.length > 0) {
+        source = 'wordnet';
+        
+        // Apply topic filter if specified
+        if (topicFilter.length > 0) {
+          words = words.filter(w => {
+            const topic = (w.topic || '').toLowerCase();
+            return topicFilter.some(tf => topic.includes(tf));
+          });
+        }
+        
+        // If WordNet returned fewer words than requested, supplement with local
+        if (words.length < limit) {
+          const needed = limit - words.length;
+          const localWords = wordBank[difficulty] || [];
+          const localFiltered = localWords.filter(lw => 
+            !words.some(ww => ww.word === lw.word)
+          );
+          words = [...words, ...localFiltered.slice(0, needed)];
+          source = 'wordnet+local';
+        }
+      }
+    } catch (err) {
+      console.error('[WordNet] Error fetching words:', err.message);
+    }
+  }
+
+  // Fallback to local wordBank if WordNet failed or returned no words
+  if (words.length === 0) {
+    let pool = wordBank[difficulty] || [];
+
+    // Apply filters
     if (posFilter.length > 0) {
-      wordnetWords = wordnetWords.filter(w => posFilter.includes(w.partOfSpeech));
+      pool = pool.filter(w => posFilter.includes(w.partOfSpeech));
     }
     if (topicFilter.length > 0) {
-      wordnetWords = wordnetWords.filter(w => topicFilter.includes(w.topic));
+      pool = pool.filter(w => topicFilter.includes(w.topic));
     }
-    if (wordnetWords.length > 0) {
-      return res.json({ words: wordnetWords, source: 'wordnet' });
+
+    if (pool.length === 0) {
+      return res.json({ words: [], source: 'empty' });
     }
+
+    const shuffled = shuffle(pool);
+    words = shuffled.slice(0, limit);
+    source = 'local';
   }
 
-  // ── Fall back to static word bank ────────────────────────────────────────
-  let pool = wordBank[difficulty] || [];
-
-  if (posFilter.length > 0) {
-    pool = pool.filter(w => posFilter.includes(w.partOfSpeech));
-  }
-  if (topicFilter.length > 0) {
-    pool = pool.filter(w => topicFilter.includes(w.topic));
-  }
-
-  if (pool.length === 0) {
-    return res.json({ words: [], source: 'empty' });
-  }
-
-  const shuffled = shuffle(pool);
-  const words = shuffled.slice(0, limit);
-
-  return res.json({ words, source: 'local' });
+  return res.json({ words, source });
 });
 
 // ── Microsoft Edge Text-to-Speech ────────────────────────────────────────
@@ -284,21 +258,20 @@ app.get('/api/tts', async (req, res) => {
 
 // ── SPA fallback: serve index.html for all non-API routes in production ──
 if (NODE_ENV === 'production') {
-  app.use((req, res, next) => {
-    if (req.path.startsWith('/api/') || req.path === '/api') {
-      return next();
-    }
+  app.get('*', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
 
-const HOST = process.env.HOST || '0.0.0.0';
-
-app.listen(PORT, HOST, () => {
+app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`[${NODE_ENV}] Spelling Bee API listening on http://${HOST}:${PORT}`);
-  console.log(`[WordBank] Fallback: ${wordBank.easy.length} easy, ${wordBank.medium.length} medium, ${wordBank.hard.length} hard words.`);
-  console.log(`[WordNet]  Primary source: ${wordnetGetWords ? 'active' : 'unavailable (using word bank)'}`);
+  console.log(`[${NODE_ENV}] Spelling Bee Server listening on http://localhost:${PORT}`);
+  if (wordnetAvailable) {
+    const stats = getStats();
+    console.log(`[WordNet] Connected: ${stats.totalWords.toLocaleString()} words`);
+    console.log(`[WordNet] Easy: ${stats.byDifficulty.easy}, Medium: ${stats.byDifficulty.medium}, Hard: ${stats.byDifficulty.hard}`);
+  }
+  console.log(`[WordBank] Fallback loaded: ${wordBank.easy.length} easy, ${wordBank.medium.length} medium, ${wordBank.hard.length} hard words.`);
 });
 
 function clampInt(v, min, max) {
@@ -306,3 +279,4 @@ function clampInt(v, min, max) {
   if (!Number.isFinite(n)) return min;
   return Math.max(min, Math.min(max, n));
 }
+
