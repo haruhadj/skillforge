@@ -23,10 +23,12 @@ export default function PhaseInput({
 }: PhaseInputProps) {
   const [freq, setFreq] = useState<number>(initialFreq);
   const [isTuning, setIsTuning] = useState<boolean>(false);
+  const [isMouseDragging, setIsMouseDragging] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<boolean>(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const freqRef = useRef<number>(initialFreq);
   const lastTouchYRef = useRef<number | null>(null);
+  const lastMouseYRef = useRef<number | null>(null);
 
   // Keep freqRef in sync so imperative wheel handler always sees latest value
   useEffect(() => {
@@ -98,6 +100,47 @@ export default function PhaseInput({
     setIsTuning(false);
   };
 
+  // Mouse drag handlers (desktop)
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+    lastMouseYRef.current = e.clientY;
+    AudioService.startTuning(freqRef.current);
+    setIsMouseDragging(true);
+    setIsTuning(true);
+    setWaveActive(true);
+    setShowTooltip(false);
+  };
+
+  useEffect(() => {
+    if (!isMouseDragging) return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (lastMouseYRef.current === null) return;
+      const deltaY = e.clientY - lastMouseYRef.current;
+      lastMouseYRef.current = e.clientY;
+
+      const currentRatio = frequencyToPosition(freqRef.current);
+      const newRatio = Math.max(0, Math.min(1, currentRatio - deltaY * 0.004));
+      const newFreq = positionToFrequency(newRatio);
+      freqRef.current = newFreq;
+      setFreq(newFreq);
+      AudioService.setFrequency(newFreq);
+    };
+
+    const onMouseUp = () => {
+      lastMouseYRef.current = null;
+      setIsMouseDragging(false);
+      setIsTuning(false);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [isMouseDragging]);
+
   const getFrequencyLabel = (f: number) => {
     if (f < 140) return "Sub Bass";
     if (f < 250) return "Bass / Low End";
@@ -109,13 +152,14 @@ export default function PhaseInput({
   return (
     <div
       ref={containerRef}
+      onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       style={{ touchAction: 'none' }}
       className={`flex flex-col justify-between h-full w-full px-6 py-8 z-10 max-w-md mx-auto select-none relative transition-colors duration-300 ${
         isTuning ? 'bg-cyan-950/5' : ''
-      }`}
+      } ${isMouseDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
     >
       {/* Header */}
       <div className="flex justify-between items-center w-full mt-6 relative z-20">
@@ -150,7 +194,7 @@ export default function PhaseInput({
               🔊 Tuning Pitch Live...
             </>
           ) : (
-            "Scroll or swipe anywhere to tune"
+            "Drag, scroll, or swipe anywhere to tune"
           )}
         </p>
       </div>
@@ -189,9 +233,9 @@ export default function PhaseInput({
             className="bg-cyan-950/70 backdrop-blur-md p-4 rounded-2xl border border-cyan-500/20 text-center max-w-xs shadow-2xl space-y-2 pointer-events-auto"
           >
             <HelpCircle className="w-8 h-8 text-cyan-400 mx-auto animate-bounce" />
-            <h4 className="text-xs font-black tracking-wider text-white uppercase">Scroll to Tune</h4>
+            <h4 className="text-xs font-black tracking-wider text-white uppercase">Drag or Scroll to Tune</h4>
             <p className="text-[10px] text-zinc-300 leading-relaxed font-medium">
-              Scroll or swipe <span className="text-cyan-400 font-bold">anywhere on the screen</span> to tune the oscillator up or down. Submit once you dial it in!
+              Click-drag, scroll, or swipe <span className="text-cyan-400 font-bold">anywhere on the screen</span> to tune the oscillator up or down. Submit once you dial it in!
             </p>
             <button
               onClick={(e) => {
