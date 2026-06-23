@@ -762,7 +762,7 @@
   "hard": [
     {
       "word": "melancholy",
-      "definition": "A feeling of pensive sadness.",
+      "definition": "A feeling of pensive sadness with no obvious cause.",
       "partOfSpeech": "noun",
       "example": "A sense of melancholy filled the empty room.",
       "topic": "general"
@@ -776,28 +776,28 @@
     },
     {
       "word": "tenacious",
-      "definition": "Holding firmly to a position or opinion.",
+      "definition": "Holding firmly to a position, principle, or course of action.",
       "partOfSpeech": "adjective",
       "example": "Her tenacious spirit helped her succeed.",
       "topic": "general"
     },
     {
       "word": "labyrinth",
-      "definition": "A complicated irregular network of passages.",
+      "definition": "A complicated irregular network of passages or paths.",
       "partOfSpeech": "noun",
       "example": "They got lost in the labyrinth of streets.",
       "topic": "geography"
     },
     {
       "word": "resplendent",
-      "definition": "Attractive and impressive through being richly colorful.",
+      "definition": "Attractive and impressive through being richly colorful or sumptuous.",
       "partOfSpeech": "adjective",
       "example": "She looked resplendent in her golden gown.",
       "topic": "general"
     },
     {
       "word": "oblivious",
-      "definition": "Not aware of or concerned about what is happening.",
+      "definition": "Not aware of or concerned about what is happening around one.",
       "partOfSpeech": "adjective",
       "example": "He was oblivious to the noise around him.",
       "topic": "general"
@@ -811,318 +811,318 @@
     },
     {
       "word": "persevere",
-      "definition": "Continue in a course of action despite difficulty.",
+      "definition": "Continue in a course of action despite difficulty or delay.",
       "partOfSpeech": "verb",
       "example": "You must persevere through the hardest challenges.",
       "topic": "general"
     },
     {
-      "word": "chameleon",
-      "definition": "A lizard that can change color.",
-      "partOfSpeech": "noun",
-      "example": "The chameleon blended into the leaves.",
-      "topic": "animals"
-    },
-    {
-      "word": "butterfly",
-      "definition": "A flying insect with large colorful wings.",
-      "partOfSpeech": "noun",
-      "example": "The butterfly landed on the flower.",
-      "topic": "animals"
-    },
-    {
-      "word": "crocodile",
-      "definition": "A large predatory semiaquatic reptile.",
-      "partOfSpeech": "noun",
-      "example": "The crocodile lurked beneath the water.",
-      "topic": "animals"
-    },
-    {
-      "word": "rhinoceros",
-      "definition": "A large herbivorous mammal with horns.",
-      "partOfSpeech": "noun",
-      "example": "The rhinoceros charged across the plain.",
-      "topic": "animals"
-    },
-    {
-      "word": "hypothesis",
-      "definition": "A proposed explanation made as a starting point.",
-      "partOfSpeech": "noun",
-      "example": "The scientist tested her hypothesis.",
-      "topic": "science"
-    },
-    {
-      "word": "experiment",
-      "definition": "A scientific procedure to test a hypothesis.",
-      "partOfSpeech": "noun",
-      "example": "The experiment yielded surprising results.",
-      "topic": "science"
-    },
-    {
-      "word": "microscope",
-      "definition": "An instrument used to see very small objects.",
-      "partOfSpeech": "noun",
-      "example": "She examined the cells under a microscope.",
-      "topic": "science"
-    },
-    {
-      "word": "phenomenon",
-      "definition": "A fact or event observed to exist or happen.",
-      "partOfSpeech": "noun",
-      "example": "The aurora borealis is a natural phenomenon.",
-      "topic": "science"
-    },
-    {
       "word": "archipelago",
-      "definition": "A group of islands.",
+      "definition": "A group of many islands clustered together in a sea.",
       "partOfSpeech": "noun",
       "example": "The archipelago stretched across the ocean.",
       "topic": "geography"
     },
     {
-      "word": "peninsula",
-      "definition": "Land surrounded by water on three sides.",
-      "partOfSpeech": "noun",
-      "example": "The peninsula jutted into the sea.",
-      "topic": "geography"
-    },
-    {
-      "word": "continent",
-      "definition": "One of the seven major land masses.",
-      "partOfSpeech": "noun",
-      "example": "Africa is the second largest continent.",
-      "topic": "geography"
-    },
-    {
-      "word": "hemisphere",
-      "definition": "One half of the earth.",
-      "partOfSpeech": "noun",
-      "example": "Australia is in the southern hemisphere.",
-      "topic": "geography"
-    },
-    {
-      "word": "restaurant",
-      "definition": "A place where meals are prepared and served.",
-      "partOfSpeech": "noun",
-      "example": "They dined at a fancy restaurant.",
-      "topic": "food"
-    },
-    {
-      "word": "marmalade",
-      "definition": "A preserve made from citrus fruit.",
-      "partOfSpeech": "noun",
-      "example": "She spread marmalade on her toast.",
-      "topic": "food"
-    },
-    {
-      "word": "cantaloupe",
-      "definition": "A type of melon with orange flesh.",
-      "partOfSpeech": "noun",
-      "example": "The cantaloupe was perfectly ripe.",
-      "topic": "food"
-    },
-    {
-      "word": "cinnamon",
-      "definition": "An aromatic spice from tree bark.",
-      "partOfSpeech": "noun",
-      "example": "Cinnamon adds a warm flavor to desserts.",
-      "topic": "food"
-    },
-    {
-      "word": "xylophone",
-      "definition": "A percussion instrument with wooden bars.",
-      "partOfSpeech": "noun",
-      "example": "She played a tune on the xylophone.",
-      "topic": "music"
-    },
-    {
-      "word": "crescendo",
-      "definition": "A gradual increase in loudness.",
-      "partOfSpeech": "noun",
-      "example": "The music rose to a dramatic crescendo.",
-      "topic": "music"
-    },
-    {
-      "word": "orchestra",
-      "definition": "A large group of musicians playing together.",
-      "partOfSpeech": "noun",
-      "example": "The orchestra performed a symphony.",
-      "topic": "music"
-    },
-    {
-      "word": "rehearsal",
-      "definition": "A practice session for a performance.",
-      "partOfSpeech": "noun",
-      "example": "The band had a rehearsal before the show.",
-      "topic": "music"
-    },
-    {
-      "word": "tournament",
-      "definition": "A series of contests between many competitors.",
-      "partOfSpeech": "noun",
-      "example": "Teams from around the world joined the tournament.",
-      "topic": "sports"
-    },
-    {
-      "word": "gymnasium",
-      "definition": "A room or building for indoor sports.",
-      "partOfSpeech": "noun",
-      "example": "The gymnasium echoed with cheering fans.",
-      "topic": "sports"
-    },
-    {
-      "word": "trampoline",
-      "definition": "A device for bouncing on, used in gymnastics.",
-      "partOfSpeech": "noun",
-      "example": "She practiced flips on the trampoline.",
-      "topic": "sports"
-    },
-    {
-      "word": "badminton",
-      "definition": "A sport played with rackets and a shuttlecock.",
-      "partOfSpeech": "noun",
-      "example": "They played badminton in the backyard.",
-      "topic": "sports"
-    },
-    {
       "word": "ambiguous",
-      "definition": "Open to more than one interpretation.",
+      "definition": "Open to more than one interpretation; not having one obvious meaning.",
       "partOfSpeech": "adjective",
-      "example": "The ending of the movie was very ambiguous.",
+      "example": "The contract had several ambiguous clauses.",
       "topic": "general"
     },
     {
       "word": "benevolent",
-      "definition": "Well meaning and kindly.",
+      "definition": "Well meaning and kindly; generous in giving to those in need.",
       "partOfSpeech": "adjective",
-      "example": "The benevolent queen helped the poor.",
-      "topic": "general"
-    },
-    {
-      "word": "courageous",
-      "definition": "Not deterred by danger or pain; brave.",
-      "partOfSpeech": "adjective",
-      "example": "The courageous firefighter saved the cat.",
-      "topic": "general"
-    },
-    {
-      "word": "diligent",
-      "definition": "Having or showing care and conscientiousness.",
-      "partOfSpeech": "adjective",
-      "example": "A diligent student always does their homework.",
-      "topic": "general"
-    },
-    {
-      "word": "eloquent",
-      "definition": "Fluent or persuasive in speaking or writing.",
-      "partOfSpeech": "adjective",
-      "example": "The senator gave an eloquent speech.",
+      "example": "The benevolent leader donated to schools.",
       "topic": "general"
     },
     {
       "word": "formidable",
-      "definition": "Inspiring fear or respect through being large.",
+      "definition": "Inspiring fear or respect through being impressively large or capable.",
       "partOfSpeech": "adjective",
-      "example": "The mountain presented a formidable challenge.",
-      "topic": "geography"
+      "example": "The opponent was a formidable challenger.",
+      "topic": "general"
     },
     {
       "word": "gregarious",
       "definition": "Fond of company; sociable.",
       "partOfSpeech": "adjective",
-      "example": "He is a gregarious person who loves parties.",
+      "example": "Her gregarious personality made her popular.",
       "topic": "general"
     },
     {
       "word": "hierarchy",
-      "definition": "A system in which members are ranked.",
+      "definition": "A system in which members are ranked according to status or authority.",
       "partOfSpeech": "noun",
-      "example": "There is a strict hierarchy in the army.",
+      "example": "She rose to the top of the corporate hierarchy.",
       "topic": "general"
     },
     {
       "word": "inevitable",
       "definition": "Certain to happen; unavoidable.",
       "partOfSpeech": "adjective",
-      "example": "Change is an inevitable part of life.",
+      "example": "Defeat seemed inevitable after losing their best player.",
       "topic": "general"
     },
     {
       "word": "juxtapose",
-      "definition": "To place close together for contrast.",
+      "definition": "Place or deal with close together for contrasting effect.",
       "partOfSpeech": "verb",
-      "example": "The artist likes to juxtapose light and dark colors.",
+      "example": "The painting juxtaposes light and dark perfectly.",
       "topic": "general"
-    },
-    {
-      "word": "knowledge",
-      "definition": "Facts, information, and skills acquired.",
-      "partOfSpeech": "noun",
-      "example": "He has a vast knowledge of history.",
-      "topic": "general"
-    },
-    {
-      "word": "luminous",
-      "definition": "Full of or shedding light; bright.",
-      "partOfSpeech": "adjective",
-      "example": "The watch has luminous hands for night viewing.",
-      "topic": "science"
     },
     {
       "word": "meticulous",
-      "definition": "Showing great attention to detail.",
+      "definition": "Showing great attention to detail or correct behavior.",
       "partOfSpeech": "adjective",
-      "example": "She is meticulous about keeping her room clean.",
+      "example": "She was meticulous in her research.",
       "topic": "general"
     },
     {
       "word": "notorious",
-      "definition": "Famous or well known for something bad.",
+      "definition": "Famous or well known, typically for some bad quality or deed.",
       "partOfSpeech": "adjective",
-      "example": "The pirate was notorious for his cruelty.",
+      "example": "He was notorious for arriving late.",
       "topic": "general"
     },
     {
       "word": "omnipresent",
-      "definition": "Widely or constantly encountered; widespread.",
+      "definition": "Present everywhere at the same time.",
       "partOfSpeech": "adjective",
-      "example": "Smartphones are omnipresent in modern society.",
-      "topic": "science"
+      "example": "Technology has become omnipresent in modern life.",
+      "topic": "general"
     },
     {
       "word": "precarious",
-      "definition": "Not securely held or in position.",
+      "definition": "Not securely held or in position; dangerously likely to fall.",
       "partOfSpeech": "adjective",
-      "example": "The vase was in a precarious position on the edge.",
+      "example": "The climber clung to a precarious ledge.",
       "topic": "general"
     },
     {
       "word": "quintessential",
-      "definition": "Representing the most perfect example of a quality.",
+      "definition": "Representing the most perfect example of a quality or class.",
       "partOfSpeech": "adjective",
-      "example": "It was the quintessential summer day.",
-      "topic": "general"
-    },
-    {
-      "word": "resilient",
-      "definition": "Able to withstand or recover quickly from difficult conditions.",
-      "partOfSpeech": "adjective",
-      "example": "She is a resilient person who never gives up.",
+      "example": "She was the quintessential professional athlete.",
       "topic": "general"
     },
     {
       "word": "scrutinized",
-      "definition": "Examine or inspect closely and thoroughly.",
+      "definition": "Examined or inspected closely and thoroughly.",
       "partOfSpeech": "verb",
-      "example": "The judge scrutinized the evidence.",
+      "example": "Every detail of the plan was scrutinized.",
       "topic": "general"
     },
     {
-      "word": "tranquil",
-      "definition": "Free from disturbance; calm.",
+      "word": "accommodate",
+      "definition": "Provide lodging or sufficient space for; fit in with the needs of.",
+      "partOfSpeech": "verb",
+      "example": "The hotel can accommodate up to 500 guests.",
+      "topic": "general"
+    },
+    {
+      "word": "acquiesce",
+      "definition": "Accept something reluctantly but without protest.",
+      "partOfSpeech": "verb",
+      "example": "She acquiesced to the demands despite her reservations.",
+      "topic": "general"
+    },
+    {
+      "word": "bureaucracy",
+      "definition": "A system of government with many complicated rules and processes.",
+      "partOfSpeech": "noun",
+      "example": "The bureaucracy slowed the approval process considerably.",
+      "topic": "general"
+    },
+    {
+      "word": "conscientious",
+      "definition": "Wishing to do what is right, especially to do one's work well.",
       "partOfSpeech": "adjective",
-      "example": "The lake was tranquil in the early morning.",
-      "topic": "geography"
+      "example": "She was a conscientious worker who never cut corners.",
+      "topic": "general"
+    },
+    {
+      "word": "desiccate",
+      "definition": "Remove moisture from; cause to become completely dry.",
+      "partOfSpeech": "verb",
+      "example": "The desert heat would desiccate anything left in the sun.",
+      "topic": "science"
+    },
+    {
+      "word": "millennium",
+      "definition": "A period of one thousand years.",
+      "partOfSpeech": "noun",
+      "example": "The new millennium brought great technological advances.",
+      "topic": "general"
+    },
+    {
+      "word": "mnemonic",
+      "definition": "A pattern or device that aids memory.",
+      "partOfSpeech": "noun",
+      "example": "He used a mnemonic to remember the planets' order.",
+      "topic": "science"
+    },
+    {
+      "word": "miscellaneous",
+      "definition": "Consisting of items or parts of different kinds and qualities.",
+      "partOfSpeech": "adjective",
+      "example": "The box held miscellaneous items from the old attic.",
+      "topic": "general"
+    },
+    {
+      "word": "lieutenant",
+      "definition": "An officer in the armed forces ranking below a captain.",
+      "partOfSpeech": "noun",
+      "example": "The lieutenant gave orders to her squad.",
+      "topic": "general"
+    },
+    {
+      "word": "occurrence",
+      "definition": "An incident or event, especially one that is unexpected.",
+      "partOfSpeech": "noun",
+      "example": "Rain in the desert is a rare occurrence.",
+      "topic": "general"
+    },
+    {
+      "word": "pneumonia",
+      "definition": "Lung infection causing inflammation of the air sacs.",
+      "partOfSpeech": "noun",
+      "example": "He was hospitalized with a severe case of pneumonia.",
+      "topic": "science"
+    },
+    {
+      "word": "supersede",
+      "definition": "Take the place of; cause to be set aside or replaced.",
+      "partOfSpeech": "verb",
+      "example": "Digital cameras superseded film cameras in the 2000s.",
+      "topic": "general"
+    },
+    {
+      "word": "surveillance",
+      "definition": "Close observation, especially of a suspected person or group.",
+      "partOfSpeech": "noun",
+      "example": "The bank had extensive surveillance cameras installed.",
+      "topic": "general"
+    },
+    {
+      "word": "onomatopoeia",
+      "definition": "The formation of a word from the sound it describes.",
+      "partOfSpeech": "noun",
+      "example": "Words like buzz and hiss are examples of onomatopoeia.",
+      "topic": "general"
+    },
+    {
+      "word": "soliloquy",
+      "definition": "An act of speaking one's thoughts aloud regardless of any hearers.",
+      "partOfSpeech": "noun",
+      "example": "Hamlet's famous soliloquy begins with 'To be or not to be'.",
+      "topic": "general"
+    },
+    {
+      "word": "idiosyncrasy",
+      "definition": "A mode of behavior or thought peculiar to an individual.",
+      "partOfSpeech": "noun",
+      "example": "His habit of humming while working was a quirky idiosyncrasy.",
+      "topic": "general"
+    },
+    {
+      "word": "kaleidoscope",
+      "definition": "A tube producing changing symmetrical patterns, or a vivid, complex sequence.",
+      "partOfSpeech": "noun",
+      "example": "The festival was a kaleidoscope of color and sound.",
+      "topic": "general"
+    },
+    {
+      "word": "paraphernalia",
+      "definition": "Miscellaneous articles or equipment needed for a particular activity.",
+      "partOfSpeech": "noun",
+      "example": "She arrived with all the paraphernalia of a professional chef.",
+      "topic": "general"
+    },
+    {
+      "word": "facetious",
+      "definition": "Treating serious issues with deliberately inappropriate humor.",
+      "partOfSpeech": "adjective",
+      "example": "His facetious comment lightened the tense meeting.",
+      "topic": "general"
+    },
+    {
+      "word": "nonchalant",
+      "definition": "Feeling or appearing casually calm and relaxed; not displaying anxiety.",
+      "partOfSpeech": "adjective",
+      "example": "She remained nonchalant despite the chaos around her.",
+      "topic": "general"
+    },
+    {
+      "word": "renaissance",
+      "definition": "A renewal of interest or activity; a revival.",
+      "partOfSpeech": "noun",
+      "example": "The city experienced a renaissance of art and culture.",
+      "topic": "general"
+    },
+    {
+      "word": "camaraderie",
+      "definition": "Mutual trust and friendship among people who spend time together.",
+      "partOfSpeech": "noun",
+      "example": "The team was known for its extraordinary camaraderie.",
+      "topic": "sports"
+    },
+    {
+      "word": "catastrophe",
+      "definition": "An event causing great suffering, destruction, and distress.",
+      "partOfSpeech": "noun",
+      "example": "The oil spill was an environmental catastrophe.",
+      "topic": "general"
+    },
+    {
+      "word": "exhilarate",
+      "definition": "Make someone feel very happy, animated, or elated.",
+      "partOfSpeech": "verb",
+      "example": "The mountain view never failed to exhilarate her.",
+      "topic": "general"
+    },
+    {
+      "word": "sacrilegious",
+      "definition": "Committing or involving a violation of what is regarded as sacred.",
+      "partOfSpeech": "adjective",
+      "example": "Many considered the renovation of the chapel sacrilegious.",
+      "topic": "general"
+    },
+    {
+      "word": "surreptitious",
+      "definition": "Kept secret in order to avoid being noticed.",
+      "partOfSpeech": "adjective",
+      "example": "He cast a surreptitious glance at his rival's notes.",
+      "topic": "general"
+    },
+    {
+      "word": "serendipity",
+      "definition": "The occurrence and development of events by pleasant chance.",
+      "partOfSpeech": "noun",
+      "example": "Finding that book was pure serendipity.",
+      "topic": "general"
+    },
+    {
+      "word": "perspicacious",
+      "definition": "Having a ready insight into things; shrewd.",
+      "partOfSpeech": "adjective",
+      "example": "The perspicacious detective solved the case in an hour.",
+      "topic": "general"
+    },
+    {
+      "word": "recalcitrant",
+      "definition": "Having an obstinately uncooperative attitude toward authority.",
+      "partOfSpeech": "adjective",
+      "example": "The recalcitrant student refused to follow any rules.",
+      "topic": "general"
+    },
+    {
+      "word": "wednesday",
+      "definition": "The day of the week between Tuesday and Thursday.",
+      "partOfSpeech": "noun",
+      "example": "The meeting is scheduled for Wednesday afternoon.",
+      "topic": "general"
     }
   ]
 }

@@ -13,7 +13,7 @@ import path from 'path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Path to WordNet database (relative to SkillForge server location)
-const DB_PATH = path.join(__dirname, '..', '..', '..', '..', 'cursor', 'thesis_proj', 'server', 'wordnet', 'oewn-2025-sqlite-2.3.2.sqlite');
+const DB_PATH = path.join(__dirname, '..', '..', '..', 'server', 'wordnet', 'oewn-2025-sqlite-2.3.2.sqlite');
 
 let db = null;
 
@@ -58,9 +58,9 @@ function queryAll(sql, params = []) {
  * Maps to WordNet frequency data
  */
 const DIFFICULTY_RANGES = {
-  easy:   { min: 15, max: Infinity },  // Common words (like vocab "light")
-  medium: { min: 8,  max: 14 },        // Moderate frequency
-  hard:   { min: 3,  max: 7 }          // Less common words
+  easy:   { min: 15, max: Infinity, minLen: 3 },
+  medium: { min: 6,  max: 14,       minLen: 5 },
+  hard:   { min: 2,  max: 7,        minLen: 8 },
 };
 
 /**
@@ -88,7 +88,7 @@ export function getWordsByDifficulty(difficulty, count = 10, posFilter = []) {
     JOIN poses p ON sy.posid = p.posid
     LEFT JOIN domains d ON sy.domainid = d.domainid
     WHERE se.tagcount BETWEEN ? AND ?
-      AND length(w.word) BETWEEN 3 AND 20
+      AND length(w.word) BETWEEN ? AND 20
       AND w.word NOT LIKE '% %'
       AND w.word NOT LIKE '%-%'
       AND w.word = lower(w.word)
@@ -96,8 +96,8 @@ export function getWordsByDifficulty(difficulty, count = 10, posFilter = []) {
       AND length(sy.definition) > 10
       AND length(sy.definition) < 200
   `;
-  
-  const params = [range.min, range.max === Infinity ? 999999 : range.max];
+
+  const params = [range.min, range.max === Infinity ? 999999 : range.max, range.minLen ?? 3];
   
   // Add part of speech filter if provided
   if (posFilter && posFilter.length > 0) {

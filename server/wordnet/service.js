@@ -80,10 +80,10 @@ function queryOne(sql, params = []) {
  * Maps game difficulty levels to WordNet frequency ranges
  */
 const DIFFICULTY_RANGES = {
-  light:    { min: 15, max: Infinity, label: 'Easy', emoji: '🌱' },
-  medium:   { min: 8,  max: 14,       label: 'Medium', emoji: '🌿' },
-  hard:     { min: 3,  max: 7,        label: 'Hard', emoji: '🌲' },
-  devilish: { min: 0,  max: 2,        label: 'Expert', emoji: '🔥' }
+  light:    { min: 15, max: Infinity, minLen: 3,  label: 'Easy',   emoji: '🌱' },
+  medium:   { min: 6,  max: 14,       minLen: 5,  label: 'Medium', emoji: '🌿' },
+  hard:     { min: 2,  max: 7,        minLen: 8,  label: 'Hard',   emoji: '🌲' },
+  devilish: { min: 0,  max: 2,        minLen: 10, label: 'Expert', emoji: '🔥' }
 };
 
 /**
@@ -103,7 +103,7 @@ export function getWordsByDifficulty(difficulty, count = 10) {
     JOIN poses p ON sy.posid = p.posid
     LEFT JOIN domains d ON sy.domainid = d.domainid
     WHERE se.tagcount BETWEEN ? AND ?
-      AND length(w.word) BETWEEN 4 AND 20
+      AND length(w.word) BETWEEN ? AND 20
       AND w.word NOT LIKE '% %'
       AND w.word NOT LIKE '%-%'
       AND w.word = lower(w.word)
@@ -116,9 +116,9 @@ export function getWordsByDifficulty(difficulty, count = 10) {
     ORDER BY RANDOM()
     LIMIT ?
   `;
-  
+
   const maxFreq = range.max === Infinity ? 999999 : range.max;
-  return queryAll(sql, [range.min, maxFreq, count]);
+  return queryAll(sql, [range.min, maxFreq, range.minLen ?? 4, count]);
 }
 
 /**

@@ -168,10 +168,10 @@ export const TOPIC_WORDS = {
       { word: "giraffe", definition: "A tall African mammal with a very long neck.", partOfSpeech: "noun", example: "The giraffe reached the highest leaves.", topic: "animals" },
     ],
     hard: [
-      { word: "chameleon", definition: "A lizard that can change color.", partOfSpeech: "noun", example: "The chameleon blended into the leaves.", topic: "animals" },
-      { word: "butterfly", definition: "A flying insect with large colorful wings.", partOfSpeech: "noun", example: "The butterfly landed on the flower.", topic: "animals" },
-      { word: "crocodile", definition: "A large predatory semiaquatic reptile.", partOfSpeech: "noun", example: "The crocodile lurked beneath the water.", topic: "animals" },
-      { word: "rhinoceros", definition: "A large herbivorous mammal with horns.", partOfSpeech: "noun", example: "The rhinoceros charged across the plain.", topic: "animals" },
+      { word: "chameleon", definition: "A lizard capable of changing its skin color.", partOfSpeech: "noun", example: "The chameleon blended into the leaves.", topic: "animals" },
+      { word: "orangutan", definition: "A large tree-dwelling ape native to Borneo and Sumatra.", partOfSpeech: "noun", example: "The orangutan swung gracefully between the branches.", topic: "animals" },
+      { word: "archaeopteryx", definition: "An extinct primitive bird with features of a dinosaur.", partOfSpeech: "noun", example: "The archaeopteryx fossil is one of the most famous ever found.", topic: "animals" },
+      { word: "axolotl", definition: "A Mexican salamander that retains its larval form throughout life.", partOfSpeech: "noun", example: "The axolotl can regrow lost limbs completely.", topic: "animals" },
     ],
   },
   science: {
@@ -189,10 +189,10 @@ export const TOPIC_WORDS = {
       { word: "sustain", definition: "To strengthen or support over a long period.", partOfSpeech: "verb", example: "Plants sustain life on earth.", topic: "science" },
     ],
     hard: [
-      { word: "hypothesis", definition: "A proposed explanation made as a starting point.", partOfSpeech: "noun", example: "The scientist tested her hypothesis.", topic: "science" },
-      { word: "experiment", definition: "A scientific procedure to test a hypothesis.", partOfSpeech: "noun", example: "The experiment yielded surprising results.", topic: "science" },
-      { word: "microscope", definition: "An instrument used to see very small objects.", partOfSpeech: "noun", example: "She examined the cells under a microscope.", topic: "science" },
-      { word: "phenomenon", definition: "A fact or event observed to exist or happen.", partOfSpeech: "noun", example: "The aurora borealis is a natural phenomenon.", topic: "science" },
+      { word: "hypothesis", definition: "A proposed explanation made as a starting point for investigation.", partOfSpeech: "noun", example: "The scientist tested her hypothesis.", topic: "science" },
+      { word: "photosynthesis", definition: "The process by which plants use sunlight to convert carbon dioxide into food.", partOfSpeech: "noun", example: "Photosynthesis is essential for all life on Earth.", topic: "science" },
+      { word: "phenomenon", definition: "A fact or event observed to exist or happen in the natural world.", partOfSpeech: "noun", example: "The aurora borealis is a natural phenomenon.", topic: "science" },
+      { word: "electromagnetic", definition: "Relating to the interrelation of electric and magnetic fields.", partOfSpeech: "adjective", example: "Visible light is part of the electromagnetic spectrum.", topic: "science" },
     ],
   },
   geography: {
@@ -209,10 +209,10 @@ export const TOPIC_WORDS = {
       { word: "country", definition: "A nation with its own government.", partOfSpeech: "noun", example: "Each country has its own culture.", topic: "geography" },
     ],
     hard: [
-      { word: "archipelago", definition: "A group of islands.", partOfSpeech: "noun", example: "The archipelago stretched across the ocean.", topic: "geography" },
-      { word: "peninsula", definition: "Land surrounded by water on three sides.", partOfSpeech: "noun", example: "The peninsula jutted into the sea.", topic: "geography" },
-      { word: "continent", definition: "One of the seven major land masses.", partOfSpeech: "noun", example: "Africa is the second largest continent.", topic: "geography" },
-      { word: "hemisphere", definition: "One half of the earth.", partOfSpeech: "noun", example: "Australia is in the southern hemisphere.", topic: "geography" },
+      { word: "archipelago", definition: "A group of many islands clustered together in a sea.", partOfSpeech: "noun", example: "The archipelago stretched across the ocean.", topic: "geography" },
+      { word: "peninsula", definition: "A piece of land surrounded by water on three sides.", partOfSpeech: "noun", example: "The peninsula jutted dramatically into the sea.", topic: "geography" },
+      { word: "mediterranean", definition: "Relating to the region surrounding the Mediterranean Sea.", partOfSpeech: "adjective", example: "They enjoyed a Mediterranean cruise through Greece and Italy.", topic: "geography" },
+      { word: "appalachian", definition: "Relating to the Appalachian Mountains of eastern North America.", partOfSpeech: "adjective", example: "The Appalachian trail stretches over two thousand miles.", topic: "geography" },
     ],
   },
   food: {
@@ -230,10 +230,10 @@ export const TOPIC_WORDS = {
       { word: "pastry", definition: "Dough used as a base for baked goods.", partOfSpeech: "noun", example: "The pastry was flaky and golden.", topic: "food" },
     ],
     hard: [
-      { word: "restaurant", definition: "A place where meals are prepared and served.", partOfSpeech: "noun", example: "They dined at a fancy restaurant.", topic: "food" },
-      { word: "marmalade", definition: "A preserve made from citrus fruit.", partOfSpeech: "noun", example: "She spread marmalade on her toast.", topic: "food" },
-      { word: "cantaloupe", definition: "A type of melon with orange flesh.", partOfSpeech: "noun", example: "The cantaloupe was perfectly ripe.", topic: "food" },
-      { word: "cinnamon", definition: "An aromatic spice from tree bark.", partOfSpeech: "noun", example: "Cinnamon adds a warm flavor to desserts.", topic: "food" },
+      { word: "vinaigrette", definition: "A salad dressing made with oil, vinegar, and seasonings.", partOfSpeech: "noun", example: "She drizzled a light vinaigrette over the salad.", topic: "food" },
+      { word: "marmalade", definition: "A preserve made from citrus fruit, especially orange.", partOfSpeech: "noun", example: "She spread marmalade on her toast.", topic: "food" },
+      { word: "cantaloupe", definition: "A type of muskmelon with sweet orange flesh.", partOfSpeech: "noun", example: "The cantaloupe was perfectly ripe.", topic: "food" },
+      { word: "worcestershire", definition: "A fermented liquid condiment used to flavor food.", partOfSpeech: "noun", example: "He added a dash of worcestershire sauce to the recipe.", topic: "food" },
     ],
   },
   music: {
@@ -250,10 +250,10 @@ export const TOPIC_WORDS = {
       { word: "trumpet", definition: "A brass musical instrument with a bright tone.", partOfSpeech: "noun", example: "The trumpet solo was outstanding.", topic: "music" },
     ],
     hard: [
-      { word: "xylophone", definition: "A percussion instrument with wooden bars.", partOfSpeech: "noun", example: "She played a tune on the xylophone.", topic: "music" },
-      { word: "crescendo", definition: "A gradual increase in loudness.", partOfSpeech: "noun", example: "The music rose to a dramatic crescendo.", topic: "music" },
-      { word: "orchestra", definition: "A large group of musicians playing together.", partOfSpeech: "noun", example: "The orchestra performed a symphony.", topic: "music" },
-      { word: "rehearsal", definition: "A practice session for a performance.", partOfSpeech: "noun", example: "The band had a rehearsal before the show.", topic: "music" },
+      { word: "xylophone", definition: "A percussion instrument with wooden bars struck with mallets.", partOfSpeech: "noun", example: "She played a tune on the xylophone.", topic: "music" },
+      { word: "crescendo", definition: "A gradual increase in loudness in a piece of music.", partOfSpeech: "noun", example: "The music rose to a dramatic crescendo.", topic: "music" },
+      { word: "fortissimo", definition: "A direction in music to play very loudly.", partOfSpeech: "adverb", example: "The brass section played fortissimo during the finale.", topic: "music" },
+      { word: "syncopation", definition: "A shift of accent in music to a normally unaccented beat.", partOfSpeech: "noun", example: "Jazz relies heavily on syncopation to create its characteristic rhythm.", topic: "music" },
     ],
   },
   sports: {
@@ -270,10 +270,10 @@ export const TOPIC_WORDS = {
       { word: "athlete", definition: "A person skilled in physical exercise.", partOfSpeech: "noun", example: "The athlete trained hard every day.", topic: "sports" },
     ],
     hard: [
-      { word: "tournament", definition: "A series of contests between many competitors.", partOfSpeech: "noun", example: "Teams from around the world joined the tournament.", topic: "sports" },
-      { word: "gymnasium", definition: "A room or building for indoor sports.", partOfSpeech: "noun", example: "The gymnasium echoed with cheering fans.", topic: "sports" },
-      { word: "trampoline", definition: "A device for bouncing on, used in gymnastics.", partOfSpeech: "noun", example: "She practiced flips on the trampoline.", topic: "sports" },
-      { word: "badminton", definition: "A sport played with rackets and a shuttlecock.", partOfSpeech: "noun", example: "They played badminton in the backyard.", topic: "sports" },
+      { word: "pentathlon", definition: "An athletic contest involving five different disciplines.", partOfSpeech: "noun", example: "She trained for years to compete in the pentathlon.", topic: "sports" },
+      { word: "gymnasium", definition: "A room or building equipped for indoor sports and exercise.", partOfSpeech: "noun", example: "The gymnasium echoed with cheering fans.", topic: "sports" },
+      { word: "trampoline", definition: "A resilient sheet connected by springs used for acrobatic jumps.", partOfSpeech: "noun", example: "She practiced flips on the trampoline.", topic: "sports" },
+      { word: "badminton", definition: "A racket sport played with a shuttlecock over a net.", partOfSpeech: "noun", example: "They played badminton in the backyard.", topic: "sports" },
     ],
   },
 };
