@@ -20,13 +20,22 @@ Last updated: 2026-06-19
 ## Phase 2 — Fix What Will Break Next (Leaderboard Materialization)
 
 > Every leaderboard render triggers a `collectionGroup` scan across all users' score/stat docs.
-> Cost and latency grow linearly with user count. At 10k users × 21 games = 210k+ reads per render.
+> Cost and latency grow linearly with user count. At 10k users × 28 games = 280k+ reads per render.
+>
+> **Approach**: Instead of Firebase Cloud Functions (no functions/ dir existed; client write path
+> bypasses any server hook regardless), leaderboards are materialized into `/leaderboards/*`
+> Firestore docs via `POST /api/internal/leaderboards/recompute`. The leaderboard API reads
+> 1 doc per request instead of scanning all users.
 
-- [ ] Write a Firebase Cloud Function that triggers on `users/{uid}/scores/{gameId}` writes
-- [ ] Function updates a single `/leaderboards/{gameId}` document with the top-N scores
-- [ ] Update `app/services/gameDataService.ts` to read from `/leaderboards/{gameId}` instead of scanning
-- [ ] Deploy and verify leaderboard render cost drops to 1 read per view
-- [ ] Add Firestore security rules for the new `leaderboards` collection
+- [x] Add `POST /api/internal/leaderboards/recompute` endpoint (protected by `INTERNAL_API_SECRET`)
+      that scans all score/stat docs, writes `/leaderboards/_global`, `/leaderboards/_popularity`,
+      and `/leaderboards/{gameId}` (top-10 per game) in a single batch
+- [x] Update `app/api/leaderboard/route.ts` to read from materialized docs (1 read per request);
+      falls back to full scan + writes materialized doc on first call / missing doc
+- [x] Add Firestore security rules for the `leaderboards` collection (public read, write=false)
+- [x] Add `INTERNAL_API_SECRET` env var (documented in `.env.example`)
+- [ ] **Seed**: call `POST /api/internal/leaderboards/recompute` once after prod deploy
+- [ ] **Schedule** (Phase 4): wire the recompute endpoint to a cron job for periodic refresh
 
 ---
 
@@ -69,6 +78,6 @@ Last updated: 2026-06-19
 | Phase | Status |
 |-------|--------|
 | Phase 1 — Prod WebSocket fix | In progress |
-| Phase 2 — Leaderboard materialization | Not started |
+| Phase 2 — Leaderboard materialization | Done (seed recompute needed in prod) |
 | Phase 3 — Product growth | Not started |
 | Phase 4 — Infrastructure hardening | Not started |

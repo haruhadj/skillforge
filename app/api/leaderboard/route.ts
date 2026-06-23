@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { unstable_cache } from 'next/cache'
-import { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
+import { FieldValue, QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
 import { getAdminDb } from '@/app/lib/firebase-admin'
 import {
   aggregateGlobalLeaderboard,
@@ -11,28 +10,23 @@ import {
 } from '@/app/services/scoring'
 
 /**
- * Server-side, cached leaderboards + game popularity.
+ * Server-side leaderboard reads.
  *
- * The previous implementation ran full `collectionGroup` scans over every user's
- * scores + gameStats in the browser on every page/library load. This route runs
- * those scans once per cache window (Admin SDK) and serves all visitors from the
- * cached result, collapsing N visitors x full-scan into ~1 scan per TTL. The data is
- * public (Firestore rules allow reads), so no auth is required.
+ * Primary path: reads a single pre-computed Firestore document from /leaderboards/<key>
+ * (1 read per request). These documents are written by POST /api/internal/leaderboards/recompute
+ * and should be called once after each deploy and periodically thereafter.
  *
- * Firestore I/O is kept to the thin mapping below; all ranking/aggregation logic
- * lives in pure functions in `scoring.ts` (unit-tested, database-free).
+ * Fallback path (first run / missing doc): runs a full collectionGroup scan, writes the
+ * materialized document, then returns the result. Subsequent requests hit the fast path.
  */
 
-const CACHE_TTL_SECONDS = 60
-
 function toMillis(value: unknown): number | null {
-  if (value && typeof value === 'object' && 'toMillis' in value && typeof value.toMillis === 'function') {
-    return value.toMillis()
+  if (value && typeof value === 'object' && 'toMillis' in value && typeof (value as Record<string, unknown>).toMillis === 'function') {
+    return (value as { toMillis: () => number }).toMillis()
   }
   return null
 }
 
-/** uid is the 2nd path segment: users/{uid}/(scores|gameStats)/{id}. */
 function uidFromPath(path: string): string {
   return path.split('/')[1]
 }
@@ -56,44 +50,49 @@ async function readStatsRows(): Promise<StatsRow[]> {
   }))
 }
 
-const getGlobalLeaderboard = unstable_cache(
-  async () => {
-    const [scoreRows, statsRows] = await Promise.all([readScoreRows(), readStatsRows()])
-    return aggregateGlobalLeaderboard(scoreRows, statsRows)
-  },
-  ['leaderboard-global'],
-  { revalidate: CACHE_TTL_SECONDS, tags: ['leaderboard'] },
-)
-
-const getGameLeaderboard = unstable_cache(
-  async (gameId: string) => aggregateGameLeaderboard(await readScoreRows(), gameId),
-  ['leaderboard-game'],
-  { revalidate: CACHE_TTL_SECONDS, tags: ['leaderboard'] },
-)
-
-const getGamePopularity = unstable_cache(
-  async () => aggregateGamePopularity(await readStatsRows()),
-  ['leaderboard-popularity'],
-  { revalidate: CACHE_TTL_SECONDS, tags: ['leaderboard'] },
-)
-
 export async function GET(request: NextRequest) {
   try {
+    const adminDb = getAdminDb()
     const mode = request.nextUrl.searchParams.get('mode') || 'global'
+    const now = FieldValue.serverTimestamp()
 
     if (mode === 'game') {
       const gameId = request.nextUrl.searchParams.get('gameId')
       if (!gameId) {
         return NextResponse.json({ error: 'gameId is required for mode=game' }, { status: 400 })
       }
-      return NextResponse.json({ entries: await getGameLeaderboard(gameId) })
+
+      const snap = await adminDb.collection('leaderboards').doc(gameId).get()
+      if (snap.exists && Array.isArray(snap.data()?.entries)) {
+        return NextResponse.json({ entries: snap.data()!.entries })
+      }
+
+      const entries = aggregateGameLeaderboard(await readScoreRows(), gameId).slice(0, 10)
+      await adminDb.collection('leaderboards').doc(gameId).set({ entries, recomputedAt: now })
+      return NextResponse.json({ entries })
     }
 
     if (mode === 'popularity') {
-      return NextResponse.json({ popularity: await getGamePopularity() })
+      const snap = await adminDb.collection('leaderboards').doc('_popularity').get()
+      if (snap.exists && snap.data()?.popularity) {
+        return NextResponse.json({ popularity: snap.data()!.popularity })
+      }
+
+      const popularity = aggregateGamePopularity(await readStatsRows())
+      await adminDb.collection('leaderboards').doc('_popularity').set({ popularity, recomputedAt: now })
+      return NextResponse.json({ popularity })
     }
 
-    return NextResponse.json({ entries: await getGlobalLeaderboard() })
+    // mode === 'global' (default)
+    const snap = await adminDb.collection('leaderboards').doc('_global').get()
+    if (snap.exists && Array.isArray(snap.data()?.entries)) {
+      return NextResponse.json({ entries: snap.data()!.entries })
+    }
+
+    const [scoreRows, statsRows] = await Promise.all([readScoreRows(), readStatsRows()])
+    const entries = aggregateGlobalLeaderboard(scoreRows, statsRows)
+    await adminDb.collection('leaderboards').doc('_global').set({ entries, recomputedAt: now })
+    return NextResponse.json({ entries })
   } catch (error) {
     console.error('Leaderboard error:', error)
     return NextResponse.json({ error: 'Failed to load leaderboard' }, { status: 500 })
