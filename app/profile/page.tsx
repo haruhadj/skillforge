@@ -18,7 +18,8 @@ import {
 } from '@/app/services/userProfileService'
 import { reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth'
 import { defaultGames } from '@/app/games/games'
-import { UserProfile, GlobalLeaderboardEntry } from '@/app/types'
+import { UserProfile, GlobalLeaderboardEntry, RecentActivityItem } from '@/app/types'
+import TierProgress from '@/app/components/TierProgress'
 import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitialEditorState, AVATAR_EXPORT_SIZE, AVATAR_THUMB_SIZE } from './AvatarEditor'
 import ConnectedAccounts from './ConnectedAccounts'
 import { Button } from '@/components/ui/button'
@@ -36,14 +37,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 
-const TIER_CONFIG = {
-  master: 'bg-violet-600 text-white',
-  platinum: 'bg-cyan-500 text-white',
-  gold: 'bg-yellow-500 text-white',
-  silver: 'bg-slate-400 text-white',
-  bronze: 'bg-amber-700 text-white',
-}
-
 export default function ProfilePage() {
   const router = useRouter()
   const { currentUser, logout } = useAuth()
@@ -53,6 +46,7 @@ export default function ProfilePage() {
   const [scores, setScores] = useState<Record<string, { bestScore: number; bestScoreAchievedAt?: Date; updatedAt?: Date }>>({})
   const [gameStats, setGameStats] = useState<Record<string, unknown>>({})
   const [globalStats, setGlobalStats] = useState<GlobalLeaderboardEntry | null>(null)
+  const [recentActivity, setRecentActivity] = useState<RecentActivityItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [photoEditor, setPhotoEditor] = useState<ReturnType<typeof createInitialEditorState> | null>(null)
@@ -79,11 +73,13 @@ export default function ProfilePage() {
       getUserProfile(currentUser.uid),
       gameDataService.getAllScores(currentUser.uid),
       gameDataService.getAllGameStats(currentUser.uid),
-    ]).then(async ([loadedProfile, loadedScores, loadedGameStats]) => {
+      gameDataService.getRecentActivity(currentUser.uid, 5),
+    ]).then(async ([loadedProfile, loadedScores, loadedGameStats, loadedActivity]) => {
       setProfile(loadedProfile)
       setUsernameInput(loadedProfile?.username || suggested)
       setScores(loadedScores)
       setGameStats(loadedGameStats)
+      setRecentActivity(loadedActivity)
       if (currentUser && Object.keys(loadedScores).length > 0) {
         const stats = await gameDataService.getUserGlobalStats(
           currentUser.uid, loadedScores,
@@ -259,16 +255,13 @@ export default function ProfilePage() {
                   <h2 className="text-xl font-bold">{name}</h2>
                   <p className="text-sm text-muted-foreground">{currentUser.email}</p>
                   {globalStats && (
-                    <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${TIER_CONFIG[globalStats.tier]}`}>
-                        {globalStats.tier.charAt(0).toUpperCase() + globalStats.tier.slice(1)}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        Skill Score: <span className="font-semibold text-primary">{globalStats.compositeScore}</span>
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {globalStats.gamesPlayed} games · {globalStats.totalMatchCount.toLocaleString()} matches
-                      </span>
+                    <div className="mt-3 w-full sm:max-w-sm">
+                      <TierProgress
+                        compositeScore={globalStats.compositeScore}
+                        tier={globalStats.tier}
+                        gamesPlayed={globalStats.gamesPlayed}
+                        totalMatchCount={globalStats.totalMatchCount}
+                      />
                     </div>
                   )}
                 </div>
@@ -426,6 +419,52 @@ export default function ProfilePage() {
                 })}
               </div>
             </div>
+
+            {/* Recent Activity */}
+            {recentActivity.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-semibold">Recent Activity</h3>
+                  <Link href="/activity" className="text-xs text-primary hover:underline">View all →</Link>
+                </div>
+                <div className="surface overflow-hidden divide-y divide-border">
+                  {recentActivity.map((item) => {
+                    const game = defaultGames.find((g) => g.id === item.gameId)
+                    const seconds = Math.floor((Date.now() - item.updatedAt.getTime()) / 1000)
+                    const mins = Math.floor(seconds / 60)
+                    const hrs = Math.floor(mins / 60)
+                    const days = Math.floor(hrs / 24)
+                    const relTime = seconds < 60 ? 'just now' : mins < 60 ? `${mins}m ago` : hrs < 24 ? `${hrs}h ago` : days < 7 ? `${days}d ago` : item.updatedAt.toLocaleDateString()
+                    return (
+                      <div key={item.gameId} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors">
+                        <img
+                          src={`/games/${item.gameId}/cover.png`}
+                          alt={game?.name || item.gameId}
+                          className="h-10 w-10 rounded-lg object-cover bg-muted shrink-0"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate">{game?.name || item.gameId}</p>
+                          <div className="flex gap-1.5 mt-0.5 flex-wrap">
+                            {item.lastMode && (
+                              <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                {item.lastMode}
+                              </span>
+                            )}
+                            {item.lastScore !== null && (
+                              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                                {item.lastScore.toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground shrink-0">{relTime}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
             <Separator />
 

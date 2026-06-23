@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Scaffold a new in-repo game source at games-src/<id>/.
+# Scaffold a new in-repo game source at games-src/<id>/ and register it in
+# app/games/games.ts automatically.
 #
 # Creates a minimal, no-build static game pre-wired with the SkillForge
 # postMessage score/stats contract (PLAYER_INFO in; BEST_SCORE + GAME_STATS
@@ -10,16 +11,30 @@
 # its vite.config has `base: './'`) and run scripts/build-game.sh <id>.
 #
 # Usage:
-#   ./scripts/new-game.sh <game-id> ["Display Name"]
+#   ./scripts/new-game.sh <game-id> ["Display Name"] ["Description"] [Category]
+#
+# Category must be one of: Math | Logic | Language | Memory | Science | History | Geography | Music
+# Defaults: Name=id, Description="TODO: add a one-line description.", Category=Logic
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 id="${1:-}"
 name="${2:-$id}"
+desc="${3:-TODO: add a one-line description.}"
+category="${4:-Logic}"
+
 if [[ -z "$id" || ! "$id" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
-  echo "usage: $0 <game-id> [\"Display Name\"]   (id = lowercase-kebab-case)" >&2
+  echo "usage: $0 <game-id> [\"Display Name\"] [\"Description\"] [Category]" >&2
+  echo "  Category: Math | Logic | Language | Memory | Science | History | Geography | Music" >&2
   exit 1
 fi
+
+valid_categories="Math Logic Language Memory Science History Geography Music"
+if ! echo "$valid_categories" | grep -qw "$category"; then
+  echo "!! invalid category '$category' — must be one of: $valid_categories" >&2
+  exit 1
+fi
+
 dest="games-src/$id"
 if [[ -e "$dest" ]]; then
   echo "!! $dest already exists" >&2
@@ -95,6 +110,30 @@ cat > "$dest/index.html" <<HTML
 HTML
 
 echo ">> created $dest/index.html"
-echo ">> 1. edit games-src/$id/index.html"
-echo ">> 2. ./scripts/build-game.sh $id"
-echo ">> 3. add an entry to app/games/games.ts (id: '$id'), then commit public/games/$id/"
+
+# Inject the registration entry into app/games/games.ts
+node -e "
+const fs = require('fs');
+const path = 'app/games/games.ts';
+const src = fs.readFileSync(path, 'utf8');
+const entry = \`  {
+    id: '${id}',
+    name: '${name}',
+    iframePath: '/games/${id}/index.html',
+    description: '${desc}',
+    category: '${category}',
+  },\`;
+// Insert before the closing ] of the defaultGames array (followed by blank line + export)
+const out = src.replace(/(\\n\\]\\n)/, '\\n' + entry + '\$1');
+if (out === src) {
+  process.stderr.write('!! could not inject entry into app/games/games.ts\\n');
+  process.exit(1);
+}
+fs.writeFileSync(path, out);
+"
+
+echo ">> registered in app/games/games.ts (id: '${id}')"
+echo ">> next steps:"
+echo "   1. edit games-src/${id}/index.html (replace demo gameplay)"
+echo "   2. ./scripts/build-game.sh ${id}"
+echo "   3. git add games-src/${id} public/games/${id} app/games/games.ts && git commit"

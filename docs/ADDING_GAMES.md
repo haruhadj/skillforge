@@ -97,7 +97,7 @@ Add **one** entry to `app/games/games.ts`:
   name: 'Display Name',
   iframePath: '/games/<id>/index.html',
   description: 'One-line description shown in the library.',
-  category: 'Language',       // Math | Logic | Language | Memory | Science | History | Geography
+  category: 'Language',       // Math | Logic | Language | Memory | Science | History | Geography | Music
 }
 ```
 
@@ -107,12 +107,25 @@ The `id` is also the Firestore document id: `users/{uid}/scores/{id}` and `users
 
 ## Score / stats data collection (postMessage)
 
-The iframe game must send score/stats to the parent app (`PlayGameClient.tsx`) via `postMessage`. The `pnpm game:new` scaffold already includes this; for an external build, wire it into the game source. See `scripts/GAME_DATA_COLLECTION_PROMPT.md` for full details. Summary:
+The iframe game must send score/stats to the parent app (`PlayGameClient.tsx`) via `postMessage`. The `pnpm game:new` scaffold already includes this; for an external build, wire it into the game source. See `scripts/GAME_DATA_COLLECTION_PROMPT.md` for full code templates.
 
-- **`BEST_SCORE`** — required for all games, fires on game-end. `data.bestScore` is a number (host keeps the max).
-- **`GAME_STATS`** — fires on game-end; must include a `totalGames` counter for **Matches** to show on the profile.
-- **`REQUEST_PROGRESS`** / **`RESTORE_PROGRESS`** — optional cross-device progress sync.
-- **`PLAYER_INFO`** — sent **from** the host to the game with the player's identity.
+### Complete message reference
+
+**Game → Parent** (game sets `type: 'GAME_EVENT'`)
+
+| `event` | `data` shape | Notes |
+|---|---|---|
+| `BEST_SCORE` | `{ bestScore: number }` | **Required.** Fires on game-end. Host keeps the all-time max. |
+| `GAME_STATS` | `{ totalGames: number, ...any }` | **Required.** `totalGames` drives the **Matches** counter on the profile. |
+| `REQUEST_PROGRESS` | (no data) | Optional. Host fetches Firestore stats and replies with `RESTORE_PROGRESS`. |
+| `REQUEST_PLAYER_INFO` | (no data) | Optional. Host re-sends `PLAYER_INFO` immediately. |
+
+**Parent → Game**
+
+| `type` | `data` shape | Notes |
+|---|---|---|
+| `PLAYER_INFO` | `{ name, uid, email }` | Sent automatically on load; retried up to 12× at 250 ms. |
+| `RESTORE_PROGRESS` | saved stats object | Sent in reply to `REQUEST_PROGRESS`. |
 
 **The `totalGames` counter pattern (vanilla JS):**
 ```js
@@ -122,6 +135,23 @@ window.parent.postMessage({ type: 'GAME_EVENT', event: 'GAME_STATS', data: { tot
 ```
 
 For games **without** a backend, this is the last step.
+
+---
+
+## Do I need to edit PlayGameClient.tsx?
+
+**No, for standard games.** The `BEST_SCORE` + `GAME_STATS` contract is handled generically — no code changes to `PlayGameClient.tsx` are needed.
+
+**Yes, only for these special cases:**
+
+| Trigger | What to add in PlayGameClient.tsx |
+|---|---|
+| Per-mode weighted scoring (singleplayer/multiplayer split) | New `if (gameId === '…')` branch inside the `GAME_STATS` handler, calling `saveModeScoreStats()` |
+| Non-standard inbound message format (e.g. legacy `{ type: 'gameScore' }`) | New message-type handler alongside the existing `GAME_EVENT` switch |
+| External API key injected into the iframe | New outbound message alongside `PLAYER_INFO`; matching `REQUEST_*` handler |
+| WebSocket/multiplayer game with query-param identity (like Chess) | Special `iframeSrc` construction; `PLAYER_INFO` is not used |
+
+Standard games never hit any of these cases and can be added entirely by following this doc.
 
 ---
 

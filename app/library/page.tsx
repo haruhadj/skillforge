@@ -11,7 +11,8 @@ import { getUserProfile, getRecentlyPlayed, saveRecentlyPlayed } from '@/app/ser
 import { getActiveAnnouncements } from '@/app/services/adminService'
 import { isAdmin } from '@/app/services/adminService'
 import { defaultGames, mergeGamesWithFirestore } from '@/app/games/games'
-import { UserProfile, Announcement, Game } from '@/app/types'
+import { UserProfile, Announcement, Game, GlobalLeaderboardEntry } from '@/app/types'
+import TierProgress from '@/app/components/TierProgress'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -53,6 +54,7 @@ export default function LibraryPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>([])
   const [gamePopularity, setGamePopularity] = useState<Record<string, number>>({})
+  const [userGlobalStats, setUserGlobalStats] = useState<GlobalLeaderboardEntry | null>(null)
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
@@ -118,6 +120,18 @@ export default function LibraryPage() {
       .then((payload) => setGamePopularity(payload.popularity ?? {}))
       .catch(() => setGamePopularity({}))
   }, [])
+
+  useEffect(() => {
+    if (!currentUser?.uid) return
+    fetch('/api/leaderboard?mode=global')
+      .then((r) => r.json())
+      .then(({ entries }) => {
+        if (!Array.isArray(entries)) return
+        const myEntry = entries.find((e: GlobalLeaderboardEntry) => e.uid === currentUser.uid) ?? null
+        setUserGlobalStats(myEntry)
+      })
+      .catch(() => {})
+  }, [currentUser?.uid])
 
   const trackGamePlay = (gameId: string) => {
     const updated = [gameId, ...recentlyPlayed.filter((id) => id !== gameId)].slice(0, 10)
@@ -279,6 +293,19 @@ export default function LibraryPage() {
 
       {/* Main content */}
       <main className="mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-24 md:pb-8">
+        {/* Progression strip */}
+        {userGlobalStats && (
+          <div className="surface px-4 py-3 mb-6">
+            <TierProgress
+              size="compact"
+              compositeScore={userGlobalStats.compositeScore}
+              tier={userGlobalStats.tier}
+              gamesPlayed={userGlobalStats.gamesPlayed}
+              totalMatchCount={userGlobalStats.totalMatchCount}
+            />
+          </div>
+        )}
+
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>

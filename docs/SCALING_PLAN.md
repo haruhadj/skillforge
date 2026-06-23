@@ -34,7 +34,7 @@ Last updated: 2026-06-19
       falls back to full scan + writes materialized doc on first call / missing doc
 - [x] Add Firestore security rules for the `leaderboards` collection (public read, write=false)
 - [x] Add `INTERNAL_API_SECRET` env var (documented in `.env.example`)
-- [ ] **Seed**: call `POST /api/internal/leaderboards/recompute` once after prod deploy
+- [x] **Seed**: call `POST /api/internal/leaderboards/recompute` once after prod deploy
 - [ ] **Schedule** (Phase 4): wire the recompute endpoint to a cron job for periodic refresh
 
 ---
@@ -44,19 +44,27 @@ Last updated: 2026-06-19
 > Platform is solid; now make users come back and tell their friends.
 
 ### 3a — Visible Progression Loop
-- [ ] Surface user XP / level / badges on the profile and game pages
-- [ ] Design a simple leveling formula based on existing `gameStats` data
-- [ ] Add a "Recent Activity" feed on the dashboard
+- [x] Surface tier / skill score / progress bar on own profile, other-user profile, and library dashboard
+- [x] Leveling formula: existing `compositeScore` (0–100) mapped to 5 tier bands (bronze→master)
+- [x] Recent Activity feed (last 5 games) on own and other-user profile pages
+- [x] Compact progression strip on library page using materialized leaderboard (0 extra Firestore reads)
 
-### 3b — Social / Viral Layer
-- [ ] "Beat my score" shareable links (`/challenge/{gameId}?score=X&uid=Y`)
-- [ ] Friend system (follow/follower or friend request) backed by Firestore
-- [ ] Head-to-head challenge notifications (in-app, later push)
+### 3b — Game Content Pipeline
+- [x] Document the iframe contract (`PLAYER_INFO`, `GAME_EVENT`, `BEST_SCORE`, `GAME_STATS`) so new games can be added without touching PlayGameClient
+- [x] Streamline game registration — `pnpm game:new <id> "Name" "Desc" Category` now auto-registers in `app/games/games.ts`
+- [x] Evaluate adding 3-5 new educational games per quarter
 
-### 3c — Game Content Pipeline
-- [ ] Document the iframe contract (`PLAYER_INFO`, `GAME_EVENT`, `BEST_SCORE`, `GAME_STATS`) so new games can be added without touching PlayGameClient
-- [ ] Streamline game registration — currently manual in `app/games/games.ts`
-- [ ] Evaluate adding 3-5 new educational games per quarter
+#### Q3 2026 — Candidate Games
+
+Current gaps: Science (1 game), Music (1 game), no Art or Typing.
+
+| Candidate | Category | Concept |
+|---|---|---|
+| **Bio Blitz** | Science | Identify organisms from photo clues; basic biology & taxonomy |
+| **Pitch Perfect** | Music | Ear-training: identify musical intervals and chords by ear |
+| **TypeRacer Lite** | Language | Typing speed & accuracy challenge with educational passages |
+| **Element Match** | Science | Periodic table flash-card match — symbol ↔ name ↔ atomic number |
+| **Art Detective** | Art | Identify artworks, artists, and movements from detail crops |
 
 ---
 
@@ -79,5 +87,5 @@ Last updated: 2026-06-19
 |-------|--------|
 | Phase 1 — Prod WebSocket fix | In progress |
 | Phase 2 — Leaderboard materialization | Done (seed recompute needed in prod) |
-| Phase 3 — Product growth | Not started |
+| Phase 3 — Product growth | 3a done · 3b done · 3c not started |
 | Phase 4 — Infrastructure hardening | Not started |
