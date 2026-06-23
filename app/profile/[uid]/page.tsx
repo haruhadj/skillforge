@@ -6,6 +6,7 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import MobileNav from '@/app/components/MobileNav'
 import TierProgress from '@/app/components/TierProgress'
+import RankBadge from '@/app/components/RankBadge'
 import * as gameDataService from '@/app/services/gameDataService'
 import { getUserProfile } from '@/app/services/userProfileService'
 import { defaultGames } from '@/app/games/games'
@@ -143,9 +144,10 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
               )}
             </div>
             <div className="text-center sm:text-left flex-1 min-w-0">
-              <h2 className="text-xl font-bold">{name}</h2>
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">{name}</h2>
+              {profile.username && <p className="text-sm text-muted-foreground">@{profile.username}</p>}
               {profile.email && !isOwnProfile && (
-                <p className="text-sm text-muted-foreground mt-0.5">{profile.email}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{profile.email}</p>
               )}
               {isOwnProfile && (
                 <Link href="/profile" className="inline-block mt-1 text-sm text-primary hover:underline font-medium">
@@ -153,13 +155,16 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
                 </Link>
               )}
               {globalStats && (
-                <div className="mt-3 w-full sm:max-w-sm">
-                  <TierProgress
-                    compositeScore={globalStats.compositeScore}
-                    tier={globalStats.tier}
-                    gamesPlayed={globalStats.gamesPlayed}
-                    totalMatchCount={globalStats.totalMatchCount}
-                  />
+                <div className="mt-4 flex items-center gap-3 justify-center sm:justify-start">
+                  <RankBadge tier={globalStats.tier} size={46} className="hidden sm:flex" />
+                  <div className="flex-1 w-full sm:max-w-sm">
+                    <TierProgress
+                      compositeScore={globalStats.compositeScore}
+                      tier={globalStats.tier}
+                      gamesPlayed={globalStats.gamesPlayed}
+                      totalMatchCount={globalStats.totalMatchCount}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -190,12 +195,12 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
                       <p className="text-sm font-semibold truncate">{game?.name || item.gameId}</p>
                       <div className="flex gap-1.5 mt-0.5 flex-wrap">
                         {item.lastMode && (
-                          <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] font-semibold bg-accent text-accent-foreground px-2 py-0.5 rounded-md">
                             {item.lastMode}
                           </span>
                         )}
                         {item.lastScore !== null && (
-                          <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] surface-2 text-muted-foreground px-2 py-0.5 rounded-md mono">
                             {item.lastScore.toLocaleString()}
                           </span>
                         )}
@@ -270,15 +275,15 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
                   <div className="p-3">
                     <h4 className="text-xs font-semibold truncate mb-2">{game.name}</h4>
                     <div className="grid grid-cols-2 gap-1.5">
-                      <div className="bg-muted rounded-lg px-2.5 py-2">
+                      <div className="surface-2 px-2.5 py-2">
                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Score</p>
-                        <p className={`text-sm font-bold mt-0.5 ${hasPlayed ? 'text-primary' : 'text-muted-foreground'}`}>
+                        <p className={`text-sm font-bold mono mt-0.5 ${hasPlayed ? 'text-primary' : 'text-muted-foreground'}`}>
                           {gameScore !== undefined ? gameScore.toLocaleString() : '—'}
                         </p>
                       </div>
-                      <div className="bg-muted rounded-lg px-2.5 py-2">
+                      <div className="surface-2 px-2.5 py-2">
                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Matches</p>
-                        <p className={`text-sm font-bold mt-0.5 ${matchCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <p className={`text-sm font-bold mono mt-0.5 ${matchCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
                           {matchCount > 0 ? matchCount.toLocaleString() : '—'}
                         </p>
                       </div>

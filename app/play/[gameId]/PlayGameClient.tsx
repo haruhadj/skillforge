@@ -217,7 +217,7 @@ export default function PlayGameClient() {
     <div className="fixed inset-0 flex flex-col gradient-bg transition-colors duration-500">
       <header className="flex items-center justify-between gap-2 sm:gap-4 border-b border-slate-200/50 dark:border-gray-700/50 glass px-3 sm:px-6 py-2.5 sm:py-4 shadow-sm">
         <button
-          className="btn-secondary px-3 sm:px-4 py-2 sm:py-2.5 text-sm hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2 shrink-0"
+          className="rounded-xl border border-border bg-secondary text-secondary-foreground px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-semibold hover:bg-secondary/80 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 shrink-0"
           onClick={() => router.push('/library')}
         >
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

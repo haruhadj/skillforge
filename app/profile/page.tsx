@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/app/contexts/AuthContext'
-import ThemeToggle from '@/app/components/ThemeToggle'
 import MobileNav from '@/app/components/MobileNav'
+import TopNav from '@/app/components/TopNav'
+import RankBadge from '@/app/components/RankBadge'
 import * as gameDataService from '@/app/services/gameDataService'
 import {
   claimUsername,
@@ -201,20 +202,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen gradient-bg">
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 h-14 flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground -ml-2">
-            <Link href="/library">
-              <svg className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
-              </svg>
-              Back
-            </Link>
-          </Button>
-          <h1 className="text-lg font-bold flex-1 text-center">My Profile</h1>
-          <ThemeToggle />
-        </div>
-      </header>
+      <TopNav />
 
       <main className="mx-auto max-w-4xl px-4 sm:px-6 py-8 pb-24 md:pb-8 space-y-5">
         {loading ? (
@@ -231,7 +219,7 @@ export default function ProfilePage() {
         ) : (
           <>
             {/* Profile card */}
-            <div className="surface p-6 sm:p-8">
+            <div className="surface p-6 sm:p-8 relative">
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                 {/* Avatar */}
                 <button
@@ -252,19 +240,28 @@ export default function ProfilePage() {
                 <input ref={photoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handlePhotoChange} className="hidden" />
 
                 <div className="text-center sm:text-left flex-1 min-w-0">
-                  <h2 className="text-xl font-bold">{name}</h2>
-                  <p className="text-sm text-muted-foreground">{currentUser.email}</p>
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">{name}</h2>
+                  {profile?.username && <p className="text-sm text-muted-foreground">@{profile.username}</p>}
+                  <p className="text-xs text-muted-foreground">{currentUser.email}</p>
                   {globalStats && (
-                    <div className="mt-3 w-full sm:max-w-sm">
-                      <TierProgress
-                        compositeScore={globalStats.compositeScore}
-                        tier={globalStats.tier}
-                        gamesPlayed={globalStats.gamesPlayed}
-                        totalMatchCount={globalStats.totalMatchCount}
-                      />
+                    <div className="mt-4 flex items-center gap-3 justify-center sm:justify-start">
+                      <RankBadge tier={globalStats.tier} size={46} className="hidden sm:flex" />
+                      <div className="flex-1 w-full sm:max-w-sm">
+                        <TierProgress
+                          compositeScore={globalStats.compositeScore}
+                          tier={globalStats.tier}
+                          gamesPlayed={globalStats.gamesPlayed}
+                          totalMatchCount={globalStats.totalMatchCount}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
+              </div>
+              <div className="mt-4 sm:mt-0 sm:absolute sm:top-6 sm:right-6 flex justify-center">
+                <Button variant="outline" size="sm" onClick={async () => { try { await logout(); router.push('/') } catch {} }}>
+                  Sign out
+                </Button>
               </div>
             </div>
 
@@ -397,18 +394,18 @@ export default function ProfilePage() {
                       <div className="p-3">
                         <h4 className="text-xs font-semibold truncate mb-2">{game.name}</h4>
                         <div className="grid grid-cols-2 gap-1.5">
-                          <div className="bg-muted rounded-lg px-2.5 py-2">
+                          <div className="surface-2 px-2.5 py-2">
                             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Score</p>
-                            <p className={`text-sm font-bold mt-0.5 ${hasPlayed ? 'text-primary' : 'text-muted-foreground'}`}>
+                            <p className={`text-sm font-bold mono mt-0.5 ${hasPlayed ? 'text-primary' : 'text-muted-foreground'}`}>
                               {gameScore !== undefined ? gameScore.toLocaleString() : '—'}
                             </p>
                             {achievedAt && (
                               <p className="text-[9px] text-muted-foreground">{achievedAt.toLocaleDateString()}</p>
                             )}
                           </div>
-                          <div className="bg-muted rounded-lg px-2.5 py-2">
+                          <div className="surface-2 px-2.5 py-2">
                             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Matches</p>
-                            <p className={`text-sm font-bold mt-0.5 ${matchCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                            <p className={`text-sm font-bold mono mt-0.5 ${matchCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
                               {matchCount > 0 ? matchCount.toLocaleString() : '—'}
                             </p>
                           </div>
@@ -447,12 +444,12 @@ export default function ProfilePage() {
                           <p className="text-sm font-semibold truncate">{game?.name || item.gameId}</p>
                           <div className="flex gap-1.5 mt-0.5 flex-wrap">
                             {item.lastMode && (
-                              <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-semibold bg-accent text-accent-foreground px-2 py-0.5 rounded-md">
                                 {item.lastMode}
                               </span>
                             )}
                             {item.lastScore !== null && (
-                              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] surface-2 text-muted-foreground px-2 py-0.5 rounded-md mono">
                                 {item.lastScore.toLocaleString()}
                               </span>
                             )}

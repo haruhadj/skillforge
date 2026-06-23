@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { getUserProfile } from '@/app/services/userProfileService'
-import ThemeToggle from '@/app/components/ThemeToggle'
 import MobileNav from '@/app/components/MobileNav'
+import TopNav from '@/app/components/TopNav'
 import { getRecentActivity, getGlobalRecentActivity } from '@/app/services/gameDataService'
 import { defaultGames } from '@/app/games/games'
 import { RecentActivityItem, UserProfile } from '@/app/types'
@@ -146,46 +145,34 @@ export default function ActivityPage() {
   const isEmpty = displayItems.length === 0
 
   return (
-    <>
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/library" aria-label="Back to Library">
-                  <ArrowLeft className="h-5 w-5" />
-                </Link>
-              </Button>
-              <h1 className="text-xl font-bold">Activity</h1>
-            </div>
-            <ThemeToggle />
-          </div>
+    <div className="min-h-screen gradient-bg">
+      <TopNav />
 
-          {/* Tabs */}
-          <div className="flex gap-2">
-            <Button
-              variant={tab === 'personal' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setTab('personal')}
-              className="text-sm"
-            >
-              My Activity
-            </Button>
-            <Button
-              variant={tab === 'global' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setTab('global')}
-              className="text-sm"
-            >
-              Global Activity
-            </Button>
-          </div>
+      <main className="mx-auto max-w-3xl px-4 sm:px-6 py-6 pb-24 md:pb-12 min-h-[calc(100vh-140px)]">
+        <h1 className="text-2xl font-extrabold tracking-tight mb-4">Activity</h1>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6">
+          <Button
+            variant={tab === 'personal' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setTab('personal')}
+            className="text-sm"
+          >
+            My Activity
+          </Button>
+          <Button
+            variant={tab === 'global' ? 'default' : 'ghost'}
+            size="sm"
+            onClick={() => setTab('global')}
+            className="text-sm"
+          >
+            Global Activity
+          </Button>
         </div>
-      </header>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-24 md:pb-12 min-h-[calc(100vh-140px)]">
         {isLoading ? (
-          <div className="space-y-0 rounded-lg border border-border overflow-hidden bg-card">
+          <div className="surface overflow-hidden">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-border last:border-b-0">
                 <Skeleton className="h-12 w-12 rounded-lg shrink-0" />
@@ -198,12 +185,12 @@ export default function ActivityPage() {
             ))}
           </div>
         ) : isError ? (
-          <div className="rounded-lg border border-border bg-card p-8 text-center">
+          <div className="surface p-8 text-center">
             <p className="font-semibold text-destructive">Failed to load activity</p>
             <p className="text-sm text-muted-foreground mt-2">{isError}</p>
           </div>
         ) : isEmpty ? (
-          <div className="rounded-lg border border-border bg-card p-16 text-center">
+          <div className="surface p-16 text-center">
             <p className="text-4xl mb-3">🎮</p>
             <p className="font-semibold">
               {tab === 'personal' ? 'No activity yet' : 'No global activity'}
@@ -220,7 +207,7 @@ export default function ActivityPage() {
             )}
           </div>
         ) : (
-          <div className="rounded-lg border border-border overflow-hidden bg-card">
+          <div className="surface overflow-hidden">
             {displayItems.map((item, idx) => {
               const game = gameById[item.gameId]
               const gameName = game?.name ?? item.gameId
@@ -266,13 +253,13 @@ export default function ActivityPage() {
                     </div>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       {item.lastMode && (
-                        <span className="inline-flex items-center bg-primary/10 text-primary text-[10px] font-semibold rounded-full px-2 py-0.5">
+                        <span className="inline-flex items-center bg-accent text-accent-foreground text-[10px] font-semibold rounded-md px-2 py-0.5">
                           {item.lastMode === 'singleplayer' ? 'Singleplayer' : 'Multiplayer'}
                         </span>
                       )}
                       {item.lastScore != null && (
-                        <span className="inline-flex items-center bg-muted text-muted-foreground text-[10px] rounded-full px-2 py-0.5">
-                          Score: {item.lastScore.toLocaleString()}
+                        <span className="inline-flex items-center surface-2 text-muted-foreground text-[10px] font-medium rounded-md px-2 py-0.5">
+                          Score <span className="mono ml-1">{item.lastScore.toLocaleString()}</span>
                         </span>
                       )}
                     </div>
@@ -298,6 +285,6 @@ export default function ActivityPage() {
       </main>
 
       <MobileNav />
-    </>
+    </div>
   )
 }

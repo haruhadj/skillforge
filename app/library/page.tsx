@@ -1,31 +1,20 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useAuth } from '@/app/contexts/AuthContext'
-import ThemeToggle from '@/app/components/ThemeToggle'
 import MobileNav from '@/app/components/MobileNav'
-import { getUserProfile, getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
+import TopNav from '@/app/components/TopNav'
+import GameCard from '@/app/components/GameCard'
+import RankBadge from '@/app/components/RankBadge'
+import { getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
+import { getAllScores } from '@/app/services/gameDataService'
 import { getActiveAnnouncements } from '@/app/services/adminService'
-import { isAdmin } from '@/app/services/adminService'
 import { defaultGames, mergeGamesWithFirestore } from '@/app/games/games'
-import { UserProfile, Announcement, Game, GlobalLeaderboardEntry } from '@/app/types'
-import TierProgress from '@/app/components/TierProgress'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Announcement, Game, GlobalLeaderboardEntry } from '@/app/types'
+import { TIER_META, tierProgress, pointsToNextTier } from '@/app/services/tiers'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Separator } from '@/components/ui/separator'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import {
   Select,
   SelectContent,
@@ -40,38 +29,26 @@ const SORT_OPTIONS = [
   { value: 'popular', label: 'Most Popular' },
 ] as const
 
-export default function LibraryPage() {
+function LibraryContent() {
   const router = useRouter()
-  const { currentUser, logout } = useAuth()
-  const [avatarURL, setAvatarURL] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const { currentUser } = useAuth()
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [dismissedAnnouncements, setDismissedAnnouncements] = useState<string[]>([])
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [isAdminUser, setIsAdminUser] = useState(false)
   const [games, setGames] = useState<Game[]>(defaultGames)
   const [gamesLoading, setGamesLoading] = useState(true)
   const [sortBy, setSortBy] = useState<'name' | 'recent' | 'popular'>('name')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>([])
   const [gamePopularity, setGamePopularity] = useState<Record<string, number>>({})
+  const [bestScores, setBestScores] = useState<Record<string, number>>({})
   const [userGlobalStats, setUserGlobalStats] = useState<GlobalLeaderboardEntry | null>(null)
+  const [myRank, setMyRank] = useState<{ rank: number; total: number } | null>(null)
+  const [search, setSearch] = useState(searchParams.get('q') ?? '')
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
   }, [currentUser, router])
-
-  useEffect(() => {
-    if (!currentUser?.uid) return
-    getUserProfile(currentUser.uid).then((profile) => {
-      setUserProfile(profile)
-      setAvatarURL(profile?.photoThumbURL || profile?.photoURL || null)
-    }).catch(() => {})
-  }, [currentUser?.uid])
-
-  useEffect(() => {
-    if (!currentUser?.uid) return
-    isAdmin(currentUser.uid).then(setIsAdminUser).catch(() => setIsAdminUser(false))
-  }, [currentUser?.uid])
 
   useEffect(() => {
     getActiveAnnouncements().then(setAnnouncements).catch(() => {})
@@ -115,6 +92,23 @@ export default function LibraryPage() {
   }, [currentUser?.uid])
 
   useEffect(() => {
+    if (!currentUser?.uid) return
+    const uid = currentUser.uid
+    const fetchScores = () =>
+      getAllScores(uid)
+        .then((scores) => {
+          const map: Record<string, number> = {}
+          for (const [gameId, data] of Object.entries(scores)) map[gameId] = data.bestScore
+          setBestScores(map)
+        })
+        .catch(() => {})
+    fetchScores()
+    // Re-fetch after a short delay to catch scores written just before navigation
+    const timer = setTimeout(fetchScores, 1500)
+    return () => clearTimeout(timer)
+  }, [currentUser?.uid])
+
+  useEffect(() => {
     fetch('/api/leaderboard?mode=popularity')
       .then((r) => r.json().catch(() => ({})))
       .then((payload) => setGamePopularity(payload.popularity ?? {}))
@@ -127,8 +121,9 @@ export default function LibraryPage() {
       .then((r) => r.json())
       .then(({ entries }) => {
         if (!Array.isArray(entries)) return
-        const myEntry = entries.find((e: GlobalLeaderboardEntry) => e.uid === currentUser.uid) ?? null
-        setUserGlobalStats(myEntry)
+        const idx = entries.findIndex((e: GlobalLeaderboardEntry) => e.uid === currentUser.uid)
+        setUserGlobalStats(idx >= 0 ? entries[idx] : null)
+        if (idx >= 0) setMyRank({ rank: idx + 1, total: entries.length })
       })
       .catch(() => {})
   }, [currentUser?.uid])
@@ -140,20 +135,18 @@ export default function LibraryPage() {
     if (currentUser?.uid) saveRecentlyPlayed(currentUser.uid, updated).catch(() => {})
   }
 
-  const handleLogout = async () => {
-    try { await logout(); router.push('/') } catch { /* noop */ }
-  }
-
-  const name = userProfile?.username || currentUser?.displayName || currentUser?.email || 'Player'
-  const initials = name.slice(0, 2).toUpperCase()
-
   const categories = useMemo(() => {
     const cats = Array.from(new Set(games.filter((g) => g.enabled !== false && g.category).map((g) => g.category as string))).sort()
     return ['all', ...cats]
   }, [games])
 
   const sortedGames = useMemo(() => {
-    const enabled = games.filter((g) => g.enabled !== false && (selectedCategory === 'all' || g.category === selectedCategory))
+    const q = search.trim().toLowerCase()
+    const enabled = games.filter((g) =>
+      g.enabled !== false &&
+      (selectedCategory === 'all' || g.category === selectedCategory) &&
+      (q === '' || g.name.toLowerCase().includes(q) || g.description.toLowerCase().includes(q))
+    )
     if (sortBy === 'recent') return [...enabled].sort((a, b) => {
       const ai = recentlyPlayed.indexOf(a.id), bi = recentlyPlayed.indexOf(b.id)
       if (ai === -1 && bi === -1) return 0
@@ -165,87 +158,22 @@ export default function LibraryPage() {
       return ac === bc ? a.name.localeCompare(b.name) : bc - ac
     })
     return [...enabled].sort((a, b) => a.name.localeCompare(b.name))
-  }, [games, sortBy, selectedCategory, recentlyPlayed, gamePopularity])
+  }, [games, sortBy, selectedCategory, recentlyPlayed, gamePopularity, search])
+
+  const featured = useMemo(() => {
+    const enabled = games.filter((g) => g.enabled !== false && g.iframePath)
+    return enabled.find((g) => g.id === recentlyPlayed[0]) ?? enabled[0] ?? null
+  }, [games, recentlyPlayed])
 
   const visibleAnnouncements = announcements.filter((a) => !dismissedAnnouncements.includes(a.id))
 
   if (!currentUser) return null
 
+  const meta = userGlobalStats ? TIER_META[userGlobalStats.tier] : null
+
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Top navigation */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50 animate-fade-in">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          {/* Logo + title */}
-          <div className="flex items-center gap-3 min-w-0">
-            <Image
-              src="/game logo.jpeg"
-              alt="SkillForge"
-              width={36}
-              height={36}
-              className="rounded-xl shrink-0"
-              priority
-            />
-            <div className="min-w-0 hidden sm:block">
-              <p className="font-bold text-base leading-none">SkillForge</p>
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">Welcome, {name}</p>
-            </div>
-          </div>
-
-          {/* Nav links — desktop */}
-          <nav className="hidden md:flex items-center gap-1">
-            <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground">
-              <Link href="/library">Library</Link>
-            </Button>
-            <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground">
-              <Link href="/leaderboard">Leaderboard</Link>
-            </Button>
-            <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground">
-              <Link href="/activity">Activity</Link>
-            </Button>
-          </nav>
-
-          {/* Right side */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <ThemeToggle />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 p-0 ring-2 ring-border hover:ring-primary/50 transition-all">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={avatarURL ?? undefined} alt={name} />
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">{initials}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuLabel className="font-normal">
-                  <p className="font-semibold truncate">{name}</p>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">{currentUser?.email}</p>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="cursor-pointer">My Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/leaderboard" className="cursor-pointer">Leaderboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/activity" className="cursor-pointer">Activity</Link>
-                </DropdownMenuItem>
-                {isAdminUser && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin" className="cursor-pointer">Admin Panel</Link>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive cursor-pointer">
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
+      <TopNav searchValue={search} onSearch={setSearch} />
 
       {/* Announcements */}
       {visibleAnnouncements.length > 0 && (
@@ -267,18 +195,9 @@ export default function LibraryPage() {
                       {ann.linkUrl ? (
                         <>
                           {ann.message}{' '}
-                          <a
-                            href={ann.linkUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline font-medium opacity-100 hover:opacity-80 transition-opacity"
-                          >
-                            Learn more ↗
-                          </a>
+                          <a href={ann.linkUrl} target="_blank" rel="noopener noreferrer" className="underline font-medium opacity-100 hover:opacity-80 transition-opacity">Learn more ↗</a>
                         </>
-                      ) : (
-                        ann.message
-                      )}
+                      ) : ann.message}
                     </span>
                   )}
                 </div>
@@ -291,33 +210,92 @@ export default function LibraryPage() {
         </div>
       )}
 
-      {/* Main content */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-24 md:pb-8">
-        {/* Progression strip */}
-        {userGlobalStats && (
-          <div className="surface px-4 py-3 mb-6">
-            <TierProgress
-              size="compact"
-              compositeScore={userGlobalStats.compositeScore}
-              tier={userGlobalStats.tier}
-              gamesPlayed={userGlobalStats.gamesPlayed}
-              totalMatchCount={userGlobalStats.totalMatchCount}
-            />
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 pt-6 pb-24 md:pb-8">
+        {/* Hero: continue playing + rank panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4 mb-8 animate-slide-up">
+          {/* Continue playing */}
+          {featured ? (
+            <div className="relative rounded-3xl overflow-hidden hero-gradient min-h-[220px] flex items-end p-6">
+              <div className="absolute -bottom-16 -right-8 w-60 h-60 rounded-full bg-white/10 blur-3xl" />
+              <p className="absolute top-5 left-6 mono text-[11px] tracking-[0.16em] uppercase text-white/80">
+                {recentlyPlayed[0] === featured.id ? 'Continue playing' : 'Featured game'}
+              </p>
+              <div className="relative z-10">
+                {featured.category && (
+                  <span className="inline-flex h-6 px-2.5 items-center rounded-md text-[11px] font-semibold bg-white/20 text-white backdrop-blur-sm mb-3">{featured.category}</span>
+                )}
+                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-1.5">{featured.name}</h2>
+                <p className="text-sm leading-relaxed text-white/85 max-w-md mb-4 line-clamp-2">{featured.description}</p>
+                <div className="flex items-center gap-4 flex-wrap">
+                  <Link
+                    href={`/games/${featured.id}`}
+                    onClick={() => trackGamePlay(featured.id)}
+                    className="h-10 px-6 inline-flex items-center rounded-xl bg-white text-violet-800 text-sm font-bold hover:bg-white/90 transition-colors"
+                  >
+                    {recentlyPlayed[0] === featured.id ? 'Resume ▸' : 'Play ▸'}
+                  </Link>
+                  {(bestScores[featured.id] ?? 0) > 0 && (
+                    <span className="mono text-xs text-white/85">Best {bestScores[featured.id].toLocaleString()}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-3xl surface min-h-[220px]" />
+          )}
+
+          {/* Rank / skill panel */}
+          <div
+            className="rounded-3xl border border-border p-6 flex flex-col justify-center"
+            style={{ background: 'radial-gradient(130% 130% at 100% 0%, var(--accent) 0%, var(--card) 58%)' }}
+          >
+            {userGlobalStats && meta ? (
+              <>
+                <div className="flex items-center gap-3.5 mb-5">
+                  <RankBadge tier={userGlobalStats.tier} size={56} />
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">Rank</p>
+                    <p className="text-xl font-extrabold tracking-tight" style={{ color: meta.text }}>{meta.label}</p>
+                  </div>
+                  <div className="ml-auto text-right">
+                    <p className="text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">Skill</p>
+                    <p className="mono text-2xl font-semibold tracking-tight">{userGlobalStats.compositeScore}</p>
+                  </div>
+                </div>
+                <div className="h-3 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{ width: `${tierProgress(userGlobalStats.compositeScore, userGlobalStats.tier) * 100}%`, background: 'linear-gradient(90deg, var(--primary), #06b6d4)' }}
+                  />
+                </div>
+                <div className="flex justify-between mt-2.5 text-[11px] text-muted-foreground">
+                  <span>
+                    {meta.next
+                      ? <><span className="text-primary font-semibold mono">{pointsToNextTier(userGlobalStats.compositeScore, userGlobalStats.tier)} pts</span> to {meta.next}</>
+                      : 'Maximum tier reached'}
+                  </span>
+                  {myRank && <span>Rank <span className="mono">#{myRank.rank}</span> of <span className="mono">{myRank.total}</span></span>}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-sm font-semibold mb-1">No ranking yet</p>
+                <p className="text-xs text-muted-foreground">Play a few games to earn your first skill score and tier.</p>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Game Library</h1>
+            <h1 className="text-xl font-bold tracking-tight">Browse games</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
               {gamesLoading ? 'Loading…' : `${sortedGames.length} ${sortedGames.length === 1 ? 'game' : 'games'} available`}
             </p>
           </div>
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-            <SelectTrigger className="w-44 h-9">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="w-44 h-9"><SelectValue /></SelectTrigger>
             <SelectContent>
               {SORT_OPTIONS.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
@@ -334,7 +312,7 @@ export default function LibraryPage() {
                 key={cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`h-8 px-3 rounded-full text-xs font-medium border transition-colors ${
+                className={`h-8 px-3.5 rounded-full text-xs font-semibold border transition-colors ${
                   selectedCategory === cat
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'
@@ -348,8 +326,8 @@ export default function LibraryPage() {
 
         {/* Games grid */}
         {gamesLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {Array.from({ length: 10 }).map((_, i) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="surface overflow-hidden">
                 <Skeleton className="aspect-[4/3] w-full" />
                 <div className="p-3 space-y-2">
@@ -363,70 +341,34 @@ export default function LibraryPage() {
         ) : sortedGames.length === 0 ? (
           <div className="surface p-16 text-center">
             <p className="text-4xl mb-3">🎮</p>
-            <p className="text-muted-foreground">No games available at the moment.</p>
+            <p className="text-muted-foreground">{search.trim() ? 'No games match your search.' : 'No games available at the moment.'}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {sortedGames.map((game, idx) => {
-              const isRecent = recentlyPlayed.includes(game.id)
-              const popularity = gamePopularity[game.id] || 0
-              return (
-                <div
-                  key={game.id}
-                  className="group animate-slide-up"
-                  style={{ animationDelay: `${Math.min(idx * 40, 280)}ms` }}
-                >
-                  <div className="surface overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30">
-                    {/* Cover */}
-                    <div className="aspect-[4/3] relative overflow-hidden bg-muted">
-                      <img
-                        className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-                        src={`/games/${game.id}/cover.png`}
-                        alt={game.name}
-                        loading="lazy"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-                      />
-                      {/* Badges overlay */}
-                      <div className="absolute top-2 left-2 flex gap-1">
-                        {isRecent && (
-                          <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-background/80 backdrop-blur-sm">Recent</Badge>
-                        )}
-                        {popularity >= 10 && (
-                          <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-background/80 backdrop-blur-sm">🔥</Badge>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex flex-1 flex-col justify-between gap-2.5 p-3">
-                      <div>
-                        <h3 className="text-sm font-semibold leading-tight line-clamp-1">{game.name}</h3>
-                        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{game.description}</p>
-                      </div>
-                      {game.iframePath ? (
-                        <Button
-                          asChild
-                          size="sm"
-                          className="w-full h-8 text-xs font-semibold"
-                          onClick={() => trackGamePlay(game.id)}
-                        >
-                          <Link href={`/games/${game.id}`}>Play Now</Link>
-                        </Button>
-                      ) : (
-                        <Button size="sm" variant="secondary" className="w-full h-8 text-xs" disabled>
-                          Coming Soon
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {sortedGames.map((game, idx) => (
+              <div key={game.id} className="animate-slide-up" style={{ animationDelay: `${Math.min(idx * 40, 280)}ms` }}>
+                <GameCard
+                  game={game}
+                  isRecent={recentlyPlayed.includes(game.id)}
+                  plays={gamePopularity[game.id] || 0}
+                  best={bestScores[game.id] ?? null}
+                  onPlay={() => trackGamePlay(game.id)}
+                />
+              </div>
+            ))}
           </div>
         )}
       </main>
 
       <MobileNav />
     </div>
+  )
+}
+
+export default function LibraryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen gradient-bg" />}>
+      <LibraryContent />
+    </Suspense>
   )
 }

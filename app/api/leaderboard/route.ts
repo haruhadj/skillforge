@@ -74,8 +74,11 @@ export async function GET(request: NextRequest) {
 
     if (mode === 'popularity') {
       const snap = await adminDb.collection('leaderboards').doc('_popularity').get()
-      if (snap.exists && snap.data()?.popularity) {
-        return NextResponse.json({ popularity: snap.data()!.popularity })
+      const data = snap.data()
+      const cachedAt = toMillis(data?.recomputedAt) ?? 0
+      const stale = !snap.exists || !data?.popularity || Date.now() - cachedAt > 5 * 60 * 1000
+      if (!stale) {
+        return NextResponse.json({ popularity: data!.popularity })
       }
 
       const popularity = aggregateGamePopularity(await readStatsRows())

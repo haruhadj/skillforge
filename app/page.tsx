@@ -9,6 +9,9 @@ import ThemeToggle from '@/app/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { getOAuthConfig, OAuthConfig } from '@/app/services/adminService'
+import { defaultGames } from '@/app/games/games'
+
+const GAME_COUNT = defaultGames.filter((g) => g.enabled !== false).length
 
 export default function HomePage() {
   const router = useRouter()
@@ -62,39 +65,37 @@ export default function HomePage() {
   return (
     <div className="min-h-screen gradient-bg flex flex-col lg:flex-row">
       {/* Left — Brand Panel */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative overflow-hidden items-center justify-center p-16">
+      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative overflow-hidden items-center hero-gradient p-16">
         {/* Decorative orbs */}
-        <div className="absolute top-1/4 -left-16 w-80 h-80 rounded-full bg-violet-500/20 dark:bg-violet-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 right-0 w-64 h-64 rounded-full bg-indigo-500/20 dark:bg-indigo-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -left-16 w-80 h-80 rounded-full bg-white/12 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 right-0 w-72 h-72 rounded-full bg-cyan-400/30 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 max-w-lg animate-fade-in">
-          <div className="flex items-center gap-4 mb-8">
+        <div className="relative z-10 max-w-lg animate-fade-in text-white">
+          <div className="flex items-center gap-3.5 mb-12">
             <Image
               src="/game logo.jpeg"
               alt="SkillForge Logo"
-              width={64}
-              height={64}
-              className="rounded-2xl shadow-lg"
+              width={46}
+              height={46}
+              className="rounded-xl shadow-lg"
               priority
             />
-            <span className="text-2xl font-bold tracking-tight">SkillForge</span>
+            <span className="text-xl font-bold tracking-tight">SkillForge</span>
           </div>
-          <h1 className="text-5xl xl:text-6xl font-bold leading-tight tracking-tight mb-6">
-            Your{' '}
-            <span className="text-gradient">learning</span>
-            <br />playground.
+          <h1 className="text-5xl xl:text-6xl font-extrabold leading-[1.02] tracking-tight mb-6">
+            Your learning<br />playground.
           </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Master new skills through interactive games, compete on leaderboards,
-            and track your progress across 22 games.
+          <p className="text-lg text-white/85 leading-relaxed max-w-md">
+            Master new skills through {GAME_COUNT} interactive games. Climb the ranks,
+            top the leaderboard, and track every point you earn.
           </p>
 
           {/* Stats row */}
-          <div className="mt-10 flex items-center gap-8">
-            {[['22', 'Games'], ['Free', 'To Play'], ['100%', 'Browser-Based']].map(([num, label]) => (
+          <div className="mt-11 flex items-center gap-11">
+            {[[String(GAME_COUNT), 'Games'], ['Free', 'To play'], ['100%', 'Browser-based']].map(([num, label]) => (
               <div key={label}>
-                <p className="text-2xl font-bold text-foreground">{num}</p>
-                <p className="text-sm text-muted-foreground">{label}</p>
+                <p className="mono text-3xl font-semibold">{num}</p>
+                <p className="text-sm text-white/70 mt-0.5">{label}</p>
               </div>
             ))}
           </div>

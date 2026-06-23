@@ -6,11 +6,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { getUserProfile } from '@/app/services/userProfileService'
-import { defaultGames } from '@/app/games/games'
-import ThemeToggle from '@/app/components/ThemeToggle'
 import MobileNav from '@/app/components/MobileNav'
+import TopNav from '@/app/components/TopNav'
 import { GlobalLeaderboardEntry, UserProfile } from '@/app/types'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -54,7 +52,7 @@ function RankChip({ rank }: { rank: number }) {
   if (rank === 2) return <span className="text-lg leading-none select-none" title="2nd place">🥈</span>
   if (rank === 3) return <span className="text-lg leading-none select-none" title="3rd place">🥉</span>
   return (
-    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-muted text-muted-foreground text-xs font-bold tabular-nums">
+    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-muted text-muted-foreground text-xs font-bold mono">
       {rank}
     </span>
   )
@@ -124,7 +122,7 @@ function Podium({ top3, profiles, currentUser }: {
                 </div>
               </Link>
               <div className={`w-[4.5rem] sm:w-20 rounded-t-xl ${pp.barH} bg-gradient-to-t ${PODIUM_GRADIENTS[i]} border flex items-start justify-center pt-2`}>
-                <span className={`text-[11px] font-bold tabular-nums ${i === 1 ? 'text-yellow-700 dark:text-yellow-400' : 'text-muted-foreground'}`}>
+                <span className={`text-[11px] font-bold mono ${i === 1 ? 'text-yellow-700 dark:text-yellow-400' : 'text-muted-foreground'}`}>
                   {score.toLocaleString()}
                 </span>
               </div>
@@ -187,30 +185,16 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen gradient-bg">
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 h-14 flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground -ml-2">
-            <Link href="/library">
-              <svg className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
-              </svg>
-              Back
-            </Link>
-          </Button>
-          <div className="flex-1 flex items-center justify-center gap-2">
-            <span className="text-lg select-none">🏆</span>
-            <h1 className="text-lg font-bold tracking-tight">Global Leaderboard</h1>
-          </div>
-          <ThemeToggle />
-        </div>
-        {!loading && rows.length > 0 && (
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 pb-3 flex items-center justify-end">
-            <span className="text-xs text-muted-foreground tabular-nums">{rows.length} players ranked</span>
-          </div>
-        )}
-      </header>
+      <TopNav />
 
       <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 pb-24 md:pb-12">
+        <div className="flex items-center gap-3 mb-5">
+          <h1 className="text-2xl font-extrabold tracking-tight">Global Leaderboard</h1>
+          {!loading && rows.length > 0 && (
+            <span className="ml-auto text-sm text-muted-foreground"><span className="mono">{rows.length}</span> players ranked</span>
+          )}
+        </div>
+
         {error && (
           <div className="surface border border-destructive/30 p-4 text-destructive text-sm text-center mb-4">
             {error.includes('permission') ? 'Missing Firestore permissions.' : error}
@@ -321,7 +305,7 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
 
-                        <span className={`text-sm font-bold tabular-nums shrink-0 ${scoreColor}`}>
+                        <span className={`text-sm font-bold mono shrink-0 ${scoreColor}`}>
                           {score.toLocaleString()}
                         </span>
                       </div>
