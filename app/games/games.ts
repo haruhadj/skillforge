@@ -207,6 +207,20 @@ export const defaultGames: Game[] = [
     description: 'Hear a target pitch, then drag a tactile slider to recreate it exactly. Score up to 10 points per round across 5 rounds — precision under 2 cents earns a perfect match.',
     category: 'Music',
   },
+  {
+    id: 'merge-2048',
+    name: 'Merge 2048',
+    iframePath: '/games/merge-2048/index.html',
+    description: 'Drop and merge numbered blocks in a physics-powered container. Combine matching values to reach 2048, and play in Classic or Shape Mode.',
+    category: 'Math',
+  },
+  {
+    id: 'smartle',
+    name: 'Smartle',
+    iframePath: '/games/smartle/index.html',
+    description: 'Rearrange a scrambled 5×5 letter grid until every row spells a valid word. Daily puzzles, a timed Sprint marathon, and a full Archive. Powered by WordNet for definitions.',
+    category: 'Language',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
