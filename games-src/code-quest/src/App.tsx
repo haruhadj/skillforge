@@ -426,9 +426,23 @@ export default function App() {
         </div>
 
         {/* Right Bento: Target Program Editor workspace & Playback details */}
-        <div className={`lg:col-span-4 flex flex-col gap-4 h-full ${mobileTab === 'code' ? 'flex' : 'hidden'} lg:flex`}>
+        <div className={`lg:col-span-4 flex flex-col gap-3 h-full ${mobileTab === 'code' ? 'flex' : 'hidden'} lg:flex`}>
 
-          <div className="flex-1">
+          {/* Compact grid preview — visible on mobile code tab so the world stays in view while editing */}
+          <div className="lg:hidden shrink-0 h-[190px]">
+            <GridViewer
+              level={activeLevel}
+              robotPos={activeFrame.robotPos}
+              robotDir={activeFrame.robotDir}
+              grid={activeFrame.grid}
+              isExecuting={isPlaying}
+              isSuccess={isRunSuccess}
+              isFailure={isRunFailure}
+              compact
+            />
+          </div>
+
+          <div className="flex-1 min-h-0">
             <Workspace
               level={activeLevel}
               mainProgram={mainProgram}

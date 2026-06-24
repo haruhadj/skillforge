@@ -57,7 +57,7 @@ export const LEVELS: Level[] = [
     dimensions: { width: 6, height: 6 },
     startPos: { x: 1, y: 1, z: 0 },
     startDir: 'E',
-    maxMainSlots: 8,
+    maxMainSlots: 10,
     maxFuncSlots: [0, 0],
     availableBlocks: ['MOVE', 'TURN_L', 'TURN_R', 'ACTIVATE'],
     grid: {
@@ -125,7 +125,7 @@ export const LEVELS: Level[] = [
     startPos: { x: 3, y: 3, z: 0 },
     startDir: 'N',
     maxMainSlots: 4,
-    maxFuncSlots: [6, 0],
+    maxFuncSlots: [8, 0],
     availableBlocks: ['MOVE', 'TURN_R', 'ACTIVATE', 'CALL_F1'],
     grid: {
       "3,3": normalTile(0), // Center starting point

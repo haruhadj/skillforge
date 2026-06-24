@@ -215,9 +215,9 @@ function LibraryContent() {
         <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4 mb-8 animate-slide-up">
           {/* Continue playing */}
           {featured ? (
-            <div className="relative rounded-3xl overflow-hidden hero-gradient min-h-[220px] flex items-end p-6">
+            <div className="relative rounded-3xl overflow-hidden hero-gradient min-h-[220px] flex flex-col justify-between p-6">
               <div className="absolute -bottom-16 -right-8 w-60 h-60 rounded-full bg-white/10 blur-3xl" />
-              <p className="absolute top-5 left-6 mono text-[11px] tracking-[0.16em] uppercase text-white/80">
+              <p className="relative z-10 mono text-[11px] tracking-[0.16em] uppercase text-white/80">
                 {recentlyPlayed[0] === featured.id ? 'Continue playing' : 'Featured game'}
               </p>
               <div className="relative z-10">

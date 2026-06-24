@@ -16,6 +16,7 @@ interface GridViewerProps {
   isExecuting: boolean;
   isSuccess: boolean;
   isFailure: boolean;
+  compact?: boolean;
 }
 
 export default function GridViewer({
@@ -25,10 +26,11 @@ export default function GridViewer({
   grid,
   isExecuting,
   isSuccess,
-  isFailure
+  isFailure,
+  compact = false,
 }: GridViewerProps) {
   const isMobileInit = typeof window !== 'undefined' && window.innerWidth < 1024;
-  const [viewMode, setViewMode] = useState<'3d' | '2d'>(isMobileInit ? '2d' : '3d');
+  const [viewMode, setViewMode] = useState<'3d' | '2d'>(compact || isMobileInit ? '2d' : '3d');
   const [isMobile, setIsMobile] = useState(isMobileInit);
   const { width, height } = level.dimensions;
 
@@ -78,43 +80,45 @@ export default function GridViewer({
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-between h-full w-full bg-slate-950 border border-slate-800/80 rounded-2xl p-4 overflow-hidden shadow-2xl">
-      
-      {/* Grid Header Info / Modes */}
-      <div className="z-10 flex w-full justify-between items-center bg-slate-900/60 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-800/60" id="grid_header">
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-mono text-slate-300 font-medium">GRID WORLD ACTIVE</span>
-        </div>
+    <div className={`relative flex flex-col items-center justify-between h-full w-full bg-slate-950 border border-slate-800/80 rounded-2xl overflow-hidden shadow-2xl ${compact ? 'p-2' : 'p-4'}`}>
 
-        <div className="flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800" id="view_mode_toggle_group">
-          <button
-            id="view_mode_3d"
-            onClick={() => setViewMode('3d')}
-            className={`px-3 py-1 text-[11px] font-mono font-medium rounded-md transition-all ${
-              viewMode === '3d'
-                ? 'bg-slate-800 text-purple-400 shadow-sm'
-                : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            3D ISOMETRIC
-          </button>
-          <button
-            id="view_mode_2d"
-            onClick={() => setViewMode('2d')}
-            className={`px-3 py-1 text-[11px] font-mono font-medium rounded-md transition-all ${
-              viewMode === '2d'
-                ? 'bg-slate-800 text-purple-400 shadow-sm'
-                : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            2D FLAT MAP
-          </button>
+      {/* Grid Header Info / Modes — hidden in compact mode */}
+      {!compact && (
+        <div className="z-10 flex w-full justify-between items-center bg-slate-900/60 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-800/60" id="grid_header">
+          <div className="flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-mono text-slate-300 font-medium">GRID WORLD ACTIVE</span>
+          </div>
+
+          <div className="flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800" id="view_mode_toggle_group">
+            <button
+              id="view_mode_3d"
+              onClick={() => setViewMode('3d')}
+              className={`px-3 py-1 text-[11px] font-mono font-medium rounded-md transition-all ${
+                viewMode === '3d'
+                  ? 'bg-slate-800 text-purple-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              3D ISOMETRIC
+            </button>
+            <button
+              id="view_mode_2d"
+              onClick={() => setViewMode('2d')}
+              className={`px-3 py-1 text-[11px] font-mono font-medium rounded-md transition-all ${
+                viewMode === '2d'
+                  ? 'bg-slate-800 text-purple-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              2D FLAT MAP
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Primary Simulator Canvas Area */}
-      <div className="relative flex-1 flex items-center justify-center w-full min-h-[260px] lg:min-h-[340px] select-none py-4 lg:py-6 overflow-auto">
+      <div className={`relative flex-1 flex items-center justify-center w-full select-none overflow-auto ${compact ? 'min-h-[120px] py-1' : 'min-h-[260px] lg:min-h-[340px] py-4 lg:py-6'}`}>
 
         {/* Ambient grid lines in 3D background */}
         <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" />
@@ -134,9 +138,13 @@ export default function GridViewer({
             className="relative grid bg-slate-900/40 p-3 lg:p-4 rounded-2xl border border-slate-800/80 shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-all duration-300"
             style={{
               gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
-              gap: viewMode === '3d' ? (isMobile ? '10px' : '14px') : (isMobile ? '5px' : '6px'),
-              width: `${Math.min(width * (viewMode === '3d' ? (isMobile ? 50 : 62) : (isMobile ? 40 : 46)), isMobile ? 340 : 460)}px`,
-              height: `${Math.min(height * (viewMode === '3d' ? (isMobile ? 50 : 62) : (isMobile ? 40 : 46)), isMobile ? 340 : 430)}px`,
+              gap: compact ? '3px' : viewMode === '3d' ? (isMobile ? '10px' : '14px') : (isMobile ? '5px' : '6px'),
+              width: compact
+                ? `${Math.min(width * 26, 200)}px`
+                : `${Math.min(width * (viewMode === '3d' ? (isMobile ? 50 : 62) : (isMobile ? 40 : 46)), isMobile ? 340 : 460)}px`,
+              height: compact
+                ? `${Math.min(height * 26, 200)}px`
+                : `${Math.min(height * (viewMode === '3d' ? (isMobile ? 50 : 62) : (isMobile ? 40 : 46)), isMobile ? 340 : 430)}px`,
             }}
           >
             {cells.map(({ x, y, key }) => {
@@ -264,16 +272,18 @@ export default function GridViewer({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
             id="success_banner_overlay"
-            className="absolute bottom-4 inset-x-4 bg-emerald-950/95 border border-emerald-500/40 p-4 rounded-xl flex items-center gap-3 z-30 shadow-xl"
+            className={`absolute inset-x-2 bg-emerald-950/95 border border-emerald-500/40 rounded-xl flex items-center gap-2 z-30 shadow-xl ${compact ? 'bottom-1 p-2' : 'bottom-4 p-4 gap-3'}`}
           >
-            <div className="bg-emerald-800/40 p-2 rounded-lg text-emerald-300">
-              <Sparkles className="h-5 w-5 text-emerald-400 animate-spin" />
+            <div className={`bg-emerald-800/40 rounded-lg text-emerald-300 shrink-0 ${compact ? 'p-1' : 'p-2'}`}>
+              <Sparkles className={`text-emerald-400 animate-spin ${compact ? 'h-3 w-3' : 'h-5 w-5'}`} />
             </div>
             <div>
-              <h4 className="text-xs font-display font-semibold text-emerald-300 select-none">CODE QUEST PASSED!</h4>
-              <p className="text-[10px] text-emerald-400/90 leading-tight select-none">
-                All puzzle goals successfully illuminated. Brilliant execution.
-              </p>
+              <h4 className={`font-display font-semibold text-emerald-300 select-none ${compact ? 'text-[10px]' : 'text-xs'}`}>CODE QUEST PASSED!</h4>
+              {!compact && (
+                <p className="text-[10px] text-emerald-400/90 leading-tight select-none">
+                  All puzzle goals successfully illuminated. Brilliant execution.
+                </p>
+              )}
             </div>
           </motion.div>
         )}
@@ -284,16 +294,18 @@ export default function GridViewer({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
             id="failure_banner_overlay"
-            className="absolute bottom-4 inset-x-4 bg-rose-950/95 border border-rose-500/40 p-4 rounded-xl flex items-center gap-3 z-30 shadow-xl animate-shake"
+            className={`absolute inset-x-2 bg-rose-950/95 border border-rose-500/40 rounded-xl flex items-center gap-2 z-30 shadow-xl animate-shake ${compact ? 'bottom-1 p-2' : 'bottom-4 p-4 gap-3'}`}
           >
-            <div className="bg-rose-800/40 p-2 rounded-lg text-rose-300">
-              <AlertCircle className="h-5 w-5 text-rose-400" />
+            <div className={`bg-rose-800/40 rounded-lg text-rose-300 shrink-0 ${compact ? 'p-1' : 'p-2'}`}>
+              <AlertCircle className={`text-rose-400 ${compact ? 'h-3 w-3' : 'h-5 w-5'}`} />
             </div>
             <div>
-              <h4 className="text-xs font-display font-semibold text-rose-300 select-none">TEST RUN FAILED</h4>
-              <p className="text-[10px] text-rose-400/90 leading-tight select-none">
-                The compiled commands ended without powering all nodes. Press Reset and re-structure!
-              </p>
+              <h4 className={`font-display font-semibold text-rose-300 select-none ${compact ? 'text-[10px]' : 'text-xs'}`}>TEST RUN FAILED</h4>
+              {!compact && (
+                <p className="text-[10px] text-rose-400/90 leading-tight select-none">
+                  The compiled commands ended without powering all nodes. Press Reset and re-structure!
+                </p>
+              )}
             </div>
           </motion.div>
         )}
