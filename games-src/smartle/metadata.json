@@ -1,0 +1,6 @@
+{
+  "name": "Smartle",
+  "description": "Daily 5-letter word rearrangement puzzle game, featuring Daily, Sprint, and Archive modes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

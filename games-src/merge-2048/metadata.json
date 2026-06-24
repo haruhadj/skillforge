@@ -1,0 +1,6 @@
+{
+  "name": "Merge 2048",
+  "description": "Combine matching numbered blocks to reach higher values and aim for the 2048 block. Play in Classic or Shape Mode, use TNT power-ups to clear space, and avoid container overflow.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
