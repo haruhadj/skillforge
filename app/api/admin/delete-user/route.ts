@@ -4,6 +4,26 @@ import { QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
 
 export async function POST(request: NextRequest) {
   try {
+    // Require a valid Firebase ID token belonging to an admin caller.
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.split('Bearer ')[1]
+    let callerUid: string
+    try {
+      const decodedToken = await getAdminAuth().verifyIdToken(token)
+      callerUid = decodedToken.uid
+    } catch (tokenError) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    }
+
+    const callerSnap = await getAdminDb().collection('users').doc(callerUid).get()
+    if (callerSnap.data()?.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const { uid } = await request.json()
 
     if (!uid || typeof uid !== 'string') {
