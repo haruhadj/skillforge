@@ -94,9 +94,11 @@ export async function POST(request: NextRequest) {
       firestoreDeleted: true 
     })
   } catch (error) {
+    // Log full detail server-side; return a generic message so wrapped Firebase
+    // Admin internals don't leak to the client (audit S6).
     console.error('Delete user error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete user' },
+      { error: 'Failed to delete user' },
       { status: 500 }
     )
   }

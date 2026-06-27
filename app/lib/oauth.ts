@@ -16,6 +16,11 @@ export const OAUTH_TOKEN_COOKIE = 'oauth_token'
 
 export type OAuthProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook'
 
+// Single source of truth for which providers can be linked to / unlinked from an
+// account. Shared by link/start and link/remove so the two can never drift out of
+// sync (audit S7: twitter/facebook were linkable but not removable).
+export const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'tiktok', 'twitter', 'facebook']
+
 // Providers that require PKCE (RFC 7636). X (Twitter) OAuth 2.0 mandates it.
 export function providerRequiresPkce(provider: OAuthProvider): boolean {
   return provider === 'twitter'

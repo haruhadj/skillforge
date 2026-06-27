@@ -4,6 +4,7 @@ import {
   OAUTH_STATE_COOKIE,
   OAUTH_LINK_UID_COOKIE,
   OAUTH_PKCE_COOKIE,
+  LINKABLE_PROVIDERS,
   buildAuthorizeUrl,
   generateOAuthState,
   generatePkce,
@@ -12,8 +13,6 @@ import {
   providerRequiresPkce,
   type OAuthProvider,
 } from '@/app/lib/oauth'
-
-const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'tiktok', 'twitter', 'facebook']
 
 // Starts an OAuth "link to my account" flow. The user must be signed in: we verify
 // their ID token, then stash the verified uid + CSRF state in short-lived cookies

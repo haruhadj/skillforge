@@ -157,16 +157,28 @@ io.on('connection', (socket) => {
   })
 
   socket.on('make_move', (data) => {
-    const { roomCode, squareIndex, player } = data
+    const { roomCode, squareIndex } = data
     const room = rooms.get(roomCode)
     if (!room) return
-    if (room.squares[squareIndex] !== null) return
     if (room.winner) return
 
-    const isXturn = room.xIsNext
-    if ((player === 'X' && !isXturn) || (player === 'O' && isXturn)) return
+    // Authorize the sender: the symbol is derived server-side from the seat the
+    // socket occupies (host = X, guest = O) — never trusted from the payload. A
+    // socket that is neither host nor guest (spectator / stranger who guessed the
+    // 4-char code) has no symbol and cannot move.
+    const symbol = socket.id === room.host ? 'X' : socket.id === room.guest ? 'O' : null
+    if (!symbol) return
 
-    room.squares[squareIndex] = player
+    // Turn check against the derived symbol (X moves when xIsNext is true).
+    if ((symbol === 'X') !== room.xIsNext) return
+
+    // Bounds-check the index: an out-of-range/non-integer index would otherwise
+    // pass the `!== null` guard (undefined !== null) and write an arbitrary
+    // property onto the squares array, corrupting game state.
+    if (!Number.isInteger(squareIndex) || squareIndex < 0 || squareIndex > 8) return
+    if (room.squares[squareIndex] !== null) return
+
+    room.squares[squareIndex] = symbol
     room.xIsNext = !room.xIsNext
     room.lastActivity = Date.now()
 
@@ -186,6 +198,9 @@ io.on('connection', (socket) => {
   socket.on('request_rematch', (data) => {
     const room = rooms.get(data?.roomCode)
     if (!room) return
+    // Only a seated player (host or guest) may reset the board, so a stranger
+    // can't wipe an in-progress game by guessing the room code.
+    if (socket.id !== room.host && socket.id !== room.guest) return
     room.squares = Array(9).fill(null)
     room.xIsNext = true
     room.winner = null

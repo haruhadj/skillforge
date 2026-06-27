@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { timingSafeEqual } from 'node:crypto'
 import { FieldValue, QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
 import { getAdminDb } from '@/app/lib/firebase-admin'
 import { defaultGames } from '@/app/games/games'
+
+// Constant-time bearer-token compare so the shared secret can't be recovered by
+// timing the response to a `===` short-circuit (audit S5).
+function bearerMatches(header: string | null, secret: string): boolean {
+  if (!header) return false
+  const expected = Buffer.from(`Bearer ${secret}`)
+  const got = Buffer.from(header)
+  if (got.length !== expected.length) return false
+  return timingSafeEqual(got, expected)
+}
 import {
   aggregateGlobalLeaderboard,
   aggregateGameLeaderboard,
@@ -26,7 +37,7 @@ export async function POST(request: NextRequest) {
   if (!secret) {
     return NextResponse.json({ error: 'INTERNAL_API_SECRET not configured' }, { status: 500 })
   }
-  if (request.headers.get('authorization') !== `Bearer ${secret}`) {
+  if (!bearerMatches(request.headers.get('authorization'), secret)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

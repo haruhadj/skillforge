@@ -4,6 +4,11 @@ import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
 import { defaultGames } from '@/app/games/games'
 import { SUPPORTED_MODES, type GameMode, buildWeightedModeStats } from '@/app/services/scoring'
 import { GameStats } from '@/app/types'
+import { rateLimit, sweepExpired } from '@/app/lib/rateLimit'
+
+// Per-user write throttle so a single valid token can't flood score writes.
+const SCORE_LIMIT = 60
+const SCORE_WINDOW_MS = 60 * 1000
 
 /**
  * Server-authoritative score submission.
@@ -33,6 +38,16 @@ export async function POST(request: NextRequest) {
       uid = decoded.uid
     } catch {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+    }
+
+    // Rate-limit per authenticated user.
+    sweepExpired()
+    const limit = rateLimit(`score:uid:${uid}`, SCORE_LIMIT, SCORE_WINDOW_MS)
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down.' },
+        { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } },
+      )
     }
 
     // 2. Validate the payload (uid is intentionally ignored if present).

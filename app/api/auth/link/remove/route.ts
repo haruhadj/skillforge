@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
 import { removeOAuthLink } from '@/app/lib/oauthLinks'
-import type { OAuthProvider } from '@/app/lib/oauth'
+import { LINKABLE_PROVIDERS, type OAuthProvider } from '@/app/lib/oauth'
 
 // Disconnects a linked OAuth provider from the signed-in account, refusing to
 // remove the user's only remaining sign-in method (which would lock them out).
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   const body = (await request.json().catch(() => ({}))) as { provider?: string }
   const provider = body.provider as OAuthProvider
-  if (provider !== 'google' && provider !== 'github' && provider !== 'tiktok') {
+  if (!LINKABLE_PROVIDERS.includes(provider)) {
     return NextResponse.json({ error: 'Invalid provider' }, { status: 400 })
   }
 
@@ -36,9 +36,11 @@ export async function POST(request: NextRequest) {
   const userRecord = await getAdminAuth().getUser(uid)
   const remaining = new Set<string>()
   if (userRecord.providerData.some((p) => p.providerId === 'password')) remaining.add('password')
-  if (uid.startsWith('google_')) remaining.add('google')
-  if (uid.startsWith('github_')) remaining.add('github')
-  if (uid.startsWith('tiktok_')) remaining.add('tiktok')
+  // The account's native provider is implied by the uid prefix (e.g. `twitter_…`).
+  // Cover all linkable providers so twitter/facebook-native accounts are counted.
+  for (const p of LINKABLE_PROVIDERS) {
+    if (uid.startsWith(`${p}_`)) remaining.add(p)
+  }
   Object.keys(linked)
     .filter((p) => p !== provider)
     .forEach((p) => remaining.add(p))

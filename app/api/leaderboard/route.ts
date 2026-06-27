@@ -8,6 +8,12 @@ import {
   type ScoreRow,
   type StatsRow,
 } from '@/app/services/scoring'
+import { rateLimit, clientIpFrom, sweepExpired } from '@/app/lib/rateLimit'
+
+// Public, unauthenticated read — throttle per IP so a flood can't repeatedly
+// trigger the expensive collectionGroup fallback when the cache doc is missing.
+const LB_LIMIT = 30
+const LB_WINDOW_MS = 60 * 1000
 
 /**
  * Server-side leaderboard reads.
@@ -52,6 +58,15 @@ async function readStatsRows(): Promise<StatsRow[]> {
 
 export async function GET(request: NextRequest) {
   try {
+    sweepExpired()
+    const limit = rateLimit(`lb:ip:${clientIpFrom(request)}`, LB_LIMIT, LB_WINDOW_MS)
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down.' },
+        { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } },
+      )
+    }
+
     const adminDb = getAdminDb()
     const mode = request.nextUrl.searchParams.get('mode') || 'global'
     const now = FieldValue.serverTimestamp()

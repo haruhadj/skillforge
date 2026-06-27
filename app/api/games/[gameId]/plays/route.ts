@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
 import { defaultGames } from '@/app/games/games'
+import { rateLimit, clientIpFrom, sweepExpired } from '@/app/lib/rateLimit'
+
+// POST throttled per authenticated user; GET (public) throttled per IP — the GET
+// reads an entire quizzes subcollection, so an unauthenticated flood is costly.
+const PLAYS_POST_LIMIT = 60
+const PLAYS_GET_LIMIT = 60
+const PLAYS_WINDOW_MS = 60 * 1000
 
 /**
  * Per-quiz community analytics for quiz-style games (e.g. philippine-trivia).
@@ -73,6 +80,16 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
+    // Rate-limit per authenticated user.
+    sweepExpired()
+    const limit = rateLimit(`plays:uid:${uid}`, PLAYS_POST_LIMIT, PLAYS_WINDOW_MS)
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down.' },
+        { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } },
+      )
+    }
+
     // 2. Validate payload.
     const body = await request.json()
     const quizId = String(body?.quizId || '')
@@ -138,6 +155,16 @@ export async function GET(
     if (!isKnownGame(gameId)) {
       return NextResponse.json({ error: 'Unknown gameId' }, { status: 400 })
     }
+
+    sweepExpired()
+    const limit = rateLimit(`plays-get:ip:${clientIpFrom(request)}`, PLAYS_GET_LIMIT, PLAYS_WINDOW_MS)
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down.' },
+        { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } },
+      )
+    }
+
     const quizIdFilter = request.nextUrl.searchParams.get('quizId')
 
     const snap = await getAdminDb()

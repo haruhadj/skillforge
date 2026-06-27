@@ -431,6 +431,14 @@ function finalizeRound(room) {
   }, ROUND_RESULT_MS)
 }
 
+// Coerce to a finite number clamped to [min, max]; non-numeric input (e.g. a
+// string or object) becomes `min` instead of leaking NaN into score math.
+function clampFinite(value, min, max) {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return min
+  return Math.max(min, Math.min(max, n))
+}
+
 function leaveRoom(socket, roomCode) {
   if (!roomCode) return
 
@@ -479,6 +487,12 @@ io.on('connection', (socket) => {
       socket.emit('room_error', { message: 'Too many open rooms.' })
       return
     }
+
+    // Now that creation is committed, leave any room this socket is already in;
+    // otherwise it lingers as a ghost player in the old room's array (cleanup
+    // only tracks the latest socket.data.roomCode), so that room never reaps (L1).
+    if (socket.data.roomCode) leaveRoom(socket, socket.data.roomCode)
+
     const code = generateRoomCode()
     const room = {
       code,
@@ -512,6 +526,12 @@ io.on('connection', (socket) => {
     if (!room) {
       socket.emit('room_error', { message: 'Room not found.' })
       return
+    }
+
+    // Leave any previously-joined room so the socket isn't left as a ghost player
+    // in it (cleanup only tracks the latest socket.data.roomCode) — see L1.
+    if (socket.data.roomCode && socket.data.roomCode !== code) {
+      leaveRoom(socket, socket.data.roomCode)
     }
 
     if (room.status !== 'LOBBY') {
@@ -568,9 +588,9 @@ io.on('connection', (socket) => {
     if (room.submissions.has(socket.id)) return
 
     const safeGuess = {
-      h: Math.max(0, Math.min(360, Number(guess?.h ?? 0))),
-      s: Math.max(0, Math.min(100, Number(guess?.s ?? 0))),
-      b: Math.max(0, Math.min(100, Number(guess?.b ?? 0))),
+      h: clampFinite(guess?.h, 0, 360),
+      s: clampFinite(guess?.s, 0, 100),
+      b: clampFinite(guess?.b, 0, 100),
     }
 
     room.submissions.set(socket.id, safeGuess)

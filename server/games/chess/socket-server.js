@@ -189,6 +189,23 @@ io.on('connection', (socket) => {
     const room = rooms.get(roomId)
     if (!room || room.gameEnded) return
 
+    // Authorize the sender: only a seated player may move (spectators / 3rd+
+    // joiners get color:null and are never added to room.players). This mirrors
+    // the existing guard on offerDraw/respondDraw/resign — `move` was the lone
+    // unguarded mutator.
+    const player = room.players[socket.id]
+    if (!player) return
+
+    // Turn-ownership check without a server-side chess engine: the active color
+    // of the currently-stored (pre-move) FEN must match the mover's color, so a
+    // player can't move for the opponent or move twice in a row. NOTE: full
+    // board/move legality is still client-trusted (the chess client is a prebuilt
+    // artifact); this only enforces who-moves-when, per audit M3.
+    const activeColor = String(room.fen).split(' ')[1]
+    if (activeColor === 'w' || activeColor === 'b') {
+      if (player.color !== activeColor) return
+    }
+
     room.fen = isValidFen(fen) ? fen : START_FEN
     room.lastActivity = Date.now()
     if (room.drawOfferedBy) {
