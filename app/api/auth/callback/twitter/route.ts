@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminAuth } from '@/app/lib/firebase-admin'
-import { OAUTH_STATE_COOKIE, OAUTH_LINK_UID_COOKIE, OAUTH_PKCE_COOKIE } from '@/app/lib/oauth'
+import { OAUTH_STATE_COOKIE, OAUTH_LINK_UID_COOKIE, OAUTH_PKCE_COOKIE, OAUTH_TOKEN_COOKIE, oauthCookieOptions } from '@/app/lib/oauth'
 import { resolveSignInUid, linkOAuthToAccount, type OAuthProfile } from '@/app/lib/oauthLinks'
 
 export async function GET(request: NextRequest) {
@@ -104,7 +104,9 @@ export async function GET(request: NextRequest) {
   const firebaseUid = await resolveSignInUid(profile)
   const customToken = await getAdminAuth().createCustomToken(firebaseUid)
 
-  return clearCookies(
-    NextResponse.redirect(`${appUrl}/auth/callback?token=${encodeURIComponent(customToken)}`),
-  )
+  // Deliver the custom token via a short-lived httpOnly cookie (not the URL, which
+  // would leak it into logs/history) and redirect to the callback page to exchange it.
+  const response = clearCookies(NextResponse.redirect(`${appUrl}/auth/callback`))
+  response.cookies.set(OAUTH_TOKEN_COOKIE, customToken, oauthCookieOptions(120))
+  return response
 }

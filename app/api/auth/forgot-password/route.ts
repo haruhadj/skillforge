@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { getAdminAuth } from '@/app/lib/firebase-admin'
+import { rateLimit, clientIpFrom, sweepExpired } from '@/app/lib/rateLimit'
 
 // Lazy Resend initialization
 function getResend() {
@@ -11,8 +12,30 @@ function getResend() {
   return new Resend(apiKey)
 }
 
+// Throttle the reset-email endpoint to stop email-bombing a victim and burning the
+// Resend quota: cap per client IP and per target email address.
+const IP_LIMIT = 5
+const IP_WINDOW_MS = 15 * 60 * 1000
+const EMAIL_LIMIT = 3
+const EMAIL_WINDOW_MS = 60 * 60 * 1000
+
+function tooMany(retryAfterSeconds: number) {
+  return NextResponse.json(
+    { error: 'Too many requests. Please try again later.' },
+    { status: 429, headers: { 'Retry-After': String(retryAfterSeconds) } }
+  )
+}
+
 export async function POST(request: NextRequest) {
   try {
+    sweepExpired()
+
+    const ip = clientIpFrom(request)
+    const ipLimit = rateLimit(`forgot-pw:ip:${ip}`, IP_LIMIT, IP_WINDOW_MS)
+    if (!ipLimit.allowed) {
+      return tooMany(ipLimit.retryAfterSeconds)
+    }
+
     const { email } = await request.json()
 
     if (!email || typeof email !== 'string') {
@@ -20,6 +43,16 @@ export async function POST(request: NextRequest) {
         { error: 'Email is required' },
         { status: 400 }
       )
+    }
+
+    const emailLimit = rateLimit(
+      `forgot-pw:email:${email.trim().toLowerCase()}`,
+      EMAIL_LIMIT,
+      EMAIL_WINDOW_MS
+    )
+    if (!emailLimit.allowed) {
+      // Generic success-shaped 429 avoids leaking whether the address exists.
+      return tooMany(emailLimit.retryAfterSeconds)
     }
 
     if (!process.env.RESEND_API_KEY) {

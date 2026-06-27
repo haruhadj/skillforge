@@ -8,6 +8,11 @@ export const OAUTH_STATE_COOKIE = 'oauth_state'
 export const OAUTH_LINK_UID_COOKIE = 'oauth_link_uid'
 // Holds the PKCE code_verifier for providers that mandate PKCE (X / Twitter OAuth 2.0).
 export const OAUTH_PKCE_COOKIE = 'oauth_pkce_verifier'
+// Short-lived, single-use carrier for the minted Firebase custom token. The callback
+// sets this httpOnly cookie instead of putting the token in the redirect URL (which
+// would leak it into nginx access logs and browser history); /api/auth/token reads
+// and immediately clears it so the client can complete signInWithCustomToken.
+export const OAUTH_TOKEN_COOKIE = 'oauth_token'
 
 export type OAuthProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook'
 
