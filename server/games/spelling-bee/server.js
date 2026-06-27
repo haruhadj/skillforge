@@ -11,7 +11,15 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-app.use(cors());
+// CORS — restrict to the app's own origins (audit M4), mirroring vocab/hamaru.
+// The game is served same-origin via the nginx /api/ proxy, so this blocks
+// cross-origin abuse of the compute-heavy /api/tts endpoint.
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://skillforge.haruhadj.org', 'https://skillforge.haruhadj.duckdns.org', 'https://haruhadj.github.io']
+    : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4173', 'http://127.0.0.1:5173'],
+  credentials: true,
+}));
 
 const PORT = Number(process.env.PORT) || 8787;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -184,13 +192,16 @@ app.post('/api/log-current-word', (req, res) => {
   const { word, idx, roundId, partOfSpeech, topic } = req.body || {};
   if (!word) return res.status(400).json({ error: 'Missing `word` in request body' });
 
+  // Strip control chars / newlines + bound length to prevent log forging (audit L3).
+  const clean = (v) => (v == null ? null : String(v).replace(/[\x00-\x1f\x7f]/g, ' ').slice(0, 80));
+
   // eslint-disable-next-line no-console
   console.log('[SpellingBee] Now spelling:', {
-    word: String(word),
-    idx: idx ?? null,
-    roundId: roundId ?? null,
-    partOfSpeech: partOfSpeech ?? null,
-    topic: topic ?? null,
+    word: clean(word),
+    idx: Number.isFinite(Number(idx)) ? Number(idx) : null,
+    roundId: clean(roundId),
+    partOfSpeech: clean(partOfSpeech),
+    topic: clean(topic),
     at: new Date().toISOString(),
   });
 

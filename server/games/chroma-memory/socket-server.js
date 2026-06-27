@@ -57,8 +57,17 @@ const CONN_WINDOW_MS = 60 * 1000
 
 const ipConnections = new Map()
 
+// Behind nginx, socket.handshake.address is the proxy's IP for every client, so
+// throttling on it would rate-limit all players as a single IP. Prefer the real
+// client IP from X-Forwarded-For (nginx sets it on the *-ws/ locations).
+function clientIp(socket) {
+  const xff = socket.handshake.headers['x-forwarded-for']
+  if (xff) return String(xff).split(',')[0].trim()
+  return socket.handshake.address || 'unknown'
+}
+
 io.use((socket, next) => {
-  const ip = socket.handshake.address || 'unknown'
+  const ip = clientIp(socket)
   const now = Date.now()
   const recent = (ipConnections.get(ip) || []).filter((t) => now - t < CONN_WINDOW_MS)
   if (recent.length >= MAX_CONN_PER_IP) return next(new Error('Too many connections'))
