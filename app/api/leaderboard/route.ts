@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { FieldValue, QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
 import { getAdminDb } from '@/app/lib/firebase-admin'
+import { defaultGames } from '@/app/games/games'
 import {
   aggregateGlobalLeaderboard,
   aggregateGameLeaderboard,
@@ -75,6 +76,12 @@ export async function GET(request: NextRequest) {
       const gameId = request.nextUrl.searchParams.get('gameId')
       if (!gameId) {
         return NextResponse.json({ error: 'gameId is required for mode=game' }, { status: 400 })
+      }
+      // Validate against the known game registry before using gameId as a Firestore
+      // doc id — otherwise an unauthenticated caller could mint arbitrary junk
+      // `leaderboards/*` docs (or steer the write to nested paths via slashes).
+      if (!defaultGames.some((g) => g.id === gameId)) {
+        return NextResponse.json({ error: 'Unknown gameId' }, { status: 404 })
       }
 
       const snap = await adminDb.collection('leaderboards').doc(gameId).get()

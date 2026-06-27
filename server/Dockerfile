@@ -14,6 +14,12 @@ COPY server/start-all.js ./server/
 # Create empty wordnet directory for volume mount
 RUN mkdir -p ./server/wordnet
 
-EXPOSE 3001 3002 3004 3005 8787 8788 8789
+# Ports actually used by the per-service commands (compose overrides `command`):
+# chroma 3002, chess 3004, tictactoe 3005, spelling-bee 8787, vocab 8788, hamaru 8789.
+EXPOSE 3002 3004 3005 8787 8788 8789
+
+# Drop root — the node:alpine image ships a built-in uid-1000 `node` user. Each
+# service only reads its source + the read-only WordNet volume mount.
+USER node
 
 CMD ["node", "server/start-all.js"]

@@ -47,8 +47,10 @@ service cloud.firestore {
     // Usernames lookup - readable by anyone, writable by the owner
     match /usernames/{username} {
       allow read: if true;
-      // Allow write if: user is authenticated AND (creating new OR owns this username)
-      allow create: if request.auth != null;
+      // Create only a username doc that points at the caller's own uid — otherwise
+      // any authed user could squat names (or forge an entry pointing at a victim),
+      // bypassing claimUsername. Update/delete remain restricted to the current owner.
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
       allow update, delete: if request.auth != null && resource.data.uid == request.auth.uid;
     }
 

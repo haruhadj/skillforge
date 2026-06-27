@@ -15,6 +15,27 @@ import type { DeviceInfo } from '@/app/lib/deviceInfo'
 
 export const USERNAME_REGEX = /^[A-Za-z0-9_]{3,20}$/
 
+// Names that must not be claimable, to prevent impersonation of staff/system
+// accounts. Compared against the normalized (lowercased, trimmed) username.
+export const RESERVED_USERNAMES = new Set<string>([
+  'admin',
+  'administrator',
+  'support',
+  'moderator',
+  'mod',
+  'staff',
+  'official',
+  'root',
+  'system',
+  'skillforge',
+  'help',
+  'security',
+])
+
+export function isReservedUsername(username: string): boolean {
+  return RESERVED_USERNAMES.has(normalizeUsername(username))
+}
+
 // Firestore UserProfile with FieldValue for timestamps
 interface FirestoreUserProfile extends Omit<Partial<UserProfile>, 'createdAt' | 'updatedAt'> {
   createdAt?: Date | FieldValue
@@ -347,12 +368,15 @@ export async function claimUsername(
   }
 
   const normalized = normalizeUsername(trimmedUsername)
+
+  if (RESERVED_USERNAMES.has(normalized)) {
+    throw new Error('That username is reserved and cannot be used')
+  }
+
   const userRef = doc(db, 'users', uid)
   const usernameRef = doc(db, 'usernames', normalized)
   const now = serverTimestamp()
 
-  // First, update the user profile (outside transaction to avoid race with AuthContext)
-  // Use setDoc with merge to handle case where profile already exists
   const userPayload = {
     ...metadata,
     username: trimmedUsername,
@@ -361,31 +385,35 @@ export async function claimUsername(
     updatedAt: now,
   }
 
-  try {
-    await setDoc(userRef, userPayload, { merge: true })
-  } catch (err) {
-    console.error('[claimUsername] Failed to write user profile:', err)
-    throw err
-  }
-
-  // Then, claim the username in a transaction (username is the critical part)
+  // The profile write and the username claim must be one atomic unit: if the
+  // username is taken we must NOT have already mutated the profile (drift), and
+  // on a rename we must observe the *previous* username before overwriting it so
+  // the old `usernames/<old>` doc gets reaped. Firestore transactions auto-retry
+  // on the AuthContext profile-write race, so doing the profile write here is safe.
   return runTransaction(db, async (transaction) => {
+    // All reads must precede any writes in a Firestore transaction.
     const usernameSnap = await transaction.get(usernameRef)
-
     if (usernameSnap.exists() && usernameSnap.data().uid !== uid) {
       throw new Error('Username is already taken')
     }
 
-    // Clean up previous username if user is changing theirs
     const userSnap = await transaction.get(userRef)
     const previousNormalized = userSnap.exists() ? userSnap.data().usernameNormalized : null
 
+    let previousUsernameRef: ReturnType<typeof doc> | null = null
     if (previousNormalized && previousNormalized !== normalized) {
-      const previousUsernameRef = doc(db, 'usernames', previousNormalized)
-      const previousUsernameSnap = await transaction.get(previousUsernameRef)
+      const ref = doc(db, 'usernames', previousNormalized)
+      const previousUsernameSnap = await transaction.get(ref)
       if (previousUsernameSnap.exists() && previousUsernameSnap.data().uid === uid) {
-        transaction.delete(previousUsernameRef)
+        previousUsernameRef = ref
       }
+    }
+
+    // Writes — atomic with the availability check above.
+    transaction.set(userRef, userPayload, { merge: true })
+
+    if (previousUsernameRef) {
+      transaction.delete(previousUsernameRef)
     }
 
     const usernamePayload = {
@@ -394,11 +422,9 @@ export async function claimUsername(
       usernameNormalized: normalized,
       updatedAt: now,
     }
-
     if (!usernameSnap.exists() || !usernameSnap.data().createdAt) {
       ;(usernamePayload as Record<string, unknown>).createdAt = now
     }
-
     transaction.set(usernameRef, usernamePayload, { merge: true })
 
     return {

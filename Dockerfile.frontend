@@ -53,4 +53,8 @@ COPY --from=builder /app/public ./public
 
 EXPOSE 3000
 
+# Drop root — the node:alpine image ships a built-in uid-1000 `node` user.
+# The standalone server only reads from /app, so no writable paths are needed.
+USER node
+
 CMD ["node", "server.js"]
