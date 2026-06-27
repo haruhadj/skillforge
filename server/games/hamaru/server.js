@@ -40,7 +40,12 @@ app.use(
   cors({
     origin:
       NODE_ENV === 'production'
-        ? ['https://skillforge.haruhadj.org']
+        ? [
+            // Keep in sync with the sibling game servers (chess/tictactoe/chroma/
+            // vocab) which all allow the duckdns prod origin too (audit H3).
+            'https://skillforge.haruhadj.org',
+            'https://skillforge.haruhadj.duckdns.org',
+          ]
         : [
             'http://localhost:3000',
             'http://localhost:5173',

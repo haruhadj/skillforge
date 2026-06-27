@@ -3,6 +3,9 @@ services:
     image: nginx:alpine
     container_name: skillforge-nginx
     restart: unless-stopped
+    # Resource caps so no single service can OOM the Raspberry Pi (audit H2).
+    mem_limit: 64m
+    pids_limit: 128
     ports:
       - "1234:80"
     volumes:
@@ -30,18 +33,15 @@ services:
         NEXT_PUBLIC_FIREBASE_APP_ID: ${NEXT_PUBLIC_FIREBASE_APP_ID}
         NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
-        GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
-        GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
-        GITHUB_OAUTH_CLIENT_ID: ${GITHUB_OAUTH_CLIENT_ID}
-        GITHUB_OAUTH_CLIENT_SECRET: ${GITHUB_OAUTH_CLIENT_SECRET}
-        TIKTOK_OAUTH_CLIENT_KEY: ${TIKTOK_OAUTH_CLIENT_KEY}
-        TIKTOK_OAUTH_CLIENT_SECRET: ${TIKTOK_OAUTH_CLIENT_SECRET}
-        FACEBOOK_OAUTH_CLIENT_ID: ${FACEBOOK_OAUTH_CLIENT_ID}
-        FACEBOOK_OAUTH_CLIENT_SECRET: ${FACEBOOK_OAUTH_CLIENT_SECRET}
-        TWITTER_OAUTH_CLIENT_ID: ${TWITTER_OAUTH_CLIENT_ID}
-        TWITTER_OAUTH_CLIENT_SECRET: ${TWITTER_OAUTH_CLIENT_SECRET}
+        # OAuth client IDs/secrets are server-side only (read at runtime in
+        # app/api/auth/callback/*). They are intentionally NOT build args:
+        # build args get baked into image layer history (docker history) and
+        # they are not declared as ARG in Dockerfile.frontend anyway. They are
+        # provided at runtime via the `environment:` block below.
     container_name: skillforge-frontend
     restart: unless-stopped
+    mem_limit: 512m
+    pids_limit: 512
     expose:
       - "3000"
     environment:
@@ -76,6 +76,8 @@ services:
     container_name: skillforge-tictactoe
     restart: unless-stopped
     command: ["node", "server/games/tictactoe/socket-server.js"]
+    mem_limit: 192m
+    pids_limit: 256
     environment:
       - TICTACTOE_PORT=3005
     expose:
@@ -89,6 +91,8 @@ services:
     container_name: skillforge-chess
     restart: unless-stopped
     command: ["node", "server/games/chess/socket-server.js"]
+    mem_limit: 192m
+    pids_limit: 256
     environment:
       - CHESS_PORT=3004
     expose:
@@ -102,6 +106,8 @@ services:
     container_name: skillforge-chroma-memory
     restart: unless-stopped
     command: ["node", "server/games/chroma-memory/socket-server.js"]
+    mem_limit: 192m
+    pids_limit: 256
     environment:
       - CHROMA_MEMORY_PORT=3002
     expose:
@@ -115,6 +121,8 @@ services:
     container_name: skillforge-spelling-bee
     restart: unless-stopped
     command: ["node", "server/games/spelling-bee/server.js"]
+    mem_limit: 256m
+    pids_limit: 256
     environment:
       - NODE_ENV=production
       - PORT=8787
@@ -137,6 +145,8 @@ services:
     container_name: skillforge-vocab
     restart: unless-stopped
     command: ["node", "server/games/vocab/server.js"]
+    mem_limit: 256m
+    pids_limit: 256
     environment:
       - NODE_ENV=production
       - VOCAB_PORT=8788
@@ -154,6 +164,8 @@ services:
     container_name: skillforge-hamaru
     restart: unless-stopped
     command: ["node", "server/games/hamaru/server.js"]
+    mem_limit: 320m
+    pids_limit: 256
     environment:
       - NODE_ENV=production
       - HAMARU_PORT=8789

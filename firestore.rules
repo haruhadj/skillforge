@@ -1,20 +1,40 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read/write their own data
-    match /users/{uid}/{document=**} {
+    // True only when the *caller* already holds the admin role. Reads the caller's
+    // own user doc, so it cannot be spoofed by writing the target document.
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // True when the incoming write does not touch privileged fields. `role` is the
+    // sole admin marker (see app/api/admin/delete-user/route.ts) and must never be
+    // self-assignable; gate any future privilege fields here too.
+    function noPrivilegeEscalation() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+    }
+
+    // Owner has full access to their SUBCOLLECTIONS only (scores, gameStats, …).
+    // This match requires at least one path segment below users/{uid}, so it can
+    // never grant write access to the root profile doc — that is governed solely by
+    // the `match /users/{uid}` block below, which guards the `role` field. Without
+    // this separation, a recursive `{document=**}` rule would let any signed-in user
+    // write `role: 'admin'` onto their own profile and self-escalate to admin.
+    match /users/{uid}/{sub}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // User profiles are readable by anyone (for leaderboards, profile viewing)
-    // Allow authenticated users to create their own profile
-    // Admins can update any user document (e.g. to assign roles)
+    // User profiles are readable by anyone (for leaderboards, profile viewing).
+    // Owners may create/update their own profile but may NOT set or change `role`;
+    // only an existing admin can assign roles.
     match /users/{uid} {
       allow read: if true;
-      allow create: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid &&
+        (!('role' in request.resource.data) || request.resource.data.role != 'admin');
       allow update: if request.auth != null && (
-        request.auth.uid == uid ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        (request.auth.uid == uid && noPrivilegeEscalation()) ||
+        isAdmin()
       );
     }
 
@@ -44,43 +64,37 @@ service cloud.firestore {
     // Games registry - readable by anyone, writable by admins
     match /games/{gameId} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if isAdmin();
     }
 
     // Platform stats - readable by anyone, writable by admins
     match /platform/{docId} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if isAdmin();
     }
 
     // Announcements - readable by anyone, writable by admins
     match /announcements/{announcementId} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if isAdmin();
     }
 
     // Game visibility - readable by anyone, writable by admins
     match /gameVisibility/{gameId} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if isAdmin();
     }
 
     // Game registry - readable by anyone, writable by admins
     match /gameRegistry/{gameId} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if isAdmin();
     }
 
     // Platform config (e.g. OAuth provider toggles) - readable by anyone, writable by admins
     match /config/{docId} {
       allow read: if true;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if isAdmin();
     }
 
     // Materialized leaderboard documents - written only by Admin SDK (server-side), public read

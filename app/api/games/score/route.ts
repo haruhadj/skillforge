@@ -47,6 +47,17 @@ export async function POST(request: NextRequest) {
     if (!Number.isFinite(numScore)) {
       return NextResponse.json({ error: 'Score must be a finite number' }, { status: 400 })
     }
+    // Sanity bounds (audit S3): reject negative and implausibly large scores so a
+    // token holder cannot poison the leaderboard with e.g. 1e9. This guards only
+    // this HTTP route — the canonical in-app path writes via the client SDK, which
+    // still needs the server-authoritative migration (audit S2) to be fully closed.
+    const MAX_SCORE = 1_000_000
+    if (numScore < 0 || numScore > MAX_SCORE) {
+      return NextResponse.json(
+        { error: `Score must be between 0 and ${MAX_SCORE}` },
+        { status: 400 },
+      )
+    }
 
     if (!SUPPORTED_MODES.includes(mode as GameMode)) {
       return NextResponse.json(

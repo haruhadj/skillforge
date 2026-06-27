@@ -45,6 +45,45 @@ const io = new Server(server, {
 
 const rooms = new Map()
 
+// ── DoS hardening (audit H1) ────────────────────────────────────────────
+// Cap concurrent/per-socket rooms, evict idle rooms (clearing their game
+// timers), and throttle connections per IP.
+const MAX_ROOMS = 500
+const MAX_ROOMS_PER_SOCKET = 5
+const ROOM_IDLE_MS = 30 * 60 * 1000
+const REAPER_INTERVAL_MS = 5 * 60 * 1000
+const MAX_CONN_PER_IP = 30
+const CONN_WINDOW_MS = 60 * 1000
+
+const ipConnections = new Map()
+
+io.use((socket, next) => {
+  const ip = socket.handshake.address || 'unknown'
+  const now = Date.now()
+  const recent = (ipConnections.get(ip) || []).filter((t) => now - t < CONN_WINDOW_MS)
+  if (recent.length >= MAX_CONN_PER_IP) return next(new Error('Too many connections'))
+  recent.push(now)
+  ipConnections.set(ip, recent)
+  next()
+})
+
+const roomReaper = setInterval(() => {
+  const now = Date.now()
+  for (const [code, room] of rooms) {
+    if (now - (room.lastActivity || 0) > ROOM_IDLE_MS) {
+      clearRoomTimers(room)
+      io.to(code).emit('room_error', { message: 'Room closed due to inactivity.' })
+      rooms.delete(code)
+    }
+  }
+  for (const [ip, ts] of ipConnections) {
+    const recent = ts.filter((t) => now - t < CONN_WINDOW_MS)
+    if (recent.length === 0) ipConnections.delete(ip)
+    else ipConnections.set(ip, recent)
+  }
+}, REAPER_INTERVAL_MS)
+roomReaper.unref?.()
+
 function hsbToRgb(hsb) {
   const h = hsb.h / 360
   const s = hsb.s / 100
@@ -421,9 +460,20 @@ function leaveRoom(socket, roomCode) {
 
 io.on('connection', (socket) => {
   socket.on('create_room', ({ playerName } = {}) => {
+    if (rooms.size >= MAX_ROOMS) {
+      socket.emit('room_error', { message: 'Server is busy, try again later.' })
+      return
+    }
+    let hosted = 0
+    for (const r of rooms.values()) if (r.hostId === socket.id) hosted++
+    if (hosted >= MAX_ROOMS_PER_SOCKET) {
+      socket.emit('room_error', { message: 'Too many open rooms.' })
+      return
+    }
     const code = generateRoomCode()
     const room = {
       code,
+      lastActivity: Date.now(),
       status: 'LOBBY',
       phase: 'LOBBY',
       round: 1,
@@ -471,6 +521,7 @@ io.on('connection', (socket) => {
       totalScore: 0,
       roundScores: [],
     })
+    room.lastActivity = Date.now()
     socket.join(code)
     socket.data.roomCode = code
     emitSnapshot(room)
@@ -494,6 +545,7 @@ io.on('connection', (socket) => {
     room.status = 'PLAYING'
     room.phase = 'MEMORIZE'
     room.round = 1
+    room.lastActivity = Date.now()
     room.roundHistory = []
     room.summary = null
     room.players = room.players.map((player) => ({ ...player, totalScore: 0, roundScores: [] }))
@@ -513,6 +565,7 @@ io.on('connection', (socket) => {
     }
 
     room.submissions.set(socket.id, safeGuess)
+    room.lastActivity = Date.now()
     emitSnapshot(room)
 
     const allSubmitted = room.players.every((player) => room.submissions.has(player.id))

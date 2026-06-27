@@ -41,6 +41,45 @@ const io = new Server(server, {
 
 const rooms = new Map()
 
+// ── DoS hardening (audit H1) ────────────────────────────────────────────
+// Rooms are keyed by client-supplied ids, so without caps a single client can
+// create unlimited room entries. Cap the global count + rooms a socket may
+// open, evict idle rooms, and throttle connections per IP.
+const MAX_ROOMS = 500
+const MAX_ROOMS_PER_SOCKET = 5
+const ROOM_IDLE_MS = 30 * 60 * 1000
+const REAPER_INTERVAL_MS = 5 * 60 * 1000
+const MAX_CONN_PER_IP = 30
+const CONN_WINDOW_MS = 60 * 1000
+
+const ipConnections = new Map()
+
+io.use((socket, next) => {
+  const ip = socket.handshake.address || 'unknown'
+  const now = Date.now()
+  const recent = (ipConnections.get(ip) || []).filter((t) => now - t < CONN_WINDOW_MS)
+  if (recent.length >= MAX_CONN_PER_IP) return next(new Error('Too many connections'))
+  recent.push(now)
+  ipConnections.set(ip, recent)
+  next()
+})
+
+const roomReaper = setInterval(() => {
+  const now = Date.now()
+  for (const [roomId, room] of rooms) {
+    if (now - (room.lastActivity || 0) > ROOM_IDLE_MS) {
+      io.to(roomId).emit('roomClosed', { reason: 'idle' })
+      rooms.delete(roomId)
+    }
+  }
+  for (const [ip, ts] of ipConnections) {
+    const recent = ts.filter((t) => now - t < CONN_WINDOW_MS)
+    if (recent.length === 0) ipConnections.delete(ip)
+    else ipConnections.set(ip, recent)
+  }
+}, REAPER_INTERVAL_MS)
+roomReaper.unref?.()
+
 function isValidFen(fen) {
   return typeof fen === 'string' && fen.trim().split(/\s+/).length === 6
 }
@@ -72,19 +111,32 @@ io.on('connection', (socket) => {
     const roomId = typeof payload === 'string' ? payload : payload?.roomId
     if (!roomId || typeof roomId !== 'string') return
 
-    socket.join(roomId)
-
     if (!rooms.has(roomId)) {
+      if (rooms.size >= MAX_ROOMS) {
+        socket.emit('roomError', { error: 'Server is busy, try again later' })
+        return
+      }
+      // Count rooms this socket already participates in (its joined rooms minus
+      // its own auto-room) to bound how many a single client can spin up.
+      const joined = [...socket.rooms].filter((r) => r !== socket.id && rooms.has(r)).length
+      if (joined >= MAX_ROOMS_PER_SOCKET) {
+        socket.emit('roomError', { error: 'Too many open rooms' })
+        return
+      }
       rooms.set(roomId, {
         players: {},
         fen: START_FEN,
         gameEnded: false,
         resultMessage: null,
         drawOfferedBy: null,
+        lastActivity: Date.now(),
       })
     }
 
+    socket.join(roomId)
+
     const room = rooms.get(roomId)
+    room.lastActivity = Date.now()
     if (!isValidFen(room.fen)) {
       room.fen = START_FEN
     }
@@ -129,6 +181,7 @@ io.on('connection', (socket) => {
     if (!room || room.gameEnded) return
 
     room.fen = isValidFen(fen) ? fen : START_FEN
+    room.lastActivity = Date.now()
     if (room.drawOfferedBy) {
       room.drawOfferedBy = null
       io.to(roomId).emit('drawOfferCleared')
