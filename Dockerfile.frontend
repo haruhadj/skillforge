@@ -6,11 +6,12 @@ WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
 
-COPY package.json ./
+COPY package.json package-lock.json ./
+# npm ci installs exactly from the lockfile for reproducible builds.
 # --ignore-scripts prevents agentic-flow's native deps (hnswlib-node,
 # better-sqlite3) from trying to compile — alpine has no build toolchain
 # and the Next.js app never imports those packages anyway.
-RUN npm install --legacy-peer-deps --ignore-scripts
+RUN npm ci --legacy-peer-deps --ignore-scripts
 
 # Builder stage
 FROM --platform=$BUILDPLATFORM base AS builder

@@ -82,7 +82,7 @@ The file `public/games/<game-id>/index.html` must exist.
      base: './',   // REQUIRED — do not omit
    })
    ```
-2. Build the game: `pnpm run build` (or `npm run build`)
+2. Build the game: `npm run build`
 3. Copy the contents of `dist/` (not the folder itself) to `public/games/<game-id>/`:
    ```powershell
    New-Item -ItemType Directory -Force -Path public\games\<game-id>

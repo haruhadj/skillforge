@@ -20,7 +20,7 @@ Every game has **two** locations — one rule keeps them in sync:
 - Only `games-src/**/node_modules/` and `games-src/*/{dist,build}/` are git-ignored — that's the actual bloat — so committed source stays tiny. Heavy binary assets → Git LFS (already configured).
 - `games-src/` is **docker-ignored** → the frontend image (its builder does `COPY . .`) ships only the published artifacts under `public/`, not source or deps.
 
-> ℹ️ Each game under `games-src/` is its own **isolated** mini-project. **Game source is built with npm, never pnpm** — `build-game.sh` runs `npm install` + `npm run build` inside the game folder (its own local `package-lock.json` + `node_modules`), so a game's pinned React/Vite versions never collide with the main app or touch the root `pnpm-lock.yaml`/workspace. pnpm remains the package manager for the main app; npm is used **only** for building game source. See [Why npm, not pnpm](#why-npm-not-pnpm-for-game-source) below.
+> ℹ️ Each game under `games-src/` is its own **isolated** mini-project. `build-game.sh` runs `npm install` + `npm run build` inside the game folder (its own local `package-lock.json` + `node_modules`), so a game's pinned React/Vite versions never collide with the main app's lockfile. See [Per-game isolated installs](#per-game-isolated-installs) below.
 
 ---
 
@@ -28,9 +28,9 @@ Every game has **two** locations — one rule keeps them in sync:
 
 | Command | Does |
 |---|---|
-| `pnpm game:new <id> ["Display Name"]` | Scaffold a new **no-build** static game at `games-src/<id>/`, pre-wired with the score/stats postMessage contract. |
-| `pnpm game:build <id>` | Build `games-src/<id>/` and publish into `public/games/<id>/`. |
-| `pnpm game:build:all` | Rebuild & publish **every** game under `games-src/`. |
+| `npm run game:new <id> ["Display Name"]` | Scaffold a new **no-build** static game at `games-src/<id>/`, pre-wired with the score/stats postMessage contract. |
+| `npm run game:build <id>` | Build `games-src/<id>/` and publish into `public/games/<id>/`. |
+| `npm run game:build:all` | Rebuild & publish **every** game under `games-src/`. |
 
 A game is **buildable** when `games-src/<id>/package.json` exists (Vite/Node): the script runs its build and publishes `dist/` (or `build/`). Otherwise it is a **static** game and the folder is published as-is. A curated `cover.png` already present in `public/games/<id>/` is preserved across rebuilds.
 
@@ -38,13 +38,15 @@ A game is **buildable** when `games-src/<id>/package.json` exists (Vite/Node): t
 
 ---
 
-### Why npm, not pnpm (for game source)
+### Per-game isolated installs
 
-Build game source with **npm** (`npm install` / `npm run build`) inside `games-src/<id>/`. The `pnpm game:*` commands above are root scripts for convenience, but they shell out to `build-game.sh`, which uses **npm** for the per-game install + build.
+The whole repo uses **npm**. Each game under `games-src/<id>/` keeps its **own** local
+`package-lock.json` + `node_modules`, separate from the main app. `build-game.sh` runs
+`npm install` + `npm run build` inside the game folder, so a game's pinned React/Vite
+versions never collide with the main app's dependency tree. The `npm run game:*` commands
+above are root scripts that shell out to `build-game.sh`.
 
-Why not pnpm: pnpm v11 blocks dependency **build scripts** by default and aborts with `ERR_PNPM_IGNORED_BUILDS`. That can't be overridden under `--ignore-workspace` (the isolation flag a per-game install needs — it makes pnpm ignore the local `pnpm-workspace.yaml` where the approval would live), and it breaks every Vite game, because Vite's bundler (**esbuild**) ships its platform binary via a postinstall script. **npm runs build scripts by default**, so these games build cleanly, and `npm install` is naturally isolated — a local `package-lock.json` + `node_modules` that never rewrites the root pnpm lockfile/workspace.
-
-**Rule:** never run `pnpm install` or `pnpm run build` inside `games-src/<id>/`. If you build or debug a game by hand, use npm:
+If you build or debug a game by hand, run npm from inside the game folder:
 
 ```bash
 cd games-src/<id>
@@ -52,16 +54,14 @@ npm install
 npm run build
 ```
 
-pnpm stays the package manager for everything else — the main Next.js app, `pnpm dev`, `pnpm test`, etc.
-
 ---
 
 ## Path A — author a new game in-repo (no build step)
 
 ```bash
-pnpm game:new memory-flip "Memory Flip"   # creates games-src/memory-flip/index.html
+npm run game:new memory-flip "Memory Flip"   # creates games-src/memory-flip/index.html
 #   ... edit games-src/memory-flip/index.html ...
-pnpm game:build memory-flip               # publishes -> public/games/memory-flip/
+npm run game:build memory-flip               # publishes -> public/games/memory-flip/
 ```
 
 The scaffold already wires the iframe contract (sends `BEST_SCORE` + `GAME_STATS`, listens for `PLAYER_INFO`). Replace the demo gameplay with your own. Then **register** it (see below).
@@ -80,7 +80,7 @@ The scaffold already wires the iframe contract (sends `BEST_SCORE` + `GAME_STATS
    ```
 3. Publish (installs with **npm** if needed, builds, copies `dist/*` → `public/games/<id>/`):
    ```bash
-   pnpm game:build <id>   # root script → build-game.sh → npm install + npm run build
+   npm run game:build <id>   # root script → build-game.sh → npm install + npm run build
    ```
 
 Then **register** it (see below).
@@ -107,7 +107,7 @@ The `id` is also the Firestore document id: `users/{uid}/scores/{id}` and `users
 
 ## Score / stats data collection (postMessage)
 
-The iframe game must send score/stats to the parent app (`PlayGameClient.tsx`) via `postMessage`. The `pnpm game:new` scaffold already includes this; for an external build, wire it into the game source. See `scripts/GAME_DATA_COLLECTION_PROMPT.md` for full code templates.
+The iframe game must send score/stats to the parent app (`PlayGameClient.tsx`) via `postMessage`. The `npm run game:new` scaffold already includes this; for an external build, wire it into the game source. See `scripts/GAME_DATA_COLLECTION_PROMPT.md` for full code templates.
 
 ### Complete message reference
 
@@ -188,7 +188,7 @@ const socket = io(`http://${window.location.hostname}:3001`, { path: '/my-game-w
 
 ### Install server deps & env
 ```bash
-cd server && pnpm install
+cd server && npm install
 cp .env.example .env   # fill in keys
 ```
 
@@ -197,9 +197,9 @@ cp .env.example .env   # fill in keys
 ## Running locally
 
 ```bash
-pnpm dev          # next dev + all backend servers
-pnpm dev:client   # next dev only
-pnpm dev:servers  # backend servers only
+npm run dev          # next dev + all backend servers
+npm run dev:client   # next dev only
+npm run dev:servers  # backend servers only
 ```
 Dev server: `http://localhost:3000`
 
@@ -209,7 +209,7 @@ Dev server: `http://localhost:3000`
 
 ```bash
 #   ... edit games-src/<id>/... ...
-pnpm game:build <id>     # republish to public/games/<id>/
+npm run game:build <id>     # republish to public/games/<id>/
 # hard-refresh the browser, then commit public/games/<id>/
 ```
 
@@ -220,7 +220,7 @@ pnpm game:build <id>     # republish to public/games/<id>/
 Built artifacts under `public/games/` are committed and baked into the frontend image by `scripts/build-push.sh` (builds linux/arm64, pushes to GHCR; the Pi only pulls + runs). So the full path to production is:
 
 ```bash
-pnpm game:build <id>            # 1. publish artifact
+npm run game:build <id>            # 1. publish artifact
 #   ... register in app/games/games.ts ...
 git add public/games/<id> app/games/games.ts && git commit   # 2. commit artifact + registry
 ./scripts/build-push.sh         # 3. build & push image
@@ -235,13 +235,12 @@ There is **no** game-specific deploy step — `games-src/` is excluded from the 
 | Problem | Cause | Fix |
 |---|---|---|
 | Blank page in iframe | Asset paths are absolute (`/assets/...`) | Set `base: './'` in the game's Vite config and rebuild |
-| `pnpm game:build` says "no source folder" | Building before scaffolding/dropping source | Create `games-src/<id>/` first (`pnpm game:new` or drop an export) |
+| `npm run game:build` says "no source folder" | Building before scaffolding/dropping source | Create `games-src/<id>/` first (`npm run game:new` or drop an export) |
 | Build runs but "no dist/ or build/ output" | Game's build emits to a different dir | Make its build output `dist/` (Vite default) or `build/` |
-| `ERR_PNPM_IGNORED_BUILDS` during a game build | Game source was built with pnpm | Build game source with **npm** — `build-game.sh` already does; by hand run `npm install` + `npm run build` in `games-src/<id>/`. See [Why npm, not pnpm](#why-npm-not-pnpm-for-game-source) |
 | `cover.png` disappears after rebuild | Build doesn't emit a cover | Keep the cover in the game's own `public/cover.png` (Vite copies it), or it's auto-preserved if it already exists in `public/games/<id>/` |
 | API calls fail (404) | Next.js rewrite not configured | Add a rewrite in `next.config.js` |
 | WebSocket won't connect | CORS blocking | Update socket server CORS to allow the app's origin |
-| Game shows old version | Browser cache | Hard-refresh; `pnpm game:build` already wipes & republishes the folder |
+| Game shows old version | Browser cache | Hard-refresh; `npm run game:build` already wipes & republishes the folder |
 | Score not saving | `BEST_SCORE` message wrong shape | Verify `type:'GAME_EVENT'`, `event:'BEST_SCORE'`, `data.bestScore` is a number |
 | Matches always shows `-` | `totalGames` not in `GAME_STATS` payload | Add the `totalGames` counter to the game's `GAME_STATS` message |
 | postMessage silently ignored | Origin mismatch | Game files must be in `public/games/`, served same-origin as Next.js |
@@ -257,8 +256,8 @@ skillforge/
 ├── public/games/                    ← ⭐ published artifacts (committed, served as iframes)
 │   └── <id>/index.html
 ├── scripts/
-│   ├── new-game.sh                  ← scaffold games-src/<id>/ (pnpm game:new)
-│   ├── build-game.sh                ← build & publish (pnpm game:build / :all)
+│   ├── new-game.sh                  ← scaffold games-src/<id>/ (npm run game:new)
+│   ├── build-game.sh                ← build & publish (npm run game:build / :all)
 │   └── GAME_DATA_COLLECTION_PROMPT.md
 ├── app/
 │   ├── games/games.ts              ← ⭐ game registry (edit this to add games)

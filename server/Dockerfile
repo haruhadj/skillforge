@@ -1,10 +1,10 @@
 FROM node:22-alpine
 WORKDIR /app
 
-# Copy server package.json
-COPY server/package.json ./
+# Copy server manifest + lockfile for a reproducible install
+COPY server/package.json server/package-lock.json ./
 
-RUN npm install --omit=dev --legacy-peer-deps
+RUN npm ci --omit=dev --legacy-peer-deps
 
 # Copy server source code (wordnet db mounted as volume in compose)
 COPY server/games ./server/games

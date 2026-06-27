@@ -16,7 +16,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "agentic-flow": "^2.0.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.6",
@@ -49,7 +48,7 @@
     "firebase-tools": "^15.11.0",
     "globals": "^17.6.0",
     "jsdom": "^29.0.1",
-    "postcss": "^8.5.3",
+    "postcss": "^8.5.10",
     "shadcn": "^4.11.0",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.8.3",

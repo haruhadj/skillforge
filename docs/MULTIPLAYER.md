@@ -20,7 +20,7 @@ Player A (Browser)                   Player B (Browser)
                     (Express + Socket.IO, port 3001)
 ```
 
-During **development** (`pnpm run dev`), Next.js rewrites/proxies the WebSocket paths, so both players connect through `http://localhost:3000`.  
+During **development** (`npm run dev`), Next.js rewrites/proxies the WebSocket paths, so both players connect through `http://localhost:3000`.  
 In **production / LAN play**, the socket server must be reachable directly (or via the Nginx reverse proxy) at the same origin.
 
 ## Tic Tac Toe — Room-Based Multiplayer
@@ -64,7 +64,7 @@ If either player disconnects at any point, the other player receives an `opponen
 The socket server starts automatically when you run:
 
 ```bash
-pnpm run dev          # starts next dev + all backend servers together
+npm run dev          # starts next dev + all backend servers together
 ```
 
 To start only the socket server in isolation:
@@ -73,7 +73,7 @@ To start only the socket server in isolation:
 cd server
 node games/tictactoe/socket-server.js
 # or
-pnpm run tictactoe
+npm run tictactoe
 ```
 
 The server listens on **port 3001** by default. You can override this with the `TICTACTOE_PORT` environment variable.
@@ -83,7 +83,7 @@ The server listens on **port 3001** by default. You can override this with the `
 To play across two different machines on the same network:
 
 1. Find the host machine's LAN IP (e.g. `192.168.1.10`).
-2. Start the dev server on the host: `pnpm run dev`
+2. Start the dev server on the host: `npm run dev`
 3. On the second machine, open `http://192.168.1.10:3000` in a browser.
 4. Both browsers connect through the same Next.js dev server which proxies WebSocket paths to the socket servers.
 

@@ -20,24 +20,24 @@ An educational gaming platform where users log in, play skill-based games, and t
 | Styling | Tailwind CSS v4 |
 | Auth & Database | Firebase 12 (Auth + Firestore + Storage) |
 | Real-time | Socket.IO (Chess, Tic Tac Toe, Chroma Memory) |
-| Package manager | pnpm |
+| Package manager | npm |
 | Runtime | Node.js 24 |
 
 ## Getting Started
 
-**Prerequisites:** Node.js 22+, pnpm
+**Prerequisites:** Node.js 22+, npm
 
 ```bash
 # Clone and install
 git clone https://github.com/haruhadj/skillforge.git
 cd skillforge
-pnpm install
+npm install
 
 # Set up environment variables
 cp .env.example .env.local   # then fill in your Firebase config
 
 # Start development server (Next.js + all game servers)
-pnpm dev
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -68,13 +68,13 @@ TICTACTOE_PORT=3001
 ## Scripts
 
 ```bash
-pnpm dev           # Next.js dev server + all game servers
-pnpm dev:client    # Next.js only
-pnpm dev:servers   # Game servers only
-pnpm build         # Production build
-pnpm start         # Start production server
-pnpm test          # Run tests (Vitest)
-pnpm lint          # ESLint
+npm run dev          # Next.js dev server + all game servers
+npm run dev:client   # Next.js only
+npm run dev:servers  # Game servers only
+npm run build        # Production build
+npm start            # Start production server
+npm test             # Run tests (Vitest)
+npm run lint         # ESLint
 ```
 
 ## Project Structure
