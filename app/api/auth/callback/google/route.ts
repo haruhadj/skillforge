@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
   }
 
   const googleUser = await userInfoRes.json()
-  const { email, name, picture, id: googleId } = googleUser
+  const { email, verified_email, name, picture, id: googleId } = googleUser
 
   if (!email) {
     return NextResponse.redirect(`${appUrl}/?error=google_no_email`)
@@ -63,7 +63,11 @@ export async function GET(request: NextRequest) {
   const profile: OAuthProfile = {
     provider: 'google',
     providerId: String(googleId),
-    email,
+    // Only trust the email for account unification when Google says it is
+    // verified. An unverified address must NOT be allowed to unify onto — and
+    // thereby take over — an existing account, so fall back to keying by the
+    // provider id (null email), exactly like the no-email providers.
+    email: verified_email === true ? email : null,
     displayName: name,
     photoURL: picture,
   }
