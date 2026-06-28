@@ -35,10 +35,12 @@ const {
 
 const app = express();
 
-// CORS - allow requests from game clients
+// CORS — restrict to the app's own origins, kept in sync with the sibling REST
+// servers (hamaru/spelling-bee). The game is served same-origin via the nginx
+// /api/ proxy, so this is config hygiene rather than the live boundary.
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://skillforge.haruhadj.duckdns.org', 'https://haruhadj.github.io']
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://skillforge.haruhadj.org', 'https://skillforge.haruhadj.duckdns.org', 'https://haruhadj.github.io']
     : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4173', 'http://127.0.0.1:5173'],
   credentials: true
 }));
@@ -75,6 +77,22 @@ const apiLimiter = rateLimit({
 });
 
 app.use('/api', apiLimiter);
+
+// Stricter bucket for the query-amplifying endpoints. Each /words or /wordpairs
+// request fans out into dozens of ORDER BY RANDOM() full-scan joins over a large
+// SQLite DB on the synchronous event-loop thread, so the flat 120/min budget is
+// too generous for them. Mirrors the dedicated TTS limiter in spelling-bee.
+const heavyLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  limit: 20, // 20 heavy requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' }
+});
+
+app.use('/api/vocab/words', heavyLimiter);
+app.use('/api/vocab/wordpairs', heavyLimiter);
+
 app.use(express.json({ limit: '16kb' }));
 
 // ── Routes ───────────────────────────────────────────────────────────────
@@ -131,8 +149,8 @@ app.get('/api/vocab/words', (req, res) => {
       ? req.query.difficulty
       : 'medium';
     
-    // Validate count (1-25)
-    const count = Math.min(25, Math.max(1, parseInt(req.query.count || '10', 10)));
+    // Validate count (1-15) — caps the per-request ORDER BY RANDOM() fan-out
+    const count = Math.min(15, Math.max(1, parseInt(req.query.count || '10', 10)));
     
     const questions = generateQuizQuestions(difficulty, count);
     
@@ -227,8 +245,8 @@ app.get('/api/vocab/wordpairs', (req, res) => {
       ? req.query.difficulty
       : 'medium';
     
-    // Validate count (5-50)
-    const count = Math.min(50, Math.max(5, parseInt(req.query.count || '20', 10)));
+    // Validate count (5-30) — caps the per-request ORDER BY RANDOM() fan-out
+    const count = Math.min(30, Math.max(5, parseInt(req.query.count || '20', 10)));
     
     const pairs = generateWordPairs(difficulty, count);
     

@@ -51,6 +51,11 @@ const ROOM_IDLE_MS = 30 * 60 * 1000
 const REAPER_INTERVAL_MS = 5 * 60 * 1000
 const MAX_CONN_PER_IP = 30
 const CONN_WINDOW_MS = 60 * 1000
+// Per-socket flood guard: generous burst cap, well above any legitimate play
+// cadence (incl. blitz), so it only trips on actual event spam.
+const EVENT_BURST = 50
+const EVENT_BURST_MS = 5 * 1000
+const MAX_ROOM_ID_LEN = 64
 
 const ipConnections = new Map()
 
@@ -59,7 +64,13 @@ const ipConnections = new Map()
 // client IP from X-Forwarded-For (nginx sets it on the *-ws/ locations).
 function clientIp(socket) {
   const xff = socket.handshake.headers['x-forwarded-for']
-  if (xff) return String(xff).split(',')[0].trim()
+  // nginx ($proxy_add_x_forwarded_for) APPENDS the real peer as the last entry;
+  // earlier entries are client-supplied and spoofable. With a single trusted proxy
+  // in front (compose only exposes these via nginx), the last hop is the real client IP.
+  if (xff) {
+    const parts = String(xff).split(',')
+    return parts[parts.length - 1].trim()
+  }
   return socket.handshake.address || 'unknown'
 }
 
@@ -89,6 +100,16 @@ const roomReaper = setInterval(() => {
 }, REAPER_INTERVAL_MS)
 roomReaper.unref?.()
 
+// Returns true once a socket exceeds EVENT_BURST events in the trailing window.
+// Keeps only in-window timestamps so the array can't grow without bound.
+function tooFast(socket) {
+  const now = Date.now()
+  const times = (socket._evtTimes || []).filter((t) => now - t < EVENT_BURST_MS)
+  times.push(now)
+  socket._evtTimes = times
+  return times.length > EVENT_BURST
+}
+
 function isValidFen(fen) {
   return typeof fen === 'string' && fen.trim().split(/\s+/).length === 6
 }
@@ -117,8 +138,11 @@ io.on('connection', (socket) => {
   console.log('[Chess] Player connected:', socket.id)
 
   socket.on('joinRoom', (payload) => {
+    if (tooFast(socket)) return
     const roomId = typeof payload === 'string' ? payload : payload?.roomId
     if (!roomId || typeof roomId !== 'string') return
+    // Cap the client-supplied id before it becomes a Map key.
+    if (roomId.length > MAX_ROOM_ID_LEN) return
 
     if (!rooms.has(roomId)) {
       if (rooms.size >= MAX_ROOMS) {
@@ -217,6 +241,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('offerDraw', (roomId) => {
+    if (tooFast(socket)) return
     const room = rooms.get(roomId)
     if (!room || room.gameEnded) return
     if (!room.players[socket.id]) return
@@ -230,6 +255,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('cancelDrawOffer', (roomId) => {
+    if (tooFast(socket)) return
     const room = rooms.get(roomId)
     if (!room || room.gameEnded) return
     if (room.drawOfferedBy !== socket.id) return

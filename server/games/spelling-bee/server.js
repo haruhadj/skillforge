@@ -84,7 +84,10 @@ function getWordNetWords(difficulty, limit) {
   }
 }
 
-const ttsCache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
+// maxKeys bounds memory: distinct (mode:text) requests can't grow the cache without
+// limit inside the 10-min TTL. NodeCache throws on insert past maxKeys, so the set
+// below is guarded and degrades to "compute without caching" when full.
+const ttsCache = new NodeCache({ stdTTL: 600, checkperiod: 120, maxKeys: 1000 });
 
 // ── Microsoft Edge TTS ───────────────────────────────────────────────────
 function streamToBuffer(readable) {
@@ -283,7 +286,11 @@ app.get('/api/tts', async (req, res) => {
 
   try {
     const audioBuffer = await synthesizeSpeech(text, mode);
-    ttsCache.set(cacheKey, audioBuffer);
+    try {
+      ttsCache.set(cacheKey, audioBuffer);
+    } catch {
+      // Cache full (maxKeys reached): serve this response uncached rather than erroring.
+    }
     res.set('Content-Type', 'audio/mp3');
     res.send(audioBuffer);
   } catch (err) {

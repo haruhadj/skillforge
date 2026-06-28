@@ -41,10 +41,11 @@ app.use(
     origin:
       NODE_ENV === 'production'
         ? [
-            // Keep in sync with the sibling game servers (chess/tictactoe/chroma/
-            // vocab) which all allow the duckdns prod origin too (audit H3).
+            // Keep in sync with the sibling REST servers (vocab/spelling-bee) so the
+            // prod origin allowlist matches across all game servers (audit H3/R10-5).
             'https://skillforge.haruhadj.org',
             'https://skillforge.haruhadj.duckdns.org',
+            'https://haruhadj.github.io',
           ]
         : [
             'http://localhost:3000',
