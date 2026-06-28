@@ -117,6 +117,39 @@ to the **frontend** runtime `environment:` block (the route returns 500 without 
 
 ---
 
+## DEPLOY — latent bugs surfaced during the round-9 rollout
+
+This was the first prod deploy that actually enforced the `service_healthy` gating added in
+round 7 (R7-6), which exposed two pre-existing healthcheck bugs. Neither is caused by the
+round-9 code; both block startup once the gating is live.
+
+### R9-5. Next standalone never listened on loopback → frontend healthcheck failed — ✅ FIXED
+**Files:** `docker-compose.prod.yml`, `Dockerfile.frontend`
+
+**Verified:** the frontend logged `✓ Ready` and nginx could proxy to it, yet the container was
+`unhealthy`. Next's standalone server (`node server.js`) binds to `$HOSTNAME`, which Docker
+defaults to the container ID — so it listened on eth0 (reachable by nginx via the service name)
+but **not** on `127.0.0.1`, and the R7-6 TCP healthcheck (`connect(3000,'127.0.0.1')`) was
+refused. With nginx + cron gated on `frontend: service_healthy`, the whole stack stalled.
+
+**Fixed:** set `HOSTNAME=0.0.0.0` (+ `PORT=3000`) in the frontend compose `environment:`
+(runtime fix — the standalone server reads it on boot, no rebuild needed) and in
+`Dockerfile.frontend` (so future CI builds bake it in). This is the canonical Next.js standalone
+Docker binding.
+
+### R9-6. nginx healthcheck used `localhost` → resolved to IPv6 ::1 → refused — ✅ FIXED
+**File:** `docker-compose.prod.yml`
+
+**Verified:** nginx served fine on port 1234, but its healthcheck (`wget http://localhost:80/healthz`)
+reported `connection refused`. Inside the container `localhost` resolves to IPv6 `::1` first, but
+nginx only listens on IPv4 (`listen 80`). Confirmed on the Pi: `wget http://127.0.0.1/healthz`
+→ `ok` (exit 0); `wget http://localhost/healthz` → refused (exit 1).
+
+**Fixed:** pinned the probe to `http://127.0.0.1:80/healthz` (runtime fix; recreate nginx, no
+rebuild). The `/healthz` location itself (R7-8) was already correct.
+
+---
+
 ## Fresh sweep — checked, no new finding
 - `/api/games/score` — verified-token uid, registry-checked gameId, finite `0..1e6` bound,
   `SUPPORTED_MODES` enum, per-uid throttle; best score only overwrites when strictly higher.
@@ -155,6 +188,8 @@ Done this round (2026-06-28):
   [x] R9-2 — scores subcollection locked read-only in firestore.rules (S2 — DEPLOY rules)
   [x] R9-3 — referrerPolicy="no-referrer" on every avatar img (photoURL referrer leak)
   [x] R9-4 — hourly leaderboard recompute cron + INTERNAL_API_SECRET on frontend
+  [x] R9-5 — frontend binds 0.0.0.0 so the loopback healthcheck passes (deploy fix)
+  [x] R9-6 — nginx healthcheck uses 127.0.0.1, not IPv6-resolving localhost (deploy fix)
 
 Next workstream:
   [ ] S2-b — server progress API, then lock gameStats writes in the rules
