@@ -138,7 +138,7 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
             <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden ring-2 ring-border shrink-0 bg-primary flex items-center justify-center text-primary-foreground text-2xl font-bold">
               {photoURL ? (
-                <img src={photoURL} alt={name} className="h-full w-full object-cover" />
+                <img src={photoURL} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
               ) : (
                 initials
               )}

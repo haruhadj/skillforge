@@ -135,7 +135,7 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 p-0 ring-2 ring-border hover:ring-primary/50 transition-all">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src={avatarURL ?? undefined} alt={name} />
+                  <AvatarImage src={avatarURL ?? undefined} alt={name} referrerPolicy="no-referrer" />
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">{initials}</AvatarFallback>
                 </Avatar>
               </Button>

@@ -272,7 +272,7 @@ export default function AdminUsersTab() {
                 {/* Avatar */}
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {user.photoThumbURL || user.photoURL ? (
-                    <img src={user.photoThumbURL || user.photoURL} alt="" className="h-10 w-10 rounded-full object-cover shrink-0" />
+                    <img src={user.photoThumbURL || user.photoURL} alt="" referrerPolicy="no-referrer" className="h-10 w-10 rounded-full object-cover shrink-0" />
                   ) : (
                     <div className="h-10 w-10 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white text-xs font-semibold shrink-0">
                       {initials}

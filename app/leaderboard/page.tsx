@@ -111,7 +111,7 @@ function Podium({ top3, profiles, currentUser }: {
                     <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-xl select-none z-10">👑</span>
                   )}
                   <Avatar className={`${pp.avatarSize} ring-2 ${pp.ring} ring-offset-2 ring-offset-background group-hover:scale-105 transition-transform ${pp.glow} ${isMe ? 'ring-primary' : ''}`}>
-                    <AvatarImage src={profile?.photoThumbURL} />
+                    <AvatarImage src={profile?.photoThumbURL} referrerPolicy="no-referrer" />
                     <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </div>
@@ -276,7 +276,7 @@ export default function LeaderboardPage() {
 
                         <Link href={isMe ? '/profile' : `/profile/${row.uid}`} className="shrink-0">
                           <Avatar className={`h-10 w-10 ring-1 ${ringClass} ring-offset-1 ring-offset-background hover:scale-105 transition-transform`}>
-                            <AvatarImage src={profile?.photoThumbURL} />
+                            <AvatarImage src={profile?.photoThumbURL} referrerPolicy="no-referrer" />
                             <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
                           </Avatar>
                         </Link>

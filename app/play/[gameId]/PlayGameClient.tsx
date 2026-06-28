@@ -6,18 +6,14 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import { defaultGames } from '@/app/games/games'
 import {
-  saveBestScore,
   saveGameStats,
-  saveModeScoreStats,
   getGameStats,
 } from '@/app/services/gameDataService'
 import { Game } from '@/app/types'
 
-// Mirror the server route's bound (`app/api/games/score/route.ts` MAX_SCORE) so the
-// client-SDK write paths below can't poison the client-computed leaderboard with
-// NaN/negative/implausibly-large values from a crafted postMessage or a buggy game.
-// Stopgap: the eventual server-authoritative migration (audit S2) supersedes these
-// guards by routing all score writes through the verified-token HTTP endpoint.
+// Mirror the server route's bound (`app/api/games/score/route.ts` MAX_SCORE) so a
+// non-finite/out-of-range value from a crafted postMessage or a buggy game is dropped
+// before it ever reaches the wire (the server route clamps again authoritatively).
 const MAX_SCORE = 1_000_000
 
 // Returns a finite score clamped to 0..MAX_SCORE, or null for non-finite input
@@ -28,20 +24,52 @@ function clampScore(value: unknown): number | null {
   return Math.min(Math.max(n, 0), MAX_SCORE)
 }
 
-// Sanitize a free-form stats blob before it is written to gameStats: any numeric
-// score-like field is clamped through clampScore (dropped if non-finite); all other
-// fields (progress/resume data) pass through untouched.
+// S2: route every leaderboard-relevant score write through the server-authoritative
+// endpoint (verified ID token, gameId allowlist, range clamp, mode enum, per-uid rate
+// limit) instead of writing users/{uid}/scores + gameStats directly via the client SDK.
+// Fire-and-forget: a failed score write must never block gameplay.
+async function postScore(
+  getToken: () => Promise<string>,
+  gameId: string,
+  score: number,
+  mode = 'singleplayer',
+): Promise<void> {
+  try {
+    const token = await getToken()
+    await fetch('/api/games/score', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ gameId, score, mode }),
+    })
+  } catch {
+    /* score write failure is non-fatal */
+  }
+}
+
+// Score-like fields a game may report inside a free-form stats blob.
 const SCORE_LIKE_KEYS = ['bestScore', 'score', 'lastScore']
-function sanitizeStatsBlob(data: unknown): Record<string, unknown> {
-  if (!data || typeof data !== 'object') return {}
-  const out: Record<string, unknown> = { ...(data as Record<string, unknown>) }
+
+// Pull the first finite score-like value out of a stats blob (for the server-routed
+// leaderboard write), or null if the blob carries no score.
+function extractScore(data: Record<string, unknown>): number | null {
   for (const key of SCORE_LIKE_KEYS) {
-    if (key in out) {
-      const clamped = clampScore(out[key])
-      if (clamped == null) delete out[key]
-      else out[key] = clamped
+    if (key in data) {
+      const clamped = clampScore(data[key])
+      if (clamped != null) return clamped
     }
   }
+  return null
+}
+
+// Drop the score-like keys (they go through the server route) and keep only the
+// progress/resume fields, which the client SDK still persists for REQUEST_PROGRESS.
+function progressBlob(data: unknown): Record<string, unknown> {
+  if (!data || typeof data !== 'object') return {}
+  const out: Record<string, unknown> = { ...(data as Record<string, unknown>) }
+  for (const key of SCORE_LIKE_KEYS) delete out[key]
   return out
 }
 
@@ -150,12 +178,10 @@ export default function PlayGameClient() {
       if (msg.type === 'gameScore' && msg.gameId === 'jose-rizal') {
         const score = clampScore(msg.score)
         if (score == null) return
-        saveBestScore(uid, 'jose-rizal', score)
-        getGameStats(uid, 'jose-rizal').then((existing) => {
-          const prev = existing as Record<string, unknown> | null
-          const totalGames = (Number((prev?.totalGames as number) || 0)) + 1
-          saveGameStats(uid, 'jose-rizal', { ...(prev || {}), totalGames })
-        })
+        // S2: best score + weighted stats are written server-side. The former custom
+        // `totalGames` counter is dropped — it never fed the leaderboard composite;
+        // buildWeightedModeStats (server route) tracks per-mode play counts instead.
+        postScore(() => authedUser.getIdToken(), 'jose-rizal', score)
         return
       }
 
@@ -165,9 +191,8 @@ export default function PlayGameClient() {
         if (gameId === 'chroma-memory') return
         const bestScore = clampScore(msg.data?.bestScore)
         if (bestScore == null) return
-        saveBestScore(uid, gameId, bestScore)
-        // Also save game stats for leaderboard
-        saveModeScoreStats(uid, gameId, 'singleplayer', bestScore)
+        // S2: server route writes both scores + weighted gameStats.
+        postScore(() => authedUser.getIdToken(), gameId, bestScore, 'singleplayer')
       }
 
       if (msg.event === 'GAME_STATS') {
@@ -178,19 +203,27 @@ export default function PlayGameClient() {
             ?? msg.data?.score
             ?? msg.data?.averageScore
             ?? msg.data?.finalScore
-          const score = Number(rawScore)
-
-          if (Number.isNaN(score)) {
-            return
-          }
-
-          const clamped = clampScore(score)
+          const clamped = clampScore(rawScore)
           if (clamped == null) return
-          saveModeScoreStats(uid, gameId, normalizedMode, clamped)
-          saveBestScore(uid, gameId, clamped)
+          // S2: server route writes both scores + weighted gameStats.
+          postScore(() => authedUser.getIdToken(), gameId, clamped, normalizedMode)
           return
         }
-        saveGameStats(uid, gameId, sanitizeStatsBlob(msg.data))
+        // S2: the leaderboard-relevant score (if any) goes through the server route;
+        // the remaining progress/resume fields are still persisted client-side so
+        // REQUEST_PROGRESS can restore them.
+        const score = extractScore(
+          (msg.data && typeof msg.data === 'object') ? (msg.data as Record<string, unknown>) : {},
+        )
+        if (score != null) {
+          postScore(() => authedUser.getIdToken(), gameId, score, 'singleplayer')
+        }
+        // S2-b: gameStats resume blob is still client-writable — lock once a progress
+        // API exists. Score-like keys are stripped so they can't bypass the route.
+        const progress = progressBlob(msg.data)
+        if (Object.keys(progress).length > 0) {
+          saveGameStats(uid, gameId, progress)
+        }
       }
 
       // Per-quiz community analytics for the Philippine Trivia game. Best-effort:

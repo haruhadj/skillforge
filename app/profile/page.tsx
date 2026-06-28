@@ -227,7 +227,7 @@ export default function ProfilePage() {
                   className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden group cursor-pointer shrink-0 ring-2 ring-border hover:ring-primary/50 transition-all"
                 >
                   {photoURL ? (
-                    <img src={photoURL} alt={name} className="h-full w-full object-cover" />
+                    <img src={photoURL} alt={name} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
                   ) : (
                     <div className="h-full w-full bg-primary flex items-center justify-center text-primary-foreground text-2xl font-bold">{initials}</div>
                   )}

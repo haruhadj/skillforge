@@ -15,12 +15,29 @@ service cloud.firestore {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
     }
 
-    // Owner has full access to their SUBCOLLECTIONS only (scores, gameStats, …).
-    // This match requires at least one path segment below users/{uid}, so it can
-    // never grant write access to the root profile doc — that is governed solely by
-    // the `match /users/{uid}` block below, which guards the `role` field. Without
-    // this separation, a recursive `{document=**}` rule would let any signed-in user
-    // write `role: 'admin'` onto their own profile and self-escalate to admin.
+    // Owner subcollection access. These matches require at least one path segment
+    // below users/{uid}, so they can never grant write access to the root profile doc
+    // — that is governed solely by the `match /users/{uid}` block below, which guards
+    // the `role` field. Without this separation, a recursive `{document=**}` rule would
+    // let any signed-in user write `role: 'admin'` onto their own profile.
+    //
+    // S2: scores are SERVER-AUTHORITATIVE. The client may read its own scores, but the
+    // only write path is /api/games/score (Admin SDK, which bypasses these rules after
+    // verifying the ID token + clamping the value). With no client `allow write` here, a
+    // direct client-SDK setDoc to scores/{gameId} is denied — closing the leaderboard
+    // score-tampering gap.
+    match /users/{uid}/scores/{gameId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // gameStats stays client-writable: it still holds the per-game progress/resume
+    // blob restored by REQUEST_PROGRESS (S2-b — lock once a server progress API exists).
+    // The leaderboard-relevant weighted stats are also written here by the score route.
+    match /users/{uid}/gameStats/{statsId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Any other owner subcollection (allowlist fallback).
     match /users/{uid}/{sub}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
