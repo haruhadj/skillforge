@@ -50,6 +50,15 @@ function LibraryContent() {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
   }, [currentUser, router])
 
+  // Restore the sort selection chosen on a previous visit
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const stored = localStorage.getItem('library:sortBy')
+    if (stored && SORT_OPTIONS.some((o) => o.value === stored)) {
+      setSortBy(stored as typeof sortBy)
+    }
+  }, [])
+
   useEffect(() => {
     getActiveAnnouncements().then(setAnnouncements).catch(() => {})
   }, [])
@@ -294,7 +303,14 @@ function LibraryContent() {
               {gamesLoading ? 'Loading…' : `${sortedGames.length} ${sortedGames.length === 1 ? 'game' : 'games'} available`}
             </p>
           </div>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+          <Select
+            value={sortBy}
+            onValueChange={(v) => {
+              const next = v as typeof sortBy
+              setSortBy(next)
+              if (typeof window !== 'undefined') localStorage.setItem('library:sortBy', next)
+            }}
+          >
             <SelectTrigger className="w-44 h-9"><SelectValue /></SelectTrigger>
             <SelectContent>
               {SORT_OPTIONS.map((opt) => (
