@@ -59,6 +59,11 @@ services:
       - "3000"
     environment:
       - NODE_ENV=production
+      # Next.js standalone (`node server.js`) binds to $HOSTNAME, which Docker
+      # otherwise sets to the container ID — so it would NOT listen on 127.0.0.1 and
+      # the loopback healthcheck below would fail. Bind to all interfaces instead.
+      - HOSTNAME=0.0.0.0
+      - PORT=3000
       - RESEND_API_KEY=${RESEND_API_KEY}
       # Shared secret the leaderboard recompute route checks (timingSafeEqual) before
       # running the full collectionGroup scan. Provisioned in the Pi .env (.env.example).
