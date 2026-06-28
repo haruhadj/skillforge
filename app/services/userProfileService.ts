@@ -435,7 +435,12 @@ export async function claimUsername(
 }
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-const MAX_PHOTO_BYTES = 2 * 1024 * 1024 // 2 MB
+// Avatars are stored as base64 data URLs INSIDE the Firestore user doc (see
+// uploadProfilePhoto), not in Storage. base64 inflates ~1.37x and the main + thumb
+// data URLs share one doc alongside the rest of the profile, so the raw cap must stay
+// well under Firestore's ~1 MB document limit — a 2 MB file would silently fail the
+// write near the limit (audit round 7/8). 600 KB raw ≈ ~820 KB base64 per image.
+const MAX_PHOTO_BYTES = 600 * 1024 // 600 KB
 
 interface ProfilePhotoUpload {
   mainFile: File
@@ -457,7 +462,7 @@ function validateProfilePhotoFile(file: File): void {
   }
 
   if (file.size > MAX_PHOTO_BYTES) {
-    throw new Error('Image must be 2 MB or smaller')
+    throw new Error('Image must be 600 KB or smaller')
   }
 }
 

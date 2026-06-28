@@ -27,11 +27,24 @@ const LB_WINDOW_MS = 60 * 1000
  * materialized document, then returns the result. Subsequent requests hit the fast path.
  */
 
+// Materialized leaderboard docs are considered fresh for this long; past it, a read
+// degrades to a recompute-and-cache instead of serving stale-forever data. Nothing in
+// the repo invokes the recompute route, so without a TTL the first request freezes the
+// values permanently (audit N5/#4).
+const CACHE_TTL_MS = 5 * 60 * 1000
+
 function toMillis(value: unknown): number | null {
   if (value && typeof value === 'object' && 'toMillis' in value && typeof (value as Record<string, unknown>).toMillis === 'function') {
     return (value as { toMillis: () => number }).toMillis()
   }
   return null
+}
+
+// True when a cached leaderboard doc exists and its recomputedAt is within the TTL.
+function isFresh(data: DocumentData | undefined, ttlMs: number): boolean {
+  if (!data) return false
+  const cachedAt = toMillis(data.recomputedAt) ?? 0
+  return Date.now() - cachedAt <= ttlMs
 }
 
 function uidFromPath(path: string): string {
@@ -85,8 +98,9 @@ export async function GET(request: NextRequest) {
       }
 
       const snap = await adminDb.collection('leaderboards').doc(gameId).get()
-      if (snap.exists && Array.isArray(snap.data()?.entries)) {
-        return NextResponse.json({ entries: snap.data()!.entries })
+      const cached = snap.data()
+      if (snap.exists && Array.isArray(cached?.entries) && isFresh(cached, CACHE_TTL_MS)) {
+        return NextResponse.json({ entries: cached!.entries })
       }
 
       const entries = aggregateGameLeaderboard(await readScoreRows(), gameId).slice(0, 10)
@@ -97,9 +111,7 @@ export async function GET(request: NextRequest) {
     if (mode === 'popularity') {
       const snap = await adminDb.collection('leaderboards').doc('_popularity').get()
       const data = snap.data()
-      const cachedAt = toMillis(data?.recomputedAt) ?? 0
-      const stale = !snap.exists || !data?.popularity || Date.now() - cachedAt > 5 * 60 * 1000
-      if (!stale) {
+      if (snap.exists && data?.popularity && isFresh(data, CACHE_TTL_MS)) {
         return NextResponse.json({ popularity: data!.popularity })
       }
 
@@ -110,8 +122,9 @@ export async function GET(request: NextRequest) {
 
     // mode === 'global' (default)
     const snap = await adminDb.collection('leaderboards').doc('_global').get()
-    if (snap.exists && Array.isArray(snap.data()?.entries)) {
-      return NextResponse.json({ entries: snap.data()!.entries })
+    const cachedGlobal = snap.data()
+    if (snap.exists && Array.isArray(cachedGlobal?.entries) && isFresh(cachedGlobal, CACHE_TTL_MS)) {
+      return NextResponse.json({ entries: cachedGlobal!.entries })
     }
 
     const [scoreRows, statsRows] = await Promise.all([readScoreRows(), readStatsRows()])

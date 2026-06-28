@@ -13,6 +13,38 @@ import {
 } from '@/app/services/gameDataService'
 import { Game } from '@/app/types'
 
+// Mirror the server route's bound (`app/api/games/score/route.ts` MAX_SCORE) so the
+// client-SDK write paths below can't poison the client-computed leaderboard with
+// NaN/negative/implausibly-large values from a crafted postMessage or a buggy game.
+// Stopgap: the eventual server-authoritative migration (audit S2) supersedes these
+// guards by routing all score writes through the verified-token HTTP endpoint.
+const MAX_SCORE = 1_000_000
+
+// Returns a finite score clamped to 0..MAX_SCORE, or null for non-finite input
+// (in which case the caller skips the write entirely).
+function clampScore(value: unknown): number | null {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return null
+  return Math.min(Math.max(n, 0), MAX_SCORE)
+}
+
+// Sanitize a free-form stats blob before it is written to gameStats: any numeric
+// score-like field is clamped through clampScore (dropped if non-finite); all other
+// fields (progress/resume data) pass through untouched.
+const SCORE_LIKE_KEYS = ['bestScore', 'score', 'lastScore']
+function sanitizeStatsBlob(data: unknown): Record<string, unknown> {
+  if (!data || typeof data !== 'object') return {}
+  const out: Record<string, unknown> = { ...(data as Record<string, unknown>) }
+  for (const key of SCORE_LIKE_KEYS) {
+    if (key in out) {
+      const clamped = clampScore(out[key])
+      if (clamped == null) delete out[key]
+      else out[key] = clamped
+    }
+  }
+  return out
+}
+
 export default function PlayGameClient() {
   const params = useParams()
   const router = useRouter()
@@ -116,7 +148,9 @@ export default function PlayGameClient() {
 
       // Handle Jose Rizal quiz scores
       if (msg.type === 'gameScore' && msg.gameId === 'jose-rizal') {
-        saveBestScore(uid, 'jose-rizal', msg.score)
+        const score = clampScore(msg.score)
+        if (score == null) return
+        saveBestScore(uid, 'jose-rizal', score)
         getGameStats(uid, 'jose-rizal').then((existing) => {
           const prev = existing as Record<string, unknown> | null
           const totalGames = (Number((prev?.totalGames as number) || 0)) + 1
@@ -129,9 +163,11 @@ export default function PlayGameClient() {
 
       if (msg.event === 'BEST_SCORE') {
         if (gameId === 'chroma-memory') return
-        saveBestScore(uid, gameId, msg.data.bestScore)
+        const bestScore = clampScore(msg.data?.bestScore)
+        if (bestScore == null) return
+        saveBestScore(uid, gameId, bestScore)
         // Also save game stats for leaderboard
-        saveModeScoreStats(uid, gameId, 'singleplayer', msg.data.bestScore)
+        saveModeScoreStats(uid, gameId, 'singleplayer', bestScore)
       }
 
       if (msg.event === 'GAME_STATS') {
@@ -148,11 +184,13 @@ export default function PlayGameClient() {
             return
           }
 
-          saveModeScoreStats(uid, gameId, normalizedMode, score)
-          saveBestScore(uid, gameId, score)
+          const clamped = clampScore(score)
+          if (clamped == null) return
+          saveModeScoreStats(uid, gameId, normalizedMode, clamped)
+          saveBestScore(uid, gameId, clamped)
           return
         }
-        saveGameStats(uid, gameId, msg.data)
+        saveGameStats(uid, gameId, sanitizeStatsBlob(msg.data))
       }
 
       // Per-quiz community analytics for the Philippine Trivia game. Best-effort:
