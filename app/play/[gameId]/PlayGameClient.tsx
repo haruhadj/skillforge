@@ -5,10 +5,6 @@ import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import { defaultGames } from '@/app/games/games'
-import {
-  saveGameStats,
-  getGameStats,
-} from '@/app/services/gameDataService'
 import { Game } from '@/app/types'
 
 // Mirror the server route's bound (`app/api/games/score/route.ts` MAX_SCORE) so a
@@ -46,6 +42,51 @@ async function postScore(
     })
   } catch {
     /* score write failure is non-fatal */
+  }
+}
+
+// S2-b: the resume/progress blob is server-authoritative too. It used to be written to
+// users/{uid}/gameStats directly via the client SDK (keeping that doc — and its
+// leaderboard-relevant weighted-stats fields — client-writable). Now it goes through
+// /api/games/progress (verified ID token, gameId allowlist, size cap), which stores it
+// under a nested `progress` field via the Admin SDK. Fire-and-forget: a failed progress
+// write must never block gameplay.
+async function postProgress(
+  getToken: () => Promise<string>,
+  gameId: string,
+  progress: Record<string, unknown>,
+): Promise<void> {
+  try {
+    const token = await getToken()
+    await fetch('/api/games/progress', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ gameId, progress }),
+    })
+  } catch {
+    /* progress write failure is non-fatal */
+  }
+}
+
+// Read the server-stored resume blob (S2-b) for REQUEST_PROGRESS. Returns {} on any
+// failure so the game still starts (just without restored progress).
+async function fetchProgress(
+  getToken: () => Promise<string>,
+  gameId: string,
+): Promise<Record<string, unknown>> {
+  try {
+    const token = await getToken()
+    const res = await fetch(`/api/games/progress?gameId=${encodeURIComponent(gameId)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!res.ok) return {}
+    const data = await res.json()
+    return (data && typeof data.progress === 'object' && data.progress) || {}
+  } catch {
+    return {}
   }
 }
 
@@ -144,7 +185,6 @@ export default function PlayGameClient() {
   useEffect(() => {
     if (!currentUser || !iframeSrc || typeof window === 'undefined') return
 
-    const uid = currentUser.uid
     const authedUser = currentUser
     const allowedOrigin = window.location.origin
 
@@ -218,11 +258,12 @@ export default function PlayGameClient() {
         if (score != null) {
           postScore(() => authedUser.getIdToken(), gameId, score, 'singleplayer')
         }
-        // S2-b: gameStats resume blob is still client-writable — lock once a progress
-        // API exists. Score-like keys are stripped so they can't bypass the route.
+        // S2-b: the resume blob now goes through the server progress route (Admin SDK),
+        // not a client-SDK gameStats write. Score-like keys are stripped so they can't
+        // bypass the score route.
         const progress = progressBlob(msg.data)
         if (Object.keys(progress).length > 0) {
-          saveGameStats(uid, gameId, progress)
+          postProgress(() => authedUser.getIdToken(), gameId, progress)
         }
       }
 
@@ -249,10 +290,10 @@ export default function PlayGameClient() {
       }
 
       if (msg.event === 'REQUEST_PROGRESS') {
-        getGameStats(uid, gameId).then((stats) => {
+        fetchProgress(() => authedUser.getIdToken(), gameId).then((progress) => {
           iframeRef.current?.contentWindow?.postMessage({
             type: 'RESTORE_PROGRESS',
-            data: stats,
+            data: progress,
           }, allowedOrigin)
         })
       }

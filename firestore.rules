@@ -30,16 +30,23 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid == uid;
     }
 
-    // gameStats stays client-writable: it still holds the per-game progress/resume
-    // blob restored by REQUEST_PROGRESS (S2-b — lock once a server progress API exists).
-    // The leaderboard-relevant weighted stats are also written here by the score route.
+    // S2-b: gameStats is SERVER-AUTHORITATIVE, like scores above. The owner may read it,
+    // but there is NO client write rule. The weighted leaderboard stats are written by
+    // /api/games/score and the per-game resume blob (under `progress`) by
+    // /api/games/progress — both Admin SDK, which bypass these rules after verifying the
+    // token. This closes the last client write path into the leaderboard's inputs
+    // (totalMatchCount feeds the composite + popularity ranking).
     match /users/{uid}/gameStats/{statsId} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && request.auth.uid == uid;
     }
 
-    // Any other owner subcollection (allowlist fallback).
+    // Any other owner subcollection: READ-ONLY. Firestore grants a write if ANY match
+    // allows it, so a permissive `{document=**}` write here would re-grant client writes
+    // to scores/{gameId} and gameStats/{statsId} above (defeating S2 / S2-b). No client
+    // path writes any owner subcollection other than via the Admin SDK score/progress
+    // routes; recentlyPlayed lives on the root profile doc, not a subcollection.
     match /users/{uid}/{sub}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && request.auth.uid == uid;
     }
 
     // User profiles are readable by anyone (for leaderboards, profile viewing).

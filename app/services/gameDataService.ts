@@ -13,10 +13,8 @@ import {
   orderBy,
   limit,
 } from 'firebase/firestore'
-import { GameStats, ScoreData, GlobalLeaderboardEntry, RecentActivityItem, GlobalActivityItem } from '@/app/types'
+import { ScoreData, GlobalLeaderboardEntry, RecentActivityItem, GlobalActivityItem } from '@/app/types'
 import {
-  type GameMode,
-  buildWeightedModeStats,
   calculateTier,
   computeCompositeScore,
 } from '@/app/services/scoring'
@@ -66,19 +64,11 @@ export async function getAllScores(uid: string): Promise<Record<string, ScoreDat
   return scores
 }
 
-export async function saveGameStats(uid: string, gameId: string, stats: Record<string, unknown>): Promise<void> {
-  const ref = doc(db, 'users', uid, 'gameStats', gameId)
-  await setDoc(ref, {
-    ...stats,
-    updatedAt: serverTimestamp(),
-  }, { merge: true })
-}
-
-export async function getGameStats(uid: string, gameId: string): Promise<Record<string, unknown> | null> {
-  const ref = doc(db, 'users', uid, 'gameStats', gameId)
-  const snap = await getDoc(ref)
-  return snap.exists() ? snap.data() : null
-}
+// S2-b: gameStats is now server-authoritative. The weighted leaderboard stats are
+// written by /api/games/score (Admin SDK), and the per-game resume blob by
+// /api/games/progress (Admin SDK). The Firestore rules deny client writes to gameStats,
+// so the former client-SDK writers (saveGameStats / getGameStats / saveModeScoreStats)
+// were removed. Reads below stay client-side.
 
 export async function getAllGameStats(uid: string): Promise<Record<string, Record<string, unknown>>> {
   const ref = collection(db, 'users', uid, 'gameStats')
@@ -88,25 +78,6 @@ export async function getAllGameStats(uid: string): Promise<Record<string, Recor
     stats[docSnap.id] = docSnap.data()
   })
   return stats
-}
-
-export async function saveModeScoreStats(
-  uid: string,
-  gameId: string,
-  mode: GameMode,
-  score: number
-): Promise<GameStats> {
-  const ref = doc(db, 'users', uid, 'gameStats', gameId)
-  const snap = await getDoc(ref)
-  const existingStats = snap.exists() ? (snap.data() as Partial<GameStats>) : null
-  const mergedStats = buildWeightedModeStats(existingStats, mode, score)
-
-  await setDoc(ref, {
-    ...mergedStats,
-    updatedAt: serverTimestamp(),
-  }, { merge: true })
-
-  return mergedStats
 }
 
 // NOTE: Global/per-game leaderboards and game popularity are computed server-side
