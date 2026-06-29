@@ -12,6 +12,7 @@ import { User as FirebaseUser } from 'firebase/auth'
 import { UserProfile } from '@/app/types'
 import { FieldValue } from 'firebase/firestore'
 import type { DeviceInfo } from '@/app/lib/deviceInfo'
+import { sanitizePhotoURL } from '@/app/lib/sanitizePhotoURL'
 
 export const USERNAME_REGEX = /^[A-Za-z0-9_]{3,20}$/
 
@@ -293,8 +294,11 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null, devic
   // Only seed photo from the provider when the profile doesn't have one yet,
   // so user-uploaded photos are never overwritten on re-login.
   if (user.photoURL && !existingProfile?.photoURL) {
-    payload.photoURL = user.photoURL
-    payload.photoThumbURL = user.photoURL
+    const safePhoto = sanitizePhotoURL(user.photoURL)
+    if (safePhoto) {
+      payload.photoURL = safePhoto
+      payload.photoThumbURL = safePhoto
+    }
   }
 
   if (!existingProfile?.createdAt) {

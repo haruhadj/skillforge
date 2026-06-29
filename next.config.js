@@ -17,6 +17,23 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+          {
+            key: 'Content-Security-Policy',
+            // Partial CSP (R12). script-src/connect-src/style-src deferred: game
+            // iframes use pre-built Vite bundles (unsafe-eval risk) and Firebase
+            // websockets span many subdomains — those need a dedicated audit pass.
+            value: [
+              "default-src 'self'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              // Same-origin game iframes under /games/*
+              "frame-src 'self'",
+              // Supersedes X-Frame-Options in modern browsers (keep both for legacy)
+              "frame-ancestors 'self'",
+              // Avatar/photo domains matching sanitizePhotoURL allowlist
+              "img-src 'self' data: blob: https://*.googleusercontent.com https://avatars.githubusercontent.com https://pbs.twimg.com https://*.twimg.com https://*.fbcdn.net https://*.fbsbx.com https://graph.facebook.com https://*.tiktokcdn.com https://*.tiktokcdn-eu.com",
+            ].join('; '),
+          },
         ],
       },
     ]

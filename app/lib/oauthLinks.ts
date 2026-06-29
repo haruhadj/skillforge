@@ -2,6 +2,7 @@ import { getAdminAuth, getAdminDb } from '@/app/lib/firebase-admin'
 import { FieldValue } from 'firebase-admin/firestore'
 import type { UserRecord } from 'firebase-admin/auth'
 import type { OAuthProvider } from '@/app/lib/oauth'
+import { sanitizePhotoURL } from '@/app/lib/sanitizePhotoURL'
 
 // Authoritative provider -> account mapping. Lives in the `oauthLinks` collection
 // (server-only; see firestore.rules) so a linked OAuth identity always resolves to
@@ -68,7 +69,7 @@ async function backfillProfile(user: UserRecord, p: OAuthProfile): Promise<void>
     try {
       await getAdminAuth().updateUser(user.uid, {
         displayName: user.displayName || p.displayName,
-        photoURL: user.photoURL || p.photoURL,
+        photoURL: user.photoURL || sanitizePhotoURL(p.photoURL) || undefined,
         ...(backfillEmail ? { email: backfillEmail, emailVerified: true } : {}),
       })
     } catch {
@@ -121,7 +122,7 @@ export async function resolveSignInUid(p: OAuthProfile): Promise<string> {
       uid: nativeUid,
       ...(p.email ? { email: p.email, emailVerified: true } : {}),
       displayName: p.displayName,
-      photoURL: p.photoURL,
+      photoURL: sanitizePhotoURL(p.photoURL) ?? undefined,
     })
     return created.uid
   }
