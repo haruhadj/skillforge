@@ -5,25 +5,25 @@ import { User as FirebaseUser } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { getUserProfile } from '@/app/services/userProfileService'
+import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
 import MobileNav from '@/app/components/MobileNav'
 import TopNav from '@/app/components/TopNav'
-import { GlobalLeaderboardEntry, UserProfile } from '@/app/types'
+import { GlobalLeaderboardEntry } from '@/app/types'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 
 const TOP_COUNT = 50
-const profileCache: Record<string, UserProfile> = {}
+const profileCache: Record<string, PublicProfile> = {}
 
-async function fetchProfiles(uids: string[]): Promise<Record<string, UserProfile>> {
+async function fetchProfiles(uids: string[]): Promise<Record<string, PublicProfile>> {
   const missing = uids.filter((uid) => !profileCache[uid])
   await Promise.all(
     missing.map((uid) =>
-      getUserProfile(uid)
-        .then((p) => { profileCache[uid] = p || { uid, username: 'Unknown', email: null } })
-        .catch(() => { profileCache[uid] = { uid, username: 'Unknown', email: null } })
+      getPublicProfile(uid)
+        .then((p) => { profileCache[uid] = p || { uid, username: 'Unknown' } })
+        .catch(() => { profileCache[uid] = { uid, username: 'Unknown' } })
     )
   )
   return Object.fromEntries(uids.map((uid) => [uid, profileCache[uid]]))
@@ -86,7 +86,7 @@ const PODIUM_GRADIENTS = [
 
 function Podium({ top3, profiles, currentUser }: {
   top3: GlobalLeaderboardEntry[]
-  profiles: Record<string, UserProfile>
+  profiles: Record<string, PublicProfile>
   currentUser: FirebaseUser | null
 }) {
   return (
@@ -98,7 +98,7 @@ function Podium({ top3, profiles, currentUser }: {
         {PODIUM_ORDER.map((idx, i) => {
           const row = top3[idx]
           const profile = profiles[row.uid]
-          const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
+          const name = profile?.username || 'Unknown'
           const isMe = row.uid === currentUser?.uid
           const score = row.compositeScore ?? 0
           const pp = PODIUM_PROPS[i]
@@ -138,7 +138,7 @@ export default function LeaderboardPage() {
   const router = useRouter()
   const { currentUser } = useAuth()
   const [rows, setRows] = useState<GlobalLeaderboardEntry[]>([])
-  const [profiles, setProfiles] = useState<Record<string, UserProfile>>({})
+  const [profiles, setProfiles] = useState<Record<string, PublicProfile>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -173,7 +173,7 @@ export default function LeaderboardPage() {
     const q = search.toLowerCase()
     return rows.filter((row) => {
       const p = profiles[row.uid]
-      const name = (p?.username || p?.email?.split('@')[0] || '').toLowerCase()
+      const name = (p?.username || '').toLowerCase()
       return name.includes(q)
     })
   }, [rows, profiles, search])
@@ -244,7 +244,7 @@ export default function LeaderboardPage() {
                   filteredRows.map((row, filteredIdx) => {
                     const rank = rows.indexOf(row) + 1
                     const profile = profiles[row.uid]
-                    const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
+                    const name = profile?.username || 'Unknown'
                     const isMe = row.uid === currentUser?.uid
                     const score = row.compositeScore ?? 0
                     const pct = maxScore > 0 ? (score / maxScore) * 100 : 0

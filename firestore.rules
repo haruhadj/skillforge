@@ -49,17 +49,36 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid == uid;
     }
 
-    // User profiles are readable by anyone (for leaderboards, profile viewing).
+    // R14: the user profile doc carries PII (email, linkedProviders OAuth emails,
+    // device fingerprints) and the `role` admin marker, so it is NO LONGER public.
+    // Read is restricted to the owner and admins. Public display data (username +
+    // photo) lives in publicProfiles/{uid} below, which the leaderboard / activity /
+    // profile viewer read instead. isAdmin() uses get(), which is exempt from read
+    // rules, so this restriction does not break the admin check itself; admins can
+    // still list the users collection (the rule is uid-independent), non-admins
+    // cannot — closing the mass email-enumeration hole (adminService getAllUsers).
     // Owners may create/update their own profile but may NOT set or change `role`;
     // only an existing admin can assign roles.
     match /users/{uid} {
-      allow read: if true;
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
       allow create: if request.auth != null && request.auth.uid == uid &&
         (!('role' in request.resource.data) || request.resource.data.role != 'admin');
       allow update: if request.auth != null && (
         (request.auth.uid == uid && noPrivilegeEscalation()) ||
         isAdmin()
       );
+    }
+
+    // R14: public, display-only mirror of a user (username + photo). World-readable
+    // so leaderboards / activity / profile viewing never touch the PII-locked
+    // users/{uid} doc. The owner-write rule uses hasOnly([...]) to guarantee email,
+    // role, linkedProviders, and device fields can NEVER be written here, even by a
+    // buggy or malicious client. Synced from users/{uid} by syncPublicProfile().
+    match /publicProfiles/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == uid &&
+        request.resource.data.keys().hasOnly(
+          ['username', 'usernameNormalized', 'photoURL', 'photoThumbURL', 'updatedAt']);
     }
 
     // OAuth provider -> account links. Managed exclusively by the server via the

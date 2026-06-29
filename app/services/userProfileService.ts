@@ -13,6 +13,7 @@ import { UserProfile } from '@/app/types'
 import { FieldValue } from 'firebase/firestore'
 import type { DeviceInfo } from '@/app/lib/deviceInfo'
 import { sanitizePhotoURL } from '@/app/lib/sanitizePhotoURL'
+import { syncPublicProfile } from '@/app/services/publicProfileService'
 
 export const USERNAME_REGEX = /^[A-Za-z0-9_]{3,20}$/
 
@@ -328,6 +329,11 @@ export async function ensureUserProfileDocument(user: FirebaseUser | null, devic
 
   await setDoc(profileRef, payload, { merge: true })
 
+  // Mirror display fields into the world-readable publicProfiles/{uid} doc so
+  // cross-user views never need to read (now PII-locked) users/{uid}. Self-heals
+  // on every login; fire-and-forget so a mirror failure can't block sign-in.
+  syncPublicProfile(user.uid, { ...(existingProfile || {}), ...payload }).catch(() => {})
+
   return {
     ...(existingProfile || {}),
     ...payload,
@@ -394,7 +400,7 @@ export async function claimUsername(
   // on a rename we must observe the *previous* username before overwriting it so
   // the old `usernames/<old>` doc gets reaped. Firestore transactions auto-retry
   // on the AuthContext profile-write race, so doing the profile write here is safe.
-  return runTransaction(db, async (transaction) => {
+  const result = await runTransaction(db, async (transaction) => {
     // All reads must precede any writes in a Firestore transaction.
     const usernameSnap = await transaction.get(usernameRef)
     if (usernameSnap.exists() && usernameSnap.data().uid !== uid) {
@@ -436,6 +442,12 @@ export async function claimUsername(
       usernameNormalized: normalized,
     }
   })
+
+  // Mirror the (possibly renamed) username into publicProfiles after the atomic
+  // claim succeeds. Fire-and-forget — the username is already authoritative here.
+  syncPublicProfile(uid, { username: trimmedUsername, usernameNormalized: normalized }).catch(() => {})
+
+  return result
 }
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -503,6 +515,9 @@ export async function uploadProfilePhoto(uid: string, upload: File | ProfilePhot
     { photoURL, photoThumbURL: resolvedThumbURL, updatedAt: serverTimestamp() },
     { merge: true },
   )
+
+  // Mirror the new avatar into publicProfiles so leaderboards/activity update.
+  syncPublicProfile(uid, { photoURL, photoThumbURL: resolvedThumbURL }).catch(() => {})
 
   return { photoURL, photoThumbURL: resolvedThumbURL }
 }

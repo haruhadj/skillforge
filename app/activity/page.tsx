@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { getUserProfile } from '@/app/services/userProfileService'
+import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
 import MobileNav from '@/app/components/MobileNav'
 import TopNav from '@/app/components/TopNav'
 import { getRecentActivity, getGlobalRecentActivity } from '@/app/services/gameDataService'
 import { defaultGames } from '@/app/games/games'
-import { RecentActivityItem, UserProfile } from '@/app/types'
+import { RecentActivityItem } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -98,11 +98,11 @@ export default function ActivityPage() {
 
         // Fetch user profiles for all unique users
         const userIds = [...new Set(data.map((item) => item.userId))]
-        const profileMap: Record<string, UserProfile | null> = {}
+        const profileMap: Record<string, PublicProfile | null> = {}
 
         await Promise.all(
           userIds.map((uid) =>
-            getUserProfile(uid)
+            getPublicProfile(uid)
               .then((p) => {
                 profileMap[uid] = p
               })
@@ -117,7 +117,7 @@ export default function ActivityPage() {
             const profile = profileMap[item.userId]
             return {
               ...item,
-              username: profile?.username || profile?.email?.split('@')[0] || 'Unknown',
+              username: profile?.username || 'Unknown',
               photoURL: profile?.photoThumbURL,
             }
           })

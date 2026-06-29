@@ -8,16 +8,16 @@ import MobileNav from '@/app/components/MobileNav'
 import TierProgress from '@/app/components/TierProgress'
 import RankBadge from '@/app/components/RankBadge'
 import * as gameDataService from '@/app/services/gameDataService'
-import { getUserProfile } from '@/app/services/userProfileService'
+import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
 import { defaultGames } from '@/app/games/games'
-import { UserProfile, GlobalLeaderboardEntry, RecentActivityItem } from '@/app/types'
+import { GlobalLeaderboardEntry, RecentActivityItem } from '@/app/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 
 export default function OtherUserProfilePage({ params }: { params: Promise<{ uid: string }> }) {
   const { uid } = use(params)
   const { currentUser } = useAuth()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [scores, setScores] = useState<Record<string, { bestScore: number }>>({})
   const [gameStats, setGameStats] = useState<Record<string, unknown>>({})
   const [globalStats, setGlobalStats] = useState<GlobalLeaderboardEntry | null>(null)
@@ -32,7 +32,7 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
       try {
         setLoading(true)
         const [loadedProfile, loadedScores, loadedGameStats, loadedActivity] = await Promise.all([
-          getUserProfile(uid),
+          getPublicProfile(uid),
           gameDataService.getAllScores(uid),
           gameDataService.getAllGameStats(uid),
           gameDataService.getRecentActivity(uid, 5),
@@ -123,7 +123,7 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
     )
   }
 
-  const name = profile.username || profile.email?.split('@')[0] || 'Unknown'
+  const name = profile.username || 'Unknown'
   const initials = name.slice(0, 2).toUpperCase()
   const photoURL = profile.photoThumbURL || profile.photoURL
   const isOwnProfile = profile.uid === currentUser.uid
@@ -146,9 +146,6 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
             <div className="text-center sm:text-left flex-1 min-w-0">
               <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">{name}</h2>
               {profile.username && <p className="text-sm text-muted-foreground">@{profile.username}</p>}
-              {profile.email && !isOwnProfile && (
-                <p className="text-xs text-muted-foreground mt-0.5">{profile.email}</p>
-              )}
               {isOwnProfile && (
                 <Link href="/profile" className="inline-block mt-1 text-sm text-primary hover:underline font-medium">
                   Edit your profile →

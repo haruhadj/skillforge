@@ -5,24 +5,24 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { defaultGames } from '@/app/games/games'
-import { getUserProfile } from '@/app/services/userProfileService'
+import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
 import { getGlobalRecentActivity } from '@/app/services/gameDataService'
 import ThemeToggle from '@/app/components/ThemeToggle'
-import { LeaderboardEntry, UserProfile } from '@/app/types'
+import { LeaderboardEntry } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const profileCache: Record<string, UserProfile> = {}
+const profileCache: Record<string, PublicProfile> = {}
 
-async function fetchProfiles(uids: string[]): Promise<Record<string, UserProfile>> {
+async function fetchProfiles(uids: string[]): Promise<Record<string, PublicProfile>> {
   const missing = uids.filter((uid) => !profileCache[uid])
   await Promise.all(
     missing.map((uid) =>
-      getUserProfile(uid)
-        .then((p) => { profileCache[uid] = p || { uid, username: 'Unknown', email: null } })
-        .catch(() => { profileCache[uid] = { uid, username: 'Unknown', email: null } })
+      getPublicProfile(uid)
+        .then((p) => { profileCache[uid] = p || { uid, username: 'Unknown' } })
+        .catch(() => { profileCache[uid] = { uid, username: 'Unknown' } })
     )
   )
   return Object.fromEntries(uids.map((uid) => [uid, profileCache[uid]]))
@@ -67,7 +67,7 @@ export default function GameDetailsPage() {
   const game = useMemo(() => defaultGames.find((g) => g.id === gameId) ?? null, [gameId])
 
   const [lbRows, setLbRows] = useState<LeaderboardEntry[]>([])
-  const [lbProfiles, setLbProfiles] = useState<Record<string, UserProfile>>({})
+  const [lbProfiles, setLbProfiles] = useState<Record<string, PublicProfile>>({})
   const [lbLoading, setLbLoading] = useState(true)
   const [lbError, setLbError] = useState<string | null>(null)
 
@@ -116,7 +116,7 @@ export default function GameDetailsPage() {
             const p = profileMap[item.userId]
             return {
               ...item,
-              username: p?.username || p?.email?.split('@')[0] || 'Unknown',
+              username: p?.username || 'Unknown',
               photoURL: p?.photoThumbURL,
             }
           }))
@@ -264,7 +264,7 @@ export default function GameDetailsPage() {
                 {lbRows.map((row, idx) => {
                   const rank = idx + 1
                   const profile = lbProfiles[row.uid]
-                  const name = profile?.username || profile?.email?.split('@')[0] || 'Unknown'
+                  const name = profile?.username || 'Unknown'
                   const isMe = row.uid === currentUser.uid
                   const pct = maxScore > 0 ? (row.bestScore / maxScore) * 100 : 0
                   const scoreColor = rank === 1 ? 'text-yellow-600 dark:text-yellow-400'
