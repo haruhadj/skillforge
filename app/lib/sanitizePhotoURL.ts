@@ -10,6 +10,8 @@ const ALLOWED_HOSTNAMES = [
   'pbs.twimg.com',
   // Facebook
   'graph.facebook.com',
+  // Discord
+  'cdn.discordapp.com',
   // Facebook CDN suffixes
 ]
 

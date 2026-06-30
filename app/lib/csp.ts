@@ -46,6 +46,6 @@ export function buildCsp(nonce: string): string {
     // Supersedes X-Frame-Options in modern browsers (kept in next.config.js for legacy).
     "frame-ancestors 'self'",
     // Avatar/photo domains matching the sanitizePhotoURL allowlist (R12).
-    "img-src 'self' data: blob: https://*.googleusercontent.com https://avatars.githubusercontent.com https://pbs.twimg.com https://*.twimg.com https://*.fbcdn.net https://*.fbsbx.com https://graph.facebook.com https://*.tiktokcdn.com https://*.tiktokcdn-eu.com",
+    "img-src 'self' data: blob: https://*.googleusercontent.com https://avatars.githubusercontent.com https://pbs.twimg.com https://*.twimg.com https://*.fbcdn.net https://*.fbsbx.com https://graph.facebook.com https://*.tiktokcdn.com https://*.tiktokcdn-eu.com https://cdn.discordapp.com",
   ].join('; ')
 }

@@ -146,6 +146,7 @@ export interface OAuthConfig {
   twitter: boolean
   facebook: boolean
   tiktok: boolean
+  discord: boolean
 }
 
 const OAUTH_CONFIG_DEFAULTS: OAuthConfig = {
@@ -154,6 +155,7 @@ const OAUTH_CONFIG_DEFAULTS: OAuthConfig = {
   twitter: true,
   facebook: true,
   tiktok: true,
+  discord: true,
 }
 
 export async function getOAuthConfig(): Promise<OAuthConfig> {

@@ -14,12 +14,12 @@ export const OAUTH_PKCE_COOKIE = 'oauth_pkce_verifier'
 // and immediately clears it so the client can complete signInWithCustomToken.
 export const OAUTH_TOKEN_COOKIE = 'oauth_token'
 
-export type OAuthProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook'
+export type OAuthProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'discord'
 
 // Single source of truth for which providers can be linked to / unlinked from an
 // account. Shared by link/start and link/remove so the two can never drift out of
 // sync (audit S7: twitter/facebook were linkable but not removable).
-export const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'tiktok', 'twitter', 'facebook']
+export const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'tiktok', 'twitter', 'facebook', 'discord']
 
 // Providers that require PKCE (RFC 7636). X (Twitter) OAuth 2.0 mandates it.
 export function providerRequiresPkce(provider: OAuthProvider): boolean {
@@ -104,6 +104,21 @@ export function buildAuthorizeUrl(
       state,
     })
     return `https://www.facebook.com/v19.0/dialog/oauth?${params}`
+  }
+
+  if (provider === 'discord') {
+    // Discord OAuth 2.0: standard authorization-code flow, returns an email with
+    // the `email` scope (no PKCE required for a confidential web app).
+    const clientId = process.env.DISCORD_OAUTH_CLIENT_ID
+    if (!clientId) throw new Error('Discord OAuth not configured')
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'identify email',
+      state,
+    })
+    return `https://discord.com/oauth2/authorize?${params}`
   }
 
   if (provider === 'twitter') {

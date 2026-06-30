@@ -129,7 +129,7 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
   return 'unknown'
 }
 
-export type LinkableProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook'
+export type LinkableProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'discord'
 
 export interface ProviderMethodState {
   // Whether this provider can currently sign the user into this account.
@@ -146,6 +146,7 @@ export interface SignInMethodsState {
   tiktok: ProviderMethodState
   twitter: ProviderMethodState
   facebook: ProviderMethodState
+  discord: ProviderMethodState
 }
 
 // Derives the account's sign-in methods from the Firebase user (password / native
@@ -187,6 +188,11 @@ export function getSignInMethods(
       connected: Boolean(linked.twitter) || uid.startsWith('twitter_'),
       email: linked.twitter?.email ?? null,
     },
+    discord: {
+      linked: Boolean(linked.discord),
+      connected: Boolean(linked.discord) || uid.startsWith('discord_'),
+      email: linked.discord?.email ?? (uid.startsWith('discord_') ? user?.email ?? null : null),
+    },
   }
 }
 
@@ -204,20 +210,23 @@ export function getProfileSignInMethods(profile: UserProfile | null): SignInMeth
   if (profile.uid?.startsWith('tiktok_')) methods.add('tiktok')
   if (profile.uid?.startsWith('twitter_')) methods.add('twitter')
   if (profile.uid?.startsWith('facebook_')) methods.add('facebook')
+  if (profile.uid?.startsWith('discord_')) methods.add('discord')
   if (profile.authProvider === 'google') methods.add('google')
   if (profile.authProvider === 'github') methods.add('github')
   if (profile.authProvider === 'tiktok') methods.add('tiktok')
   if (profile.authProvider === 'twitter') methods.add('twitter')
   if (profile.authProvider === 'facebook') methods.add('facebook')
+  if (profile.authProvider === 'discord') methods.add('discord')
   if (profile.authProvider === 'password') methods.add('password')
   if (profile.linkedProviders?.google) methods.add('google')
   if (profile.linkedProviders?.github) methods.add('github')
   if (profile.linkedProviders?.tiktok) methods.add('tiktok')
   if (profile.linkedProviders?.twitter) methods.add('twitter')
   if (profile.linkedProviders?.facebook) methods.add('facebook')
+  if (profile.linkedProviders?.discord) methods.add('discord')
 
   // Stable order: password first, then OAuth providers.
-  const order = ['password', 'google', 'github', 'tiktok', 'twitter', 'facebook']
+  const order = ['password', 'google', 'github', 'tiktok', 'twitter', 'facebook', 'discord']
   return [...methods].sort((a, b) => order.indexOf(a) - order.indexOf(b))
 }
 
