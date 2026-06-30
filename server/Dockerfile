@@ -8,7 +8,7 @@ RUN npm ci --omit=dev --legacy-peer-deps
 
 # Copy server source code (wordnet db mounted as volume in compose)
 COPY server/games ./server/games
-COPY server/wordnet/service.js ./server/wordnet/
+COPY server/wordnet/service.js server/wordnet/sample.js ./server/wordnet/
 COPY server/start-all.js ./server/
 
 # Create empty wordnet directory for volume mount
