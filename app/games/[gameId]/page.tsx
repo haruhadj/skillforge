@@ -8,6 +8,7 @@ import { defaultGames } from '@/app/games/games'
 import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
 import { getGlobalRecentActivity } from '@/app/services/gameDataService'
 import ThemeToggle from '@/app/components/ThemeToggle'
+import GameCover from '@/app/components/GameCover'
 import { LeaderboardEntry } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -171,11 +172,10 @@ export default function GameDetailsPage() {
           {/* Mobile: compact horizontal strip */}
           <div className="flex sm:hidden items-center gap-3 p-3">
             <div className="w-16 h-16 shrink-0 rounded-lg bg-muted overflow-hidden">
-              <img
-                src={`/games/${game.id}/cover.png`}
+              <GameCover
+                gameId={game.id}
                 alt={game.name}
                 className="h-full w-full object-contain"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
               />
             </div>
             <div className="flex-1 min-w-0">
@@ -199,11 +199,10 @@ export default function GameDetailsPage() {
           <div className="hidden sm:flex">
             <div className="w-52 lg:w-64 shrink-0">
               <div className="aspect-auto h-full bg-muted relative overflow-hidden min-h-[140px]">
-                <img
-                  src={`/games/${game.id}/cover.png`}
+                <GameCover
+                  gameId={game.id}
                   alt={game.name}
                   className="h-full w-full object-contain"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                 />
               </div>
             </div>

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { defaultGames } from '@/app/games/games'
 import { Game } from '@/app/types'
+import GameCover from '@/app/components/GameCover'
 
 // ==========================================
 // Service functions (Ideally move these to @/app/services/admin)
@@ -110,14 +111,11 @@ export default function AdminGamesTab() {
               <div className="flex items-center gap-4 min-w-0">
                 {/* Game Cover Preview */}
                 <div className="h-14 w-14 rounded-lg bg-slate-800 overflow-hidden shrink-0 flex items-center justify-center border border-white/10 shadow-md">
-                  <img
-                    src={`/games/${game.id}/cover.png`}
+                  <GameCover
+                    gameId={game.id}
                     alt=""
                     className="h-full w-full object-cover"
                     loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
                   />
                 </div>
 

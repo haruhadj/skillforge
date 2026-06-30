@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Game } from '@/app/types'
 import { Button } from '@/components/ui/button'
+import GameCover from '@/app/components/GameCover'
 
 interface GameCardProps {
   game: Game
@@ -27,12 +28,11 @@ export default function GameCard({ game, isRecent, plays = 0, best = null, onPla
     <div className="group surface overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30">
       {/* Cover */}
       <div className="aspect-[4/3] relative overflow-hidden bg-muted">
-        <img
-          className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-          src={`/games/${game.id}/cover.png`}
+        <GameCover
+          gameId={game.id}
           alt={game.name}
+          className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
-          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
         />
         {game.category && (
           <span className="absolute top-2 left-2 h-5 px-2 inline-flex items-center rounded-md text-[10px] font-semibold bg-background/85 backdrop-blur-sm text-foreground/80">

@@ -7,6 +7,7 @@ import ThemeToggle from '@/app/components/ThemeToggle'
 import MobileNav from '@/app/components/MobileNav'
 import TierProgress from '@/app/components/TierProgress'
 import RankBadge from '@/app/components/RankBadge'
+import GameCover from '@/app/components/GameCover'
 import * as gameDataService from '@/app/services/gameDataService'
 import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
 import { defaultGames } from '@/app/games/games'
@@ -182,11 +183,10 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
                 const relTime = secs < 60 ? 'just now' : mins < 60 ? `${mins}m ago` : hrs < 24 ? `${hrs}h ago` : days < 7 ? `${days}d ago` : item.updatedAt.toLocaleDateString()
                 return (
                   <div key={item.gameId} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors">
-                    <img
-                      src={`/games/${item.gameId}/cover.png`}
+                    <GameCover
+                      gameId={item.gameId}
                       alt={game?.name || item.gameId}
                       className="h-10 w-10 rounded-lg object-cover bg-muted shrink-0"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold truncate">{game?.name || item.gameId}</p>
@@ -257,11 +257,10 @@ export default function OtherUserProfilePage({ params }: { params: Promise<{ uid
               return (
                 <div key={game.id} className={`surface overflow-hidden transition-opacity ${hasPlayed ? '' : 'opacity-40'}`}>
                   <div className="relative aspect-video bg-muted">
-                    <img
-                      src={`/games/${game.id}/cover.png`}
+                    <GameCover
+                      gameId={game.id}
                       alt={game.name}
                       className="h-full w-full object-cover"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                     />
                     {!hasPlayed && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/20">

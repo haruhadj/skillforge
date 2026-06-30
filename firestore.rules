@@ -147,5 +147,18 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+
+    // R17: cached admin analytics (platform stats + learning-gap report). The report
+    // embeds PII-derived data (at-risk students with email), so it is Admin-SDK only —
+    // clients reach it solely through the admin-gated /api/admin/* routes, never directly.
+    match /adminCache/{docId} {
+      allow read, write: if false;
+    }
+
+    // R17: cached global activity feed. Written by Admin SDK; clients read the public
+    // /api/activity route (IP-rate-limited), not the doc directly.
+    match /activityCache/{docId} {
+      allow read, write: if false;
+    }
   }
 }

@@ -11,6 +11,7 @@
     "game:new": "bash scripts/new-game.sh",
     "game:build": "bash scripts/build-game.sh",
     "game:build:all": "bash scripts/build-game.sh --all",
+    "covers:optimize": "node scripts/optimize-covers.mjs",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -1,248 +1,41 @@
-import { db } from '@/app/lib/firebase'
-import {
-  collection,
-  collectionGroup,
-  getDocs,
-  QueryDocumentSnapshot,
-  DocumentData,
-} from 'firebase/firestore'
-import { defaultGames } from '@/app/games/games'
+import { auth } from '@/app/lib/firebase'
+import type { LearningGapReport } from '@/app/services/analyticsCompute'
 
-export const GAME_SUBJECTS: Record<string, string> = {
-  '2048': 'Mathematics',
-  'sudoku': 'Mathematics',
-  'math-game': 'Mathematics',
-  'math-blaster': 'Mathematics',
-  'math-nerdle': 'Mathematics',
-  'elemental-quest': 'Science',
-  'geomaster': 'Geography',
-  'geoguessr-clone': 'Geography',
-  'spelling-bee': 'English',
-  'how-strong-is-your-vocabulary': 'English',
-  'vocabulary-wordle': 'English',
-  'synonym-showdown': 'English',
-  'fill-in-the-blank-relay': 'English',
-  'quordle': 'English',
-  'hangman-master': 'English',
-  'grammar-police': 'English',
-  'jose-rizal': 'Literature & History',
-  'chroma-memory': 'Cognitive Skills',
-  'color-memory': 'Cognitive Skills',
-  'memory-matrix': 'Cognitive Skills',
-  'chess': 'Logic & Strategy',
-  'tictactoe': 'Logic & Strategy',
-}
+// Re-export the pure aggregation types + subject maps so existing imports
+// (`@/app/services/analyticsService`) keep working unchanged.
+export {
+  GAME_SUBJECTS,
+  SUBJECT_COLORS,
+  computeLearningGapReport,
+} from '@/app/services/analyticsCompute'
+export type {
+  GameLearningAnalytics,
+  SubjectAnalytics,
+  StudentRiskProfile,
+  DeviceStats,
+  LearningGapReport,
+} from '@/app/services/analyticsCompute'
 
-export const SUBJECT_COLORS: Record<string, string> = {
-  'Mathematics': 'indigo',
-  'Science': 'emerald',
-  'Geography': 'cyan',
-  'English': 'violet',
-  'Literature & History': 'amber',
-  'Cognitive Skills': 'pink',
-  'Logic & Strategy': 'blue',
-  'Other': 'slate',
-}
-
-export interface GameLearningAnalytics {
-  gameId: string
-  gameName: string
-  subject: string
-  playCount: number
-  totalMatches: number
-  avgBestScore: number
-  maxBestScore: number
-  normalizedAvgScore: number
-  gapScore: number
-  engagementRate: number
-  gapLevel: 'critical' | 'moderate' | 'low'
-  engagementLevel: 'high' | 'medium' | 'low'
-}
-
-export interface SubjectAnalytics {
-  subject: string
-  games: string[]
-  avgNormalizedScore: number
-  totalPlays: number
-  criticalGameCount: number
-}
-
-export interface StudentRiskProfile {
-  uid: string
-  username: string
-  email: string | null
-  gamesPlayed: number
-  avgNormalizedScore: number
-  riskLevel: 'high' | 'medium' | 'low'
-}
-
-export interface DeviceStats {
-  total: number
-  deviceTypes: Record<string, number>
-  oses: Record<string, number>
-  browsers: Record<string, number>
-}
-
-export interface LearningGapReport {
-  gameAnalytics: GameLearningAnalytics[]
-  subjectAnalytics: SubjectAnalytics[]
-  atRiskStudents: StudentRiskProfile[]
-  totalStudents: number
-  platformAvgScore: number
-  deviceStats: DeviceStats
-  generatedAt: Date
-}
-
+/**
+ * Fetch the learning-gap report from the cached, admin-gated server route.
+ *
+ * Previously this ran two client-side collectionGroup scans (all scores + all gameStats)
+ * plus a full users read on every Analytics-tab render. The scan now happens once
+ * server-side behind a 5-minute Firestore cache; the client just reads the JSON.
+ * (audit R17 — admin analytics caching)
+ */
 export async function getLearningGapReport(): Promise<LearningGapReport> {
-  const gameNameMap: Record<string, string> = {}
-  for (const g of defaultGames) {
-    gameNameMap[g.id] = g.name
-  }
+  const token = await auth.currentUser?.getIdToken()
+  if (!token) throw new Error('Not authenticated')
 
-  const usersSnap = await getDocs(collection(db, 'users'))
-  const userProfiles: Record<string, { username: string; email: string | null; role?: string }> = {}
-  const deviceStats: DeviceStats = { total: 0, deviceTypes: {}, oses: {}, browsers: {} }
-  usersSnap.forEach((d: QueryDocumentSnapshot<DocumentData>) => {
-    const data = d.data()
-    userProfiles[d.id] = {
-      username: data.username || data.email?.split('@')[0] || 'Student',
-      email: data.email || null,
-      role: data.role,
-    }
-    if (data.deviceType) {
-      deviceStats.total++
-      deviceStats.deviceTypes[data.deviceType] = (deviceStats.deviceTypes[data.deviceType] || 0) + 1
-      if (data.deviceOs) deviceStats.oses[data.deviceOs] = (deviceStats.oses[data.deviceOs] || 0) + 1
-      if (data.deviceBrowser) deviceStats.browsers[data.deviceBrowser] = (deviceStats.browsers[data.deviceBrowser] || 0) + 1
-    }
+  const res = await fetch('/api/admin/learning-gap', {
+    headers: { Authorization: `Bearer ${token}` },
   })
-  const studentCount = Object.values(userProfiles).filter(
-    (u) => u.role !== 'admin'
-  ).length
-  const totalStudents = Math.max(studentCount, 1)
-
-  const scoresSnap = await getDocs(collectionGroup(db, 'scores'))
-  const scoresByGame: Record<string, { uid: string; bestScore: number }[]> = {}
-  scoresSnap.forEach((d: QueryDocumentSnapshot<DocumentData>) => {
-    const gameId = d.id
-    const uid = d.ref.parent.parent?.id
-    if (!uid) return
-    const bestScore = Number(d.data().bestScore) || 0
-    if (!scoresByGame[gameId]) scoresByGame[gameId] = []
-    scoresByGame[gameId].push({ uid, bestScore })
-  })
-
-  const statsSnap = await getDocs(collectionGroup(db, 'gameStats'))
-  const statsByGame: Record<string, { uid: string; totalMatchCount: number }[]> = {}
-  statsSnap.forEach((d: QueryDocumentSnapshot<DocumentData>) => {
-    const gameId = d.id
-    const uid = d.ref.parent.parent?.id
-    if (!uid) return
-    const totalMatchCount = Number(d.data().totalMatchCount) || 0
-    if (!statsByGame[gameId]) statsByGame[gameId] = []
-    statsByGame[gameId].push({ uid, totalMatchCount })
-  })
-
-  const maxScoreByGame: Record<string, number> = {}
-  for (const [gameId, scores] of Object.entries(scoresByGame)) {
-    maxScoreByGame[gameId] = Math.max(...scores.map((s) => s.bestScore), 1)
+  if (!res.ok) {
+    throw new Error(res.status === 403 ? 'Admin access required' : 'Failed to load analytics')
   }
 
-  const gameAnalytics: GameLearningAnalytics[] = []
-  const allGameIds = new Set(Object.keys(scoresByGame))
-
-  for (const gameId of allGameIds) {
-    const scores = scoresByGame[gameId] || []
-    if (scores.length === 0) continue
-
-    const statsEntries = statsByGame[gameId] || []
-    const playCount = scores.length
-    const totalMatches = statsEntries.reduce((sum, s) => sum + s.totalMatchCount, 0)
-    const maxBestScore = maxScoreByGame[gameId] || 1
-    const avgBestScore = scores.reduce((sum, s) => sum + s.bestScore, 0) / playCount
-    const normalizedAvgScore = Math.min((avgBestScore / maxBestScore) * 100, 100)
-    const gapScore = 100 - normalizedAvgScore
-    const engagementRate = Math.min((playCount / totalStudents) * 100, 100)
-
-    const gapLevel: 'critical' | 'moderate' | 'low' =
-      gapScore >= 65 ? 'critical' : gapScore >= 35 ? 'moderate' : 'low'
-    const engagementLevel: 'high' | 'medium' | 'low' =
-      engagementRate >= 40 ? 'high' : engagementRate >= 15 ? 'medium' : 'low'
-
-    gameAnalytics.push({
-      gameId,
-      gameName: gameNameMap[gameId] || gameId,
-      subject: GAME_SUBJECTS[gameId] || 'Other',
-      playCount,
-      totalMatches,
-      avgBestScore: Math.round(avgBestScore * 10) / 10,
-      maxBestScore,
-      normalizedAvgScore: Math.round(normalizedAvgScore * 10) / 10,
-      gapScore: Math.round(gapScore * 10) / 10,
-      engagementRate: Math.round(engagementRate * 10) / 10,
-      gapLevel,
-      engagementLevel,
-    })
-  }
-
-  gameAnalytics.sort((a, b) => b.gapScore - a.gapScore)
-
-  const subjectMap: Record<string, GameLearningAnalytics[]> = {}
-  for (const g of gameAnalytics) {
-    if (!subjectMap[g.subject]) subjectMap[g.subject] = []
-    subjectMap[g.subject].push(g)
-  }
-  const subjectAnalytics: SubjectAnalytics[] = Object.entries(subjectMap)
-    .map(([subject, games]) => ({
-      subject,
-      games: games.map((g) => g.gameName),
-      avgNormalizedScore:
-        Math.round((games.reduce((s, g) => s + g.normalizedAvgScore, 0) / games.length) * 10) / 10,
-      totalPlays: games.reduce((s, g) => s + g.playCount, 0),
-      criticalGameCount: games.filter((g) => g.gapLevel === 'critical').length,
-    }))
-    .sort((a, b) => a.avgNormalizedScore - b.avgNormalizedScore)
-
-  const studentScoreMap: Record<string, number[]> = {}
-  for (const [gameId, scores] of Object.entries(scoresByGame)) {
-    const maxScore = maxScoreByGame[gameId] || 1
-    for (const { uid, bestScore } of scores) {
-      if (userProfiles[uid]?.role === 'admin') continue
-      if (!studentScoreMap[uid]) studentScoreMap[uid] = []
-      studentScoreMap[uid].push((bestScore / maxScore) * 100)
-    }
-  }
-
-  const atRiskStudents: StudentRiskProfile[] = Object.entries(studentScoreMap)
-    .map(([uid, scores]) => {
-      const avg = scores.reduce((s, v) => s + v, 0) / scores.length
-      return {
-        uid,
-        username: userProfiles[uid]?.username || 'Student',
-        email: userProfiles[uid]?.email || null,
-        gamesPlayed: scores.length,
-        avgNormalizedScore: Math.round(avg * 10) / 10,
-        riskLevel: (avg < 30 ? 'high' : avg < 55 ? 'medium' : 'low') as 'high' | 'medium' | 'low',
-      }
-    })
-    .filter((s) => s.riskLevel !== 'low')
-    .sort((a, b) => a.avgNormalizedScore - b.avgNormalizedScore)
-    .slice(0, 10)
-
-  const platformAvgScore =
-    gameAnalytics.length > 0
-      ? Math.round(
-          (gameAnalytics.reduce((s, g) => s + g.normalizedAvgScore, 0) / gameAnalytics.length) * 10
-        ) / 10
-      : 0
-
-  return {
-    gameAnalytics,
-    subjectAnalytics,
-    atRiskStudents,
-    totalStudents,
-    platformAvgScore,
-    deviceStats,
-    generatedAt: new Date(),
-  }
+  const data = await res.json()
+  // generatedAt is serialized to an ISO string over JSON — revive to a Date.
+  return { ...data, generatedAt: new Date(data.generatedAt) } as LearningGapReport
 }

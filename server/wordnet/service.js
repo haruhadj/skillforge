@@ -11,6 +11,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { sampleDistinct } from './sample.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, 'oewn-2025-sqlite-2.3.2.sqlite');
@@ -87,38 +88,66 @@ const DIFFICULTY_RANGES = {
 };
 
 /**
+ * Process-lifetime caches of fully-filtered candidate rows, keyed by difficulty.
+ *
+ * The DB is opened read-only and never changes, so a pool is computed once (the heavy
+ * filtered join runs a single time per key per process) and then sampled in JS on every
+ * request. This replaces the old per-request `ORDER BY RANDOM()` full-table sort over the
+ * ~152k-word WordNet SQLite — a single /words?count=10 request previously fanned out into
+ * 10–15+ of those scans. (audit R17 — vocab ORDER BY RANDOM() → sampled candidate cache)
+ */
+const wordsPoolCache = new Map();
+const distractorPoolCache = new Map();
+const wordPairPoolCache = new Map();
+
+function normalizeDifficulty(difficulty) {
+  return DIFFICULTY_RANGES[difficulty] ? difficulty : 'medium';
+}
+
+function getPool(cache, key, loader) {
+  let pool = cache.get(key);
+  if (!pool) {
+    pool = loader();
+    cache.set(key, pool);
+  }
+  return pool;
+}
+
+/**
  * Get random words by difficulty
  * @param {string} difficulty - 'light', 'medium', 'hard', 'devilish'
  * @param {number} count - Number of words to return (default: 10)
  * @returns {Array} Array of word objects with word, definition, partOfSpeech, topic
  */
 export function getWordsByDifficulty(difficulty, count = 10) {
-  const range = DIFFICULTY_RANGES[difficulty] || DIFFICULTY_RANGES.medium;
-  
-  const sql = `
-    SELECT DISTINCT w.word, sy.definition, p.pos as partOfSpeech, d.domainname as topic, se.tagcount as freq
-    FROM words w
-    JOIN senses se ON w.wordid = se.wordid
-    JOIN synsets sy ON se.synsetid = sy.synsetid
-    JOIN poses p ON sy.posid = p.posid
-    LEFT JOIN domains d ON sy.domainid = d.domainid
-    WHERE se.tagcount BETWEEN ? AND ?
-      AND length(w.word) BETWEEN ? AND 20
-      AND w.word NOT LIKE '% %'
-      AND w.word NOT LIKE '%-%'
-      AND w.word = lower(w.word)
-      AND w.word GLOB '[a-z]*'
-      AND (w.word LIKE '%a%' OR w.word LIKE '%e%' OR w.word LIKE '%i%'
-           OR w.word LIKE '%o%' OR w.word LIKE '%u%')
-      AND sy.definition IS NOT NULL
-      AND length(sy.definition) > 10
-      AND length(sy.definition) < 200
-    ORDER BY RANDOM()
-    LIMIT ?
-  `;
+  const key = normalizeDifficulty(difficulty);
+  const range = DIFFICULTY_RANGES[key];
 
-  const maxFreq = range.max === Infinity ? 999999 : range.max;
-  return queryAll(sql, [range.min, maxFreq, range.minLen ?? 4, count]);
+  const pool = getPool(wordsPoolCache, key, () => {
+    const sql = `
+      SELECT DISTINCT w.word, sy.definition, p.pos as partOfSpeech, d.domainname as topic, se.tagcount as freq
+      FROM words w
+      JOIN senses se ON w.wordid = se.wordid
+      JOIN synsets sy ON se.synsetid = sy.synsetid
+      JOIN poses p ON sy.posid = p.posid
+      LEFT JOIN domains d ON sy.domainid = d.domainid
+      WHERE se.tagcount BETWEEN ? AND ?
+        AND length(w.word) BETWEEN ? AND 20
+        AND w.word NOT LIKE '% %'
+        AND w.word NOT LIKE '%-%'
+        AND w.word = lower(w.word)
+        AND w.word GLOB '[a-z]*'
+        AND (w.word LIKE '%a%' OR w.word LIKE '%e%' OR w.word LIKE '%i%'
+             OR w.word LIKE '%o%' OR w.word LIKE '%u%')
+        AND sy.definition IS NOT NULL
+        AND length(sy.definition) > 10
+        AND length(sy.definition) < 200
+    `;
+    const maxFreq = range.max === Infinity ? 999999 : range.max;
+    return queryAll(sql, [range.min, maxFreq, range.minLen ?? 4]);
+  });
+
+  return sampleDistinct(pool, count);
 }
 
 /**
@@ -163,24 +192,29 @@ export function isValidWord(word) {
  * @returns {Array} Array of wrong definitions
  */
 export function getDistractors(correctWord, difficulty, count = 3) {
-  const range = DIFFICULTY_RANGES[difficulty] || DIFFICULTY_RANGES.medium;
-  
-  const sql = `
-    SELECT DISTINCT sy.definition, w.word as sourceWord
-    FROM words w
-    JOIN senses se ON w.wordid = se.wordid
-    JOIN synsets sy ON se.synsetid = sy.synsetid
-    WHERE se.tagcount BETWEEN ? AND ?
-      AND w.word != ?
-      AND sy.definition IS NOT NULL
-      AND length(sy.definition) > 10
-      AND length(sy.definition) < 200
-    ORDER BY RANDOM()
-    LIMIT ?
-  `;
-  
-  const maxFreq = range.max === Infinity ? 999999 : range.max;
-  return queryAll(sql, [range.min, maxFreq, correctWord.toLowerCase(), count]);
+  const key = normalizeDifficulty(difficulty);
+  const range = DIFFICULTY_RANGES[key];
+
+  // Cache the full distractor pool for this difficulty WITHOUT the per-call exclusion;
+  // the correct word is filtered out in JS at sample time so the pool stays reusable.
+  const pool = getPool(distractorPoolCache, key, () => {
+    const sql = `
+      SELECT DISTINCT sy.definition, w.word as sourceWord
+      FROM words w
+      JOIN senses se ON w.wordid = se.wordid
+      JOIN synsets sy ON se.synsetid = sy.synsetid
+      WHERE se.tagcount BETWEEN ? AND ?
+        AND sy.definition IS NOT NULL
+        AND length(sy.definition) > 10
+        AND length(sy.definition) < 200
+    `;
+    const maxFreq = range.max === Infinity ? 999999 : range.max;
+    return queryAll(sql, [range.min, maxFreq]);
+  });
+
+  const lower = correctWord.toLowerCase();
+  const candidates = pool.filter((row) => row.sourceWord !== lower);
+  return sampleDistinct(candidates, count);
 }
 
 /**
@@ -332,31 +366,35 @@ export function getAntonyms(word, limit = 5) {
  * @returns {Array} Array of word pair objects
  */
 export function generateWordPairs(difficulty, count = 20) {
-  const range = DIFFICULTY_RANGES[difficulty] || DIFFICULTY_RANGES.medium;
-  const maxFreq = range.max === Infinity ? 999999 : range.max;
-  
+  const key = normalizeDifficulty(difficulty);
+  const range = DIFFICULTY_RANGES[key];
+
   const pairs = [];
   const usedWords = new Set();
-  
-  // Get base words
-  const baseWords = queryAll(`
-    SELECT DISTINCT w.word, sy.definition, p.pos as partOfSpeech, se.tagcount as freq
-    FROM words w
-    JOIN senses se ON w.wordid = se.wordid
-    JOIN synsets sy ON se.synsetid = sy.synsetid
-    JOIN poses p ON sy.posid = p.posid
-    WHERE se.tagcount BETWEEN ? AND ?
-      AND length(w.word) BETWEEN 4 AND 12
-      AND w.word NOT LIKE '% %'
-      AND w.word NOT LIKE '%-%'
-      AND w.word = lower(w.word)
-      AND sy.definition IS NOT NULL
-      AND length(sy.definition) > 10
-      AND length(sy.definition) < 200
-    ORDER BY RANDOM()
-    LIMIT ?
-  `, [range.min, maxFreq, count * 2]);
-  
+
+  // Cache the filtered base-word pool once per difficulty, then draw a random subset.
+  const basePool = getPool(wordPairPoolCache, key, () => {
+    const sql = `
+      SELECT DISTINCT w.word, sy.definition, p.pos as partOfSpeech, se.tagcount as freq
+      FROM words w
+      JOIN senses se ON w.wordid = se.wordid
+      JOIN synsets sy ON se.synsetid = sy.synsetid
+      JOIN poses p ON sy.posid = p.posid
+      WHERE se.tagcount BETWEEN ? AND ?
+        AND length(w.word) BETWEEN 4 AND 12
+        AND w.word NOT LIKE '% %'
+        AND w.word NOT LIKE '%-%'
+        AND w.word = lower(w.word)
+        AND sy.definition IS NOT NULL
+        AND length(sy.definition) > 10
+        AND length(sy.definition) < 200
+    `;
+    const maxFreq = range.max === Infinity ? 999999 : range.max;
+    return queryAll(sql, [range.min, maxFreq]);
+  });
+
+  const baseWords = sampleDistinct(basePool, count * 2);
+
   for (const baseWord of baseWords) {
     if (pairs.length >= count) break;
     if (usedWords.has(baseWord.word)) continue;

@@ -162,26 +162,25 @@ export async function getRecentActivity(
   return items
 }
 
+/**
+ * Global recent activity from the cached, public server route.
+ *
+ * Was a client-side `collectionGroup('gameStats') orderBy(updatedAt) limit 50` scan that
+ * read every gameStats doc to sort; now a single cached read. (audit R17 — activity caching)
+ * `limitCount` is accepted for API compatibility; the route serves a fixed-size feed.
+ */
 export async function getGlobalRecentActivity(
   limitCount = 50
 ): Promise<Array<RecentActivityItem & { userId: string }>> {
-  const ref = collectionGroup(db, 'gameStats')
-  const q = query(ref, orderBy('updatedAt', 'desc'), limit(limitCount))
-  const snapshot = await getDocs(q)
-  const items: Array<RecentActivityItem & { userId: string }> = []
-  snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
-    const data = docSnap.data()
-    const updatedAt = convertTimestampToDate(data.updatedAt)
-    if (!updatedAt) return
-    const userId = docSnap.ref.parent.parent?.id
-    if (!userId) return
-    items.push({
-      userId,
-      gameId: docSnap.id,
-      lastMode: (data.lastMode as 'singleplayer' | 'multiplayer') ?? null,
-      lastScore: typeof data.lastScore === 'number' ? data.lastScore : null,
-      updatedAt,
-    })
-  })
-  return items
+  const res = await fetch('/api/activity')
+  if (!res.ok) throw new Error('Failed to load activity')
+  const data = await res.json()
+  const items: Array<RecentActivityItem & { userId: string; updatedAt: string }> = data.items ?? []
+  return items.slice(0, limitCount).map((item) => ({
+    userId: item.userId,
+    gameId: item.gameId,
+    lastMode: item.lastMode,
+    lastScore: item.lastScore,
+    updatedAt: new Date(item.updatedAt),
+  }))
 }
