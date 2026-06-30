@@ -7,6 +7,7 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
 import MobileNav from '@/app/components/MobileNav'
 import TopNav from '@/app/components/TopNav'
+import GameCover from '@/app/components/GameCover'
 import { getRecentActivity, getGlobalRecentActivity } from '@/app/services/gameDataService'
 import { defaultGames } from '@/app/games/games'
 import { RecentActivityItem } from '@/app/types'
@@ -232,13 +233,10 @@ export default function ActivityPage() {
                   )}
 
                   {/* Cover image */}
-                  <img
-                    src={`/games/${item.gameId}/cover.png`}
+                  <GameCover
+                    gameId={item.gameId}
                     alt={gameName}
                     className="h-12 w-12 rounded-lg object-cover shrink-0 bg-muted"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
                   />
 
                   {/* Game info */}

@@ -1,7 +1,6 @@
-import { db } from '@/app/lib/firebase'
+import { auth, db } from '@/app/lib/firebase'
 import {
   collection,
-  collectionGroup,
   deleteDoc,
   doc,
   getDoc,
@@ -72,22 +71,23 @@ export async function deleteGame(gameId: string): Promise<void> {
   await deleteDoc(doc(db, 'gameRegistry', gameId))
 }
 
+/**
+ * Platform totals from the cached, admin-gated server route.
+ *
+ * Was a client-side full users read + collectionGroup('gameStats') scan on every Dashboard
+ * render; now a single cached read behind a 5-minute TTL. (audit R17 — admin analytics caching)
+ */
 export async function getPlatformStats(): Promise<PlatformStats> {
-  const [usersSnap, allStatsSnap] = await Promise.all([
-    getDocs(collection(db, 'users')),
-    getDocs(collectionGroup(db, 'gameStats')),
-  ])
+  const token = await auth.currentUser?.getIdToken()
+  if (!token) throw new Error('Not authenticated')
 
-  const totalUsers = usersSnap.size
-  let totalMatches = 0
-  allStatsSnap.forEach((d) => {
-    totalMatches += Number(d.data().totalMatchCount) || 0
+  const res = await fetch('/api/admin/platform-stats', {
+    headers: { Authorization: `Bearer ${token}` },
   })
-
-  return {
-    totalUsers,
-    totalMatches,
+  if (!res.ok) {
+    throw new Error(res.status === 403 ? 'Admin access required' : 'Failed to load platform stats')
   }
+  return (await res.json()) as PlatformStats
 }
 
 // Announcements
