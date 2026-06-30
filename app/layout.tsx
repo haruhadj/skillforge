@@ -10,6 +10,12 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 const geistMono = Geist_Mono({subsets:['latin'],variable:'--font-mono'});
 
+// Render every route per-request so the CSP nonce minted in middleware.ts
+// (audit round 16) is stamped onto each response's scripts. This is the
+// accepted tradeoff of nonce-based CSP (no static prerender) and also avoids
+// the build-time Firebase-key prerender warning on /auth/action & /_not-found.
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'SkillForge - Your Learning Playground',
   description: 'Master new skills through interactive games and challenges',
