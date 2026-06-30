@@ -2,13 +2,14 @@ import http from 'http'
 import { Server } from 'socket.io'
 import express from 'express'
 import cors from 'cors'
+import { applyMove } from './moveValidator.js'
 
 const app = express()
 app.use(cors())
 
 const PORT = Number(process.env.CHESS_PORT) || 3004
 const server = http.createServer(app)
-const START_FEN = 'rn1qkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 const io = new Server(server, {
   path: '/chess-ws/',
@@ -209,7 +210,7 @@ io.on('connection', (socket) => {
     })
   })
 
-  socket.on('move', ({ roomId, move, fen }) => {
+  socket.on('move', ({ roomId, move }) => {
     const room = rooms.get(roomId)
     if (!room || room.gameEnded) return
 
@@ -220,17 +221,22 @@ io.on('connection', (socket) => {
     const player = room.players[socket.id]
     if (!player) return
 
-    // Turn-ownership check without a server-side chess engine: the active color
-    // of the currently-stored (pre-move) FEN must match the mover's color, so a
-    // player can't move for the opponent or move twice in a row. NOTE: full
-    // board/move legality is still client-trusted (the chess client is a prebuilt
-    // artifact); this only enforces who-moves-when, per audit M3.
+    // Turn-ownership pre-check: the active color of the currently-stored (pre-move)
+    // FEN must match the mover's color, so a player can't move for the opponent or
+    // move twice in a row. Cheap defense-in-depth — applyMove (chess.js) also
+    // enforces turn via the FEN's active color.
     const activeColor = String(room.fen).split(' ')[1]
     if (activeColor === 'w' || activeColor === 'b') {
       if (player.color !== activeColor) return
     }
 
-    room.fen = isValidFen(fen) ? fen : START_FEN
+    // Server-authoritative board (audit round 15): replay the move with a real
+    // engine instead of trusting the client FEN. An illegal/forged move is dropped
+    // and never broadcast; a legal move yields a server-computed FEN — the client's
+    // `fen` field is ignored from here on.
+    const outcome = applyMove(room.fen, move)
+    if (!outcome.ok) return
+    room.fen = outcome.fen
     room.lastActivity = Date.now()
     if (room.drawOfferedBy) {
       room.drawOfferedBy = null
@@ -238,6 +244,20 @@ io.on('connection', (socket) => {
     }
 
     socket.to(roomId).emit('move', { move, fen: room.fen })
+
+    // The engine detects checkmate/stalemate/draw, so the server ends the game
+    // authoritatively (reusing the resign/draw gameEnded shape; the room.gameEnded
+    // guard above blocks any further moves).
+    if (outcome.gameOver && outcome.end) {
+      room.gameEnded = true
+      room.resultMessage = outcome.end.message
+      room.drawOfferedBy = null
+      io.to(roomId).emit('gameEnded', {
+        reason: outcome.end.reason,
+        winner: outcome.end.winner,
+        message: outcome.end.message,
+      })
+    }
   })
 
   socket.on('offerDraw', (roomId) => {
