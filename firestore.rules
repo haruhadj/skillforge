@@ -130,6 +130,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Featured games (Creator's Picks ordering) - readable by anyone, writable by admins
+    match /featuredGames/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Game registry - readable by anyone, writable by admins
     match /gameRegistry/{gameId} {
       allow read: if true;

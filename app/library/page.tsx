@@ -45,6 +45,7 @@ function LibraryContent() {
   const [userGlobalStats, setUserGlobalStats] = useState<GlobalLeaderboardEntry | null>(null)
   const [myRank, setMyRank] = useState<{ rank: number; total: number } | null>(null)
   const [search, setSearch] = useState(searchParams.get('q') ?? '')
+  const [featuredIds, setFeaturedIds] = useState<string[]>([])
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
@@ -118,6 +119,18 @@ function LibraryContent() {
   }, [currentUser?.uid])
 
   useEffect(() => {
+    async function loadFeatured() {
+      try {
+        const { db } = await import('@/app/lib/firebase')
+        const { doc, getDoc } = await import('firebase/firestore')
+        const snap = await getDoc(doc(db, 'featuredGames', 'config'))
+        if (snap.exists()) setFeaturedIds(snap.data().gameIds ?? [])
+      } catch { /* silently ignore — featured section just won't render */ }
+    }
+    loadFeatured()
+  }, [])
+
+  useEffect(() => {
     fetch('/api/leaderboard?mode=popularity')
       .then((r) => r.json().catch(() => ({})))
       .then((payload) => setGamePopularity(payload.popularity ?? {}))
@@ -168,6 +181,12 @@ function LibraryContent() {
     })
     return [...enabled].sort((a, b) => a.name.localeCompare(b.name))
   }, [games, sortBy, selectedCategory, recentlyPlayed, gamePopularity, search])
+
+  const featuredGames = useMemo(() => {
+    if (!featuredIds.length) return []
+    const enabledMap = new Map(games.filter(g => g.enabled !== false).map(g => [g.id, g]))
+    return featuredIds.map(id => enabledMap.get(id)).filter(Boolean) as Game[]
+  }, [games, featuredIds])
 
   const featured = useMemo(() => {
     const enabled = games.filter((g) => g.enabled !== false && g.iframePath)
@@ -294,6 +313,31 @@ function LibraryContent() {
             )}
           </div>
         </div>
+
+        {/* Creator's Picks */}
+        {!search.trim() && featuredGames.length > 0 && (
+          <section className="mb-8 animate-slide-up">
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="h-4 w-4 text-amber-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <h2 className="text-base font-bold tracking-tight">Creator's Picks</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {featuredGames.map((game) => (
+                <div key={game.id} className="w-44 shrink-0">
+                  <GameCard
+                    game={game}
+                    isRecent={recentlyPlayed.includes(game.id)}
+                    plays={gamePopularity[game.id] || 0}
+                    best={bestScores[game.id] ?? null}
+                    onPlay={() => trackGamePlay(game.id)}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
