@@ -257,6 +257,7 @@ function LibraryContent() {
                 <div className="flex items-center gap-4 flex-wrap">
                   <Link
                     href={`/games/${featured.id}`}
+                    prefetch={false}
                     onClick={() => trackGamePlay(featured.id)}
                     className="h-10 px-6 inline-flex items-center rounded-xl bg-white text-violet-800 text-sm font-bold hover:bg-white/90 transition-colors"
                   >

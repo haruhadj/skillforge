@@ -2,7 +2,7 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    unoptimized: false,
+    unoptimized: true,
   },
   trailingSlash: true,
   // Baseline security headers (audit round 4). SAMEORIGIN (not DENY) is required

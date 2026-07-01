@@ -67,7 +67,7 @@ export default function GameCard({ game, isRecent, plays = 0, best = null, onPla
           </div>
           {playable ? (
             <Button asChild size="sm" className="w-full h-8 text-xs font-semibold" onClick={onPlay}>
-              <Link href={`/games/${game.id}`}>Play</Link>
+              <Link href={`/games/${game.id}`} prefetch={false}>Play</Link>
             </Button>
           ) : (
             <Button size="sm" variant="secondary" className="w-full h-8 text-xs" disabled>
