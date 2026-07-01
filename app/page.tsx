@@ -78,8 +78,8 @@ export default function HomePage() {
             <Image
               src="/game logo.jpeg"
               alt="SkillForge Logo"
-              width={46}
-              height={46}
+              width={64}
+              height={64}
               className="rounded-xl shadow-lg"
               priority
             />
@@ -112,7 +112,7 @@ export default function HomePage() {
         <div className="w-full max-w-[360px] animate-scale-in">
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center gap-3 mb-7 justify-center">
-            <Image src="/game logo.jpeg" alt="SkillForge" width={44} height={44} className="rounded-xl shadow" priority />
+            <Image src="/game logo.jpeg" alt="SkillForge" width={64} height={64} className="rounded-xl shadow" priority />
             <span className="text-xl font-bold">SkillForge</span>
           </div>
 
@@ -245,10 +245,6 @@ export default function HomePage() {
               </Button>
             </div>
 
-            {/* Trust signal */}
-            <p className="text-center text-[11px] text-muted-foreground mt-5 leading-relaxed">
-              Free forever · No credit card needed
-            </p>
           </div>
         </div>
       </div>

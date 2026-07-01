@@ -1,8 +1,11 @@
 server/tts-key.json
+skillforge_firebase_key.json
+.python-version
 
 # Logs
 logs
 *.log
+log.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
