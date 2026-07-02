@@ -11,6 +11,13 @@ import { Game } from '@/app/types'
 
 export const defaultGames: Game[] = [
   {
+    id: 'chrono-sense',
+    name: 'Chrono Sense',
+    iframePath: '/games/chrono-sense/index.html',
+    description: 'Test your internal clock — hold and release at the exact target time.',
+    category: 'Memory',
+  },
+  {
     id: '2048',
     name: '2048',
     iframePath: '/games/2048/index.html',

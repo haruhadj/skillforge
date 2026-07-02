@@ -1,0 +1,6 @@
+{
+  "name": "CHRONO_SENSE",
+  "description": "A mobile-first visual mini-game that tests your internal clock by matching a target time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
