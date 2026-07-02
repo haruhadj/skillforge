@@ -21,12 +21,14 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { GameState, Attempt, AccuracyTier } from './types';
-import { 
-  generateTargetTime, 
-  getAccuracyTier, 
-  formatTime, 
-  formatDelta, 
-  ACCURACY_TIERS 
+import {
+  generateTargetTime,
+  getAccuracyTier,
+  formatTime,
+  formatDelta,
+  getComboMultiplier,
+  calculateRoundPoints,
+  ACCURACY_TIERS
 } from './utils';
 
 function postToParent(event: string, data: unknown) {
@@ -144,7 +146,10 @@ export default function App() {
   const [targetTime, setTargetTime] = useState<number>(3.50);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
-  const [highScore, setHighScore] = useState<number>(0);
+  const [bestStreak, setBestStreak] = useState<number>(0);
+  const [runScore, setRunScore] = useState<number>(0);
+  const [bestRunScore, setBestRunScore] = useState<number>(0);
+  const [lastRoundPoints, setLastRoundPoints] = useState<number>(0);
   const [bestDelta, setBestDelta] = useState<number | null>(null);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [isPressing, setIsPressing] = useState<boolean>(false);
@@ -163,8 +168,11 @@ export default function App() {
   // Load stats from localStorage on mount
   useEffect(() => {
     try {
-      const storedHighScore = localStorage.getItem('chrono_high_score');
-      if (storedHighScore) setHighScore(parseInt(storedHighScore, 10));
+      const storedBestRunScore = localStorage.getItem('chrono_best_run_score');
+      if (storedBestRunScore) setBestRunScore(parseInt(storedBestRunScore, 10));
+
+      const storedBestStreak = localStorage.getItem('chrono_best_streak');
+      if (storedBestStreak) setBestStreak(parseInt(storedBestStreak, 10));
 
       const storedBestDelta = localStorage.getItem('chrono_best_delta');
       if (storedBestDelta) setBestDelta(parseFloat(storedBestDelta));
@@ -258,26 +266,44 @@ export default function App() {
 
     const delta = duration - targetTime;
     const absDelta = Math.abs(delta);
-    
-    // Streak preserved if accuracy is within 0.30s (Excellent/God/Good threshold match)
-    const isWin = absDelta <= 0.30;
-    const isSuperWin = absDelta <= 0.05;
+
+    // A round counts as a "hit" up to the Good Effort tier boundary — matches
+    // the accuracy tiers shown in How To Play, so the streak/tier language stays consistent.
+    const isWin = absDelta <= ACCURACY_TIERS.GOOD_EFFORT.maxDelta;
+    const isSuperWin = absDelta <= ACCURACY_TIERS.GOD_TIER.maxDelta;
 
     // Trigger audio feedback based on performance
     synthRef.current.playRelease(isSuperWin, isWin);
 
-    // Update Streak and Best
+    // Combo multiplier is based on the streak going into this round, so building
+    // momentum pays off on the next hit rather than the one that just landed.
+    const comboMultiplier = getComboMultiplier(streak);
+    const roundPoints = isWin ? calculateRoundPoints(delta, comboMultiplier) : 0;
+    setLastRoundPoints(roundPoints);
+
+    // Update streak, combo run score (resets on a miss), and their all-time bests
     let newStreak = streak;
+    let newRunScore = runScore;
     if (isWin) {
       newStreak = streak + 1;
+      newRunScore = runScore + roundPoints;
       setStreak(newStreak);
-      if (newStreak > highScore) {
-        setHighScore(newStreak);
-        localStorage.setItem('chrono_high_score', newStreak.toString());
+      setRunScore(newRunScore);
+      if (newStreak > bestStreak) {
+        setBestStreak(newStreak);
+        localStorage.setItem('chrono_best_streak', newStreak.toString());
       }
     } else {
       newStreak = 0;
+      newRunScore = 0;
       setStreak(0);
+      setRunScore(0);
+    }
+
+    const updatedBestRunScore = Math.max(bestRunScore, newRunScore);
+    if (updatedBestRunScore > bestRunScore) {
+      setBestRunScore(updatedBestRunScore);
+      localStorage.setItem('chrono_best_run_score', updatedBestRunScore.toString());
     }
 
     // Update Best Delta
@@ -296,6 +322,7 @@ export default function App() {
       actual: duration,
       delta: delta,
       tierId: tier.id,
+      points: roundPoints,
       timestamp: Date.now()
     };
 
@@ -307,8 +334,13 @@ export default function App() {
     setTotalGames(newTotalGames);
     localStorage.setItem('chrono_total_games', newTotalGames.toString());
 
-    postToParent('BEST_SCORE', { bestScore: Math.max(highScore, newStreak) });
-    postToParent('GAME_STATS', { totalGames: newTotalGames, bestStreak: Math.max(highScore, newStreak), bestDelta: bestDelta === null ? absDelta : Math.min(bestDelta, absDelta) });
+    postToParent('BEST_SCORE', { bestScore: updatedBestRunScore });
+    postToParent('GAME_STATS', {
+      totalGames: newTotalGames,
+      bestRunScore: updatedBestRunScore,
+      bestStreak: Math.max(bestStreak, newStreak),
+      bestDelta: bestDelta === null ? absDelta : Math.min(bestDelta, absDelta)
+    });
 
     setGameState('RESULT');
   };
@@ -333,12 +365,16 @@ export default function App() {
   const resetAllStats = () => {
     if (window.confirm('Are you sure you want to reset all high scores and history?')) {
       localStorage.removeItem('chrono_high_score');
+      localStorage.removeItem('chrono_best_run_score');
+      localStorage.removeItem('chrono_best_streak');
       localStorage.removeItem('chrono_best_delta');
       localStorage.removeItem('chrono_attempts');
-      setHighScore(0);
+      setBestRunScore(0);
+      setBestStreak(0);
       setBestDelta(null);
       setAttempts([]);
       setStreak(0);
+      setRunScore(0);
       handleNextRound();
     }
   };
@@ -390,18 +426,20 @@ export default function App() {
         {/* Stats Strip */}
         <section id="stats-dashboard" className="grid grid-cols-3 gap-2 my-1.5 sm:my-3">
           <div className="bg-zinc-900/45 border border-zinc-800/60 rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center transition-all">
-            <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-0.5">Best Streak</span>
+            <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-0.5">Best Score</span>
             <div className="flex items-center gap-1">
               <Trophy className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-amber-500" />
-              <span className="text-xs sm:text-sm font-mono font-bold text-white">{highScore}</span>
+              <span className="text-xs sm:text-sm font-mono font-bold text-white">{bestRunScore.toLocaleString()}</span>
             </div>
           </div>
 
           <div className="bg-zinc-900/45 border border-zinc-800/60 rounded-xl p-2 sm:p-2.5 flex flex-col items-center justify-center transition-all">
-            <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-0.5">Current Streak</span>
+            <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-0.5">Combo</span>
             <div className="flex items-center gap-1">
               <Flame className={`h-3 sm:h-3.5 w-3 sm:w-3.5 ${streak > 0 ? 'text-orange-500 animate-bounce' : 'text-zinc-600'}`} />
-              <span className={`text-xs sm:text-sm font-mono font-bold ${streak > 0 ? 'text-orange-400' : 'text-zinc-400'}`}>{streak}</span>
+              <span className={`text-xs sm:text-sm font-mono font-bold ${streak > 0 ? 'text-orange-400' : 'text-zinc-400'}`}>
+                {streak > 0 ? `x${getComboMultiplier(streak).toFixed(1)}` : streak}
+              </span>
             </div>
           </div>
 
@@ -484,6 +522,13 @@ export default function App() {
                     Tap & hold the trigger below. Count <strong className="text-emerald-400 font-semibold">{targetTime.toFixed(2)}s</strong> in your head, then release.
                   </p>
                 </div>
+
+                {runScore > 0 && (
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400/90 tracking-wider bg-emerald-500/5 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                    <Sparkles className="h-3 w-3" />
+                    <span>RUN SCORE: {runScore.toLocaleString()} pts</span>
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -561,6 +606,21 @@ export default function App() {
                   <p className="text-[11px] sm:text-xs text-zinc-400 leading-relaxed font-light px-2">
                     {currentTier.description}
                   </p>
+                </div>
+
+                {/* Points earned this round & running combo total */}
+                <div className="flex items-center gap-3 text-[11px] sm:text-xs font-mono">
+                  <div className="flex items-center gap-1">
+                    <Sparkles className="h-3 w-3 text-emerald-400" />
+                    <span className={lastRoundPoints > 0 ? 'text-emerald-400 font-bold' : 'text-red-400/80 font-bold'}>
+                      {lastRoundPoints > 0 ? `+${lastRoundPoints.toLocaleString()} pts` : 'RUN RESET'}
+                    </span>
+                  </div>
+                  <span className="text-zinc-700">•</span>
+                  <div className="flex items-center gap-1">
+                    <Trophy className="h-3 w-3 text-amber-500" />
+                    <span className="text-zinc-300">{runScore.toLocaleString()} run</span>
+                  </div>
                 </div>
 
                 {/* Score Progress visualizer */}
@@ -711,7 +771,7 @@ export default function App() {
                   </div>
                 ) : (
                   <p className="text-[10px] font-mono text-zinc-600 tracking-wider text-center max-w-[200px]">
-                    Hold and release on rhythm. Achieve delta &lt; 0.30s to build a streak!
+                    Hold and release on rhythm. Land within 0.50s to score and build your combo!
                   </p>
                 )}
               </motion.div>
@@ -806,7 +866,12 @@ export default function App() {
 
                 <div className="flex gap-2.5 items-start">
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-mono text-[10px] text-white">4</span>
-                  <p>Keep your timing accuracy error within <strong>±0.30 seconds</strong> to preserve and increase your current streak!</p>
+                  <p>Keep your timing accuracy error within <strong>±0.50 seconds</strong> to score points and keep your combo alive!</p>
+                </div>
+
+                <div className="flex gap-2.5 items-start">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-mono text-[10px] text-white">5</span>
+                  <p>Precision pays: perfect timing scores up to <strong>1,000 pts</strong>, boosted by a combo multiplier (up to <strong>2x</strong>) that grows with consecutive hits. One miss beyond ±0.50s resets your run!</p>
                 </div>
               </div>
 

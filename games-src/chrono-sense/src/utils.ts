@@ -74,3 +74,21 @@ export function formatDelta(delta: number): string {
   const sign = delta >= 0 ? '+' : '';
   return `${sign}${delta.toFixed(3)}s`;
 }
+
+// Combo grows 10% per consecutive hit, capped at 2x after a 10-streak.
+const COMBO_MAX_STREAK = 10;
+const COMBO_STEP = 0.1;
+const BASE_POINTS = 1000;
+
+export function getComboMultiplier(streakGoingIn: number): number {
+  return 1 + Math.min(streakGoingIn, COMBO_MAX_STREAK) * COMBO_STEP;
+}
+
+// Precision falls off quadratically to 0 at the Good Effort tier boundary, so
+// perfect hits are worth far more than a barely-passing round instead of every
+// "win" scoring the same.
+export function calculateRoundPoints(delta: number, comboMultiplier: number): number {
+  const tolerance = ACCURACY_TIERS.GOOD_EFFORT.maxDelta;
+  const precision = Math.max(0, 1 - Math.abs(delta) / tolerance);
+  return Math.round(precision * precision * BASE_POINTS * comboMultiplier);
+}

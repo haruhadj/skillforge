@@ -24,5 +24,6 @@ export interface Attempt {
   actual: number;
   delta: number;
   tierId: AccuracyTierId;
+  points: number;
   timestamp: number;
 }
