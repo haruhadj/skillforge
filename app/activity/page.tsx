@@ -219,37 +219,35 @@ export default function ActivityPage() {
               return (
                 <div
                   key={itemKey}
-                  className="flex items-center gap-4 px-4 py-3.5 border-b border-border last:border-b-0 animate-slide-up transition-colors hover:bg-muted/50"
+                  className="flex items-center gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-3.5 border-b border-border last:border-b-0 animate-slide-up transition-colors hover:bg-muted/50"
                   style={{ animationDelay: `${idx * 50}ms` }}
                 >
-                  {/* User avatar for global activity */}
-                  {isGlobal && globalItem && (
-                    <Avatar className="h-10 w-10 shrink-0">
-                      <AvatarImage src={globalItem.photoURL ?? undefined} alt={globalItem.username} />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
-                        {globalItem.username.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-
-                  {/* Cover image */}
-                  <GameCover
-                    gameId={item.gameId}
-                    alt={gameName}
-                    className="h-12 w-12 rounded-lg object-cover shrink-0 bg-muted"
-                  />
+                  {/* Cover image, with user avatar badged on the corner for global activity */}
+                  <div className="relative shrink-0">
+                    <GameCover
+                      gameId={item.gameId}
+                      alt={gameName}
+                      className="h-11 w-11 sm:h-12 sm:w-12 rounded-lg object-cover bg-muted"
+                    />
+                    {isGlobal && globalItem && (
+                      <Avatar className="absolute -bottom-1.5 -right-1.5 h-5 w-5 border-2 border-background">
+                        <AvatarImage src={globalItem.photoURL ?? undefined} alt={globalItem.username} />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-[8px] font-semibold">
+                          {globalItem.username.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
 
                   {/* Game info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold truncate">{gameName}</p>
-                      {isGlobal && globalItem && (
-                        <p className="text-xs text-muted-foreground truncate">
-                          {globalItem.username}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <p className="text-sm font-semibold truncate">{gameName}</p>
+                    {isGlobal && globalItem && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {globalItem.username}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-1.5 sm:gap-2 mt-1 flex-wrap">
                       {item.lastMode && (
                         <span className="inline-flex items-center bg-accent text-accent-foreground text-[10px] font-semibold rounded-md px-2 py-0.5">
                           {item.lastMode === 'singleplayer' ? 'Singleplayer' : 'Multiplayer'}
@@ -265,8 +263,12 @@ export default function ActivityPage() {
 
                   {/* Time and action */}
                   <div className="text-right shrink-0">
-                    <p className="text-xs font-medium text-foreground">{relativeTime(item.updatedAt)}</p>
-                    <p className="text-[11px] text-muted-foreground">{item.updatedAt.toLocaleDateString()}</p>
+                    <p className="text-[11px] sm:text-xs font-medium text-foreground whitespace-nowrap">
+                      {relativeTime(item.updatedAt)}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground hidden sm:block">
+                      {item.updatedAt.toLocaleDateString()}
+                    </p>
                   </div>
 
                   {/* Play Again button — hidden on mobile */}
