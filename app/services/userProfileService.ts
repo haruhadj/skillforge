@@ -537,7 +537,7 @@ export async function saveRecentlyPlayed(uid: string, gameIds: string[]): Promis
 }
 
 /**
- * Persist appearance preferences (theme + accent) onto the profile doc so the
+ * Persist appearance preferences (theme + accent + background style) onto the profile doc so the
  * chosen look follows the user across devices. Merges into `preferences` so a
  * partial update (e.g. accent only) never clobbers the other key. The owner
  * update rule permits any field except `role`, so no rules change is needed.
@@ -547,6 +547,7 @@ export async function saveUserPreferences(uid: string, prefs: UserPreferences): 
   const clean: UserPreferences = {}
   if (prefs.theme === 'dark' || prefs.theme === 'light') clean.theme = prefs.theme
   if (prefs.accent) clean.accent = prefs.accent
+  if (prefs.backgroundStyle) clean.backgroundStyle = prefs.backgroundStyle
   if (Object.keys(clean).length === 0) return
   const payload: Record<string, unknown> = { updatedAt: serverTimestamp() }
   for (const [k, v] of Object.entries(clean)) payload[`preferences.${k}`] = v

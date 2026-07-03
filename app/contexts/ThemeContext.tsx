@@ -1,11 +1,12 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react'
-import { AccentTheme, ThemeContextType } from '@/app/types'
+import { AccentTheme, BackgroundStyle, ThemeContextType } from '@/app/types'
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 const ACCENTS: AccentTheme[] = ['violet', 'blue', 'emerald', 'rose', 'amber']
+const BACKGROUND_STYLES: BackgroundStyle[] = ['mesh', 'nebula', 'aurora', 'horizon', 'grid', 'ripple']
 
 export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext)
@@ -32,6 +33,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return 'violet'
   })
 
+  const [backgroundStyle, setBackgroundStyle] = useState<BackgroundStyle>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('skillforge-bg-style') as BackgroundStyle | null
+      if (stored && BACKGROUND_STYLES.includes(stored)) return stored
+    }
+    return 'mesh'
+  })
+
   useEffect(() => {
     const root = document.documentElement
     if (darkMode) {
@@ -53,6 +62,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('skillforge-accent', accent)
   }, [accent])
 
+  // Mesh is the default (styled by the base .gradient-bg var) — no attribute needed for it.
+  useEffect(() => {
+    const root = document.documentElement
+    if (backgroundStyle === 'mesh') {
+      delete root.dataset.bgStyle
+    } else {
+      root.dataset.bgStyle = backgroundStyle
+    }
+    localStorage.setItem('skillforge-bg-style', backgroundStyle)
+  }, [backgroundStyle])
+
   const toggleDarkMode = () => setDarkMode((prev) => !prev)
 
   const value: ThemeContextType = {
@@ -61,6 +81,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setDarkMode,
     accent,
     setAccent,
+    backgroundStyle,
+    setBackgroundStyle,
   }
 
   return (

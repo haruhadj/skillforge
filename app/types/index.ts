@@ -25,10 +25,12 @@ export interface UserProfile {
 
 // Appearance / personalization preferences (synced to the profile doc)
 export type AccentTheme = 'violet' | 'blue' | 'emerald' | 'rose' | 'amber'
+export type BackgroundStyle = 'mesh' | 'nebula' | 'aurora' | 'horizon' | 'grid' | 'ripple'
 
 export interface UserPreferences {
   theme?: 'dark' | 'light'
   accent?: AccentTheme
+  backgroundStyle?: BackgroundStyle
 }
 
 // Auth context types
@@ -47,6 +49,8 @@ export interface ThemeContextType {
   setDarkMode: (dark: boolean) => void
   accent: AccentTheme
   setAccent: (accent: AccentTheme) => void
+  backgroundStyle: BackgroundStyle
+  setBackgroundStyle: (style: BackgroundStyle) => void
 }
 
 // Game types

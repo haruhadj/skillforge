@@ -14,7 +14,7 @@ import { getUserProfile } from '@/app/services/userProfileService'
  */
 export default function PreferenceSync() {
   const { currentUser } = useAuth()
-  const { setDarkMode, setAccent } = useTheme()
+  const { setDarkMode, setAccent, setBackgroundStyle } = useTheme()
   const appliedFor = useRef<string | null>(null)
 
   useEffect(() => {
@@ -27,9 +27,10 @@ export default function PreferenceSync() {
         if (!prefs) return
         if (prefs.theme === 'dark' || prefs.theme === 'light') setDarkMode(prefs.theme === 'dark')
         if (prefs.accent) setAccent(prefs.accent)
+        if (prefs.backgroundStyle) setBackgroundStyle(prefs.backgroundStyle)
       })
       .catch(() => {})
-  }, [currentUser?.uid, setDarkMode, setAccent])
+  }, [currentUser?.uid, setDarkMode, setAccent, setBackgroundStyle])
 
   return null
 }
