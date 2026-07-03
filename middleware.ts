@@ -8,7 +8,7 @@ import { buildCsp, generateNonce } from '@/app/lib/csp'
 // CSP-free, exactly as the old `(?!games/)` next.config.js scoping did.
 export function middleware(request: NextRequest) {
   const nonce = generateNonce()
-  const csp = buildCsp(nonce)
+  const csp = buildCsp(nonce, process.env.NODE_ENV !== 'production')
 
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)

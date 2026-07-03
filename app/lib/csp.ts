@@ -20,16 +20,21 @@ export function generateNonce(): string {
   return btoa(binary)
 }
 
-/** The full CSP header value for an app route, keyed to `nonce`. */
-export function buildCsp(nonce: string): string {
+/**
+ * The full CSP header value for an app route, keyed to `nonce`.
+ * `isDev` allows 'unsafe-eval' in script-src only: Turbopack/React dev mode
+ * uses eval() for HMR and cross-environment call-stack reconstruction. React
+ * never uses eval() in production, so the prod policy stays eval-free (R16).
+ */
+export function buildCsp(nonce: string, isDev = false): string {
   return [
     "default-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",
-    // Nonce + 'self' replaces 'unsafe-inline'/'unsafe-eval'. Next.js applies this
-    // nonce to its inline RSC streaming/bootstrap scripts; chunk loads come from
+    // Nonce + 'self' replaces 'unsafe-inline'. Next.js applies this nonce to
+    // its inline RSC streaming/bootstrap scripts; chunk loads come from
     // /_next/static ('self'). External-origin scripts stay blocked.
-    `script-src 'self' 'nonce-${nonce}'`,
+    `script-src 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-eval'" : ''}`,
     // 'unsafe-inline' kept: nonces don't cover style="" attributes, and React Hot
     // Toast + assorted style={{}} props rely on inline styles. Removing it is a
     // separate refactor (out of scope, same stance as R13).

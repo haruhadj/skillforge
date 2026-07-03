@@ -12,11 +12,16 @@ describe('buildCsp', () => {
   const nonce = 'TESTNONCE=='
   const csp = buildCsp(nonce)
 
-  it('keys script-src to the nonce and drops unsafe-inline/unsafe-eval', () => {
+  it('keys script-src to the nonce and drops unsafe-inline/unsafe-eval by default (prod)', () => {
     const scriptSrc = directive(csp, 'script-src')
     expect(scriptSrc).toBe(`script-src 'self' 'nonce-${nonce}'`)
     expect(scriptSrc).not.toContain("'unsafe-inline'")
     expect(scriptSrc).not.toContain("'unsafe-eval'")
+  })
+
+  it('adds unsafe-eval to script-src only when isDev is true', () => {
+    const devCsp = buildCsp(nonce, true)
+    expect(directive(devCsp, 'script-src')).toBe(`script-src 'self' 'nonce-${nonce}' 'unsafe-eval'`)
   })
 
   it('keeps the required non-script directives', () => {
