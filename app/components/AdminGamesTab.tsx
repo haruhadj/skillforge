@@ -158,7 +158,7 @@ export default function AdminGamesTab() {
                     type="button"
                     onClick={() => handleMoveUp(game.id)}
                     disabled={idx === 0}
-                    className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                    className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                     aria-label="Move up"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -169,7 +169,7 @@ export default function AdminGamesTab() {
                     type="button"
                     onClick={() => handleMoveDown(game.id)}
                     disabled={idx === featuredGames.length - 1}
-                    className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                    className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                     aria-label="Move down"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -179,7 +179,7 @@ export default function AdminGamesTab() {
                   <button
                     type="button"
                     onClick={() => handleUnpin(game.id)}
-                    className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                     aria-label={`Remove ${game.name} from Creator's Picks`}
                   >
                     <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -221,7 +221,7 @@ export default function AdminGamesTab() {
                   <div className="min-w-0">
                     <h3 className="font-semibold text-base text-slate-100 truncate">{game.name}</h3>
                     {game.description && (
-                      <p className="text-sm text-slate-400 truncate hidden xs:block mt-0.5">{game.description}</p>
+                      <p className="text-sm text-slate-400 truncate mt-0.5">{game.description}</p>
                     )}
                     <p className="text-xs text-slate-500 font-mono mt-0.5">ID: {game.id}</p>
                   </div>
@@ -232,7 +232,7 @@ export default function AdminGamesTab() {
                   <button
                     type="button"
                     onClick={() => isPinned ? handleUnpin(game.id) : handlePin(game.id)}
-                    className={`h-8 w-8 flex items-center justify-center rounded-lg transition-colors ${
+                    className={`h-10 w-10 flex items-center justify-center rounded-lg transition-colors ${
                       isPinned
                         ? 'text-amber-400 bg-amber-500/15 hover:bg-red-500/15 hover:text-red-400'
                         : 'text-slate-500 hover:text-amber-400 hover:bg-amber-500/15'

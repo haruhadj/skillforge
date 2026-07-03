@@ -266,14 +266,14 @@ export default function AdminAnnouncementsTab() {
                 <button
                   onClick={() => startEditing(a)}
                   disabled={deletingId === a.id}
-                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 disabled:opacity-50 transition-colors"
+                  className="rounded-lg px-3 py-2.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 disabled:opacity-50 transition-colors"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => setConfirmDelete(a)}
                   disabled={deletingId === a.id}
-                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors"
+                  className="rounded-lg px-3 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors"
                 >
                   Delete
                 </button>

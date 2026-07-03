@@ -336,7 +336,7 @@ export default function AdminUsersTab() {
                 <div className="flex items-center gap-2 shrink-0 flex-wrap">
                   <Link
                     href={isCurrentUser ? '/profile' : `/profile/${user.uid}`}
-                    className="rounded-lg px-3 py-2 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+                    className="rounded-lg px-3 py-2.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
                     title="View profile"
                   >
                     View Profile
@@ -345,7 +345,7 @@ export default function AdminUsersTab() {
                     type="button"
                     onClick={() => handleToggleRole(user)}
                     disabled={isCurrentUser}
-                    className="rounded-lg px-3 py-2 text-xs font-medium text-slate-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="rounded-lg px-3 py-2.5 text-xs font-medium text-slate-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     title={nextRoleLabel(user.role)}
                   >
                     {nextRoleLabel(user.role)}
@@ -353,7 +353,7 @@ export default function AdminUsersTab() {
                   <button
                     type="button"
                     onClick={() => setConfirmReset(user)}
-                    className="rounded-lg px-3 py-2 text-xs font-medium text-slate-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    className="rounded-lg px-3 py-2.5 text-xs font-medium text-slate-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     title="Reset all game data"
                   >
                     Reset Data
@@ -362,7 +362,7 @@ export default function AdminUsersTab() {
                     type="button"
                     onClick={() => setConfirmDelete(user)}
                     disabled={isCurrentUser}
-                    className="rounded-lg px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="rounded-lg px-3 py-2.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     title="Delete user account permanently"
                   >
                     Delete User
