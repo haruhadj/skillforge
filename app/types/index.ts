@@ -18,8 +18,17 @@ export interface UserProfile {
   }
   profileCompleted?: boolean
   role?: 'admin' | 'user'
+  preferences?: UserPreferences
   createdAt?: Date
   updatedAt?: Date
+}
+
+// Appearance / personalization preferences (synced to the profile doc)
+export type AccentTheme = 'violet' | 'blue' | 'emerald' | 'rose' | 'amber'
+
+export interface UserPreferences {
+  theme?: 'dark' | 'light'
+  accent?: AccentTheme
 }
 
 // Auth context types
@@ -35,6 +44,9 @@ export interface AuthContextType {
 export interface ThemeContextType {
   darkMode: boolean
   toggleDarkMode: () => void
+  setDarkMode: (dark: boolean) => void
+  accent: AccentTheme
+  setAccent: (accent: AccentTheme) => void
 }
 
 // Game types

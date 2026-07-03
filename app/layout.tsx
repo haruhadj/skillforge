@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
 import { AuthProvider } from '@/app/contexts/AuthContext'
+import PreferenceSync from '@/app/components/PreferenceSync'
+import PresenceTracker from '@/app/components/PresenceTracker'
 import Footer from '@/app/components/Footer'
 import './globals.css'
 import { Geist, Geist_Mono } from "next/font/google";
@@ -48,6 +50,8 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen">
         <ThemeProvider>
           <AuthProvider>
+            <PreferenceSync />
+            <PresenceTracker />
             <div className="flex-1">
               {children}
             </div>

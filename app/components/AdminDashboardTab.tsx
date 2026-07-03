@@ -22,6 +22,7 @@ function StatCard({ label, value, icon, color }: { label: string; value: string 
 export default function AdminDashboardTab() {
   const [stats, setStats] = useState<PlatformStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [online, setOnline] = useState<number | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -34,6 +35,19 @@ export default function AdminDashboardTab() {
       .finally(() => setLoading(false))
   }, [])
 
+  // Live active-user count (same public, cached endpoint as the TopNav pill).
+  useEffect(() => {
+    let active = true
+    const load = () =>
+      fetch('/api/presence/online')
+        .then((r) => r.json())
+        .then((d) => { if (active && typeof d.count === 'number') setOnline(d.count) })
+        .catch(() => {})
+    load()
+    const id = setInterval(load, 60_000)
+    return () => { active = false; clearInterval(id) }
+  }, [])
+
   const totalGames = defaultGames.length
 
   return (
@@ -44,13 +58,24 @@ export default function AdminDashboardTab() {
       </div>
 
       {loading ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-28 rounded-2xl glass animate-pulse" />
           ))}
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            label="Active Now"
+            value={online ?? '—'}
+            color="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400"
+            icon={
+              <svg className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a4 4 0 100-8 4 4 0 000 8z" />
+                <path fillRule="evenodd" d="M10 1a9 9 0 100 18 9 9 0 000-18zm-7 9a7 7 0 1114 0 7 7 0 01-14 0z" clipRule="evenodd" />
+              </svg>
+            }
+          />
           <StatCard
             label="Total Users"
             value={stats?.totalUsers ?? '—'}
@@ -74,7 +99,7 @@ export default function AdminDashboardTab() {
           <StatCard
             label="Total Matches Played"
             value={stats?.totalMatches?.toLocaleString() ?? '—'}
-            color="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400"
+            color="bg-cyan-100 dark:bg-cyan-900/50 text-cyan-600 dark:text-cyan-400"
             icon={
               <svg className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 11.293a1 1 0 001.414 1.414l2-2A1 1 0 0011 10V7z" clipRule="evenodd" />

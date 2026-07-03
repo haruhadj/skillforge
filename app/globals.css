@@ -247,6 +247,25 @@ button, a, input, select, textarea {
   --sidebar-ring: oklch(0.68 0.22 292);
 }
 
+/*
+ * Accent themes — user-selectable in profile settings (data-accent on <html>).
+ * Violet is the default (no attribute). Each preset only reskins the interactive
+ * tokens (--primary / --ring / --accent / --accent-foreground); the brand
+ * .hero-gradient and .gradient-bg stay violet on purpose. Lightness/chroma track
+ * the default so white/near-black foregrounds keep their contrast in both modes.
+ */
+:root[data-accent="blue"]    { --primary: oklch(0.52 0.24 255); --ring: oklch(0.52 0.24 255); --accent: oklch(0.93 0.03 255);  --accent-foreground: oklch(0.40 0.16 255); }
+.dark[data-accent="blue"]    { --primary: oklch(0.68 0.18 255); --ring: oklch(0.68 0.18 255); --accent: oklch(0.25 0.06 255);  --accent-foreground: oklch(0.80 0.14 255); }
+
+:root[data-accent="emerald"] { --primary: oklch(0.54 0.15 158); --ring: oklch(0.54 0.15 158); --accent: oklch(0.93 0.04 158);  --accent-foreground: oklch(0.42 0.12 158); }
+.dark[data-accent="emerald"] { --primary: oklch(0.70 0.15 158); --ring: oklch(0.70 0.15 158); --accent: oklch(0.25 0.06 158);  --accent-foreground: oklch(0.80 0.14 158); }
+
+:root[data-accent="rose"]    { --primary: oklch(0.55 0.22 12);  --ring: oklch(0.55 0.22 12);  --accent: oklch(0.93 0.035 12);  --accent-foreground: oklch(0.45 0.17 12); }
+.dark[data-accent="rose"]    { --primary: oklch(0.68 0.19 12);  --ring: oklch(0.68 0.19 12);  --accent: oklch(0.25 0.07 12);   --accent-foreground: oklch(0.80 0.15 12); }
+
+:root[data-accent="amber"]   { --primary: oklch(0.58 0.14 66);  --ring: oklch(0.58 0.14 66);  --accent: oklch(0.92 0.05 78);   --accent-foreground: oklch(0.45 0.12 66); }
+.dark[data-accent="amber"]   { --primary: oklch(0.75 0.15 78);  --ring: oklch(0.75 0.15 78);  --accent: oklch(0.26 0.06 78);   --accent-foreground: oklch(0.82 0.14 78); }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

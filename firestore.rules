@@ -166,5 +166,17 @@ service cloud.firestore {
     match /activityCache/{docId} {
       allow read, write: if false;
     }
+
+    // Presence heartbeat for "active users". Each signed-in user writes ONLY their own
+    // presence/{uid} doc, constrained to exactly { uid, lastActiveAt } so it can't be
+    // used as arbitrary storage or to spoof another user. Reads are closed: the online
+    // count is served solely by the Admin-SDK /api/presence/online route (cached), so
+    // the collection is never enumerable by clients.
+    match /presence/{uid} {
+      allow read: if false;
+      allow write: if request.auth != null && request.auth.uid == uid &&
+        request.resource.data.keys().hasOnly(['uid', 'lastActiveAt']) &&
+        request.resource.data.uid == uid;
+    }
   }
 }

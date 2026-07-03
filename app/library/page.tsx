@@ -7,13 +7,11 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import MobileNav from '@/app/components/MobileNav'
 import TopNav from '@/app/components/TopNav'
 import GameCard from '@/app/components/GameCard'
-import RankBadge from '@/app/components/RankBadge'
 import { getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
 import { getAllScores } from '@/app/services/gameDataService'
 import { getActiveAnnouncements } from '@/app/services/adminService'
 import { defaultGames, mergeGamesWithFirestore } from '@/app/games/games'
-import { Announcement, Game, GlobalLeaderboardEntry } from '@/app/types'
-import { TIER_META, tierProgress, pointsToNextTier } from '@/app/services/tiers'
+import { Announcement, Game } from '@/app/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Select,
@@ -42,22 +40,22 @@ function LibraryContent() {
   const [recentlyPlayed, setRecentlyPlayed] = useState<string[]>([])
   const [gamePopularity, setGamePopularity] = useState<Record<string, number>>({})
   const [bestScores, setBestScores] = useState<Record<string, number>>({})
-  const [userGlobalStats, setUserGlobalStats] = useState<GlobalLeaderboardEntry | null>(null)
-  const [myRank, setMyRank] = useState<{ rank: number; total: number } | null>(null)
   const [search, setSearch] = useState(searchParams.get('q') ?? '')
   const [featuredIds, setFeaturedIds] = useState<string[]>([])
+  const [showPicks, setShowPicks] = useState(false)
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
   }, [currentUser, router])
 
-  // Restore the sort selection chosen on a previous visit
+  // Restore the sort selection + picks disclosure chosen on a previous visit
   useEffect(() => {
     if (typeof window === 'undefined') return
     const stored = localStorage.getItem('library:sortBy')
     if (stored && SORT_OPTIONS.some((o) => o.value === stored)) {
       setSortBy(stored as typeof sortBy)
     }
+    if (localStorage.getItem('library:showPicks') === '1') setShowPicks(true)
   }, [])
 
   useEffect(() => {
@@ -137,19 +135,6 @@ function LibraryContent() {
       .catch(() => setGamePopularity({}))
   }, [])
 
-  useEffect(() => {
-    if (!currentUser?.uid) return
-    fetch('/api/leaderboard?mode=global')
-      .then((r) => r.json())
-      .then(({ entries }) => {
-        if (!Array.isArray(entries)) return
-        const idx = entries.findIndex((e: GlobalLeaderboardEntry) => e.uid === currentUser.uid)
-        setUserGlobalStats(idx >= 0 ? entries[idx] : null)
-        if (idx >= 0) setMyRank({ rank: idx + 1, total: entries.length })
-      })
-      .catch(() => {})
-  }, [currentUser?.uid])
-
   const trackGamePlay = (gameId: string) => {
     const updated = [gameId, ...recentlyPlayed.filter((id) => id !== gameId)].slice(0, 10)
     setRecentlyPlayed(updated)
@@ -197,8 +182,6 @@ function LibraryContent() {
 
   if (!currentUser) return null
 
-  const meta = userGlobalStats ? TIER_META[userGlobalStats.tier] : null
-
   return (
     <div className="min-h-screen gradient-bg">
       <TopNav searchValue={search} onSearch={setSearch} />
@@ -239,104 +222,72 @@ function LibraryContent() {
       )}
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 pt-6 pb-24 md:pb-8">
-        {/* Hero: continue playing + rank panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4 mb-8 animate-slide-up">
-          {/* Continue playing */}
-          {featured ? (
-            <div className="relative rounded-3xl overflow-hidden hero-gradient min-h-[220px] flex flex-col justify-between p-6">
-              <div className="absolute -bottom-16 -right-8 w-60 h-60 rounded-full bg-white/10 blur-3xl" />
-              <p className="relative z-10 mono text-[11px] tracking-[0.16em] uppercase text-white/80">
+        {/* Continue playing — compact, full width (keeps Browse near the top on mobile) */}
+        {featured && (
+          <div className="relative rounded-2xl overflow-hidden hero-gradient min-h-[112px] flex items-center justify-between gap-4 p-4 sm:p-5 mb-6 animate-slide-up">
+            <div className="absolute -bottom-16 -right-8 w-52 h-52 rounded-full bg-white/10 blur-3xl" />
+            <div className="relative z-10 min-w-0">
+              <p className="mono text-[10px] tracking-[0.16em] uppercase text-white/80 mb-1">
                 {recentlyPlayed[0] === featured.id ? 'Continue playing' : 'Featured game'}
               </p>
-              <div className="relative z-10">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white truncate">{featured.name}</h2>
                 {featured.category && (
-                  <span className="inline-flex h-6 px-2.5 items-center rounded-md text-[11px] font-semibold bg-white/20 text-white backdrop-blur-sm mb-3">{featured.category}</span>
+                  <span className="inline-flex h-5 px-2 items-center rounded-md text-[10px] font-semibold bg-white/20 text-white backdrop-blur-sm">{featured.category}</span>
                 )}
-                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-1.5">{featured.name}</h2>
-                <p className="text-sm leading-relaxed text-white/85 max-w-md mb-4 line-clamp-2">{featured.description}</p>
-                <div className="flex items-center gap-4 flex-wrap">
-                  <Link
-                    href={`/games/${featured.id}`}
-                    prefetch={false}
-                    onClick={() => trackGamePlay(featured.id)}
-                    className="h-10 px-6 inline-flex items-center rounded-xl bg-white text-violet-800 text-sm font-bold hover:bg-white/90 transition-colors"
-                  >
-                    {recentlyPlayed[0] === featured.id ? 'Resume ▸' : 'Play ▸'}
-                  </Link>
-                  {(bestScores[featured.id] ?? 0) > 0 && (
-                    <span className="mono text-xs text-white/85">Best {bestScores[featured.id].toLocaleString()}</span>
-                  )}
-                </div>
               </div>
+              {(bestScores[featured.id] ?? 0) > 0 && (
+                <span className="mono text-xs text-white/85">Best {bestScores[featured.id].toLocaleString()}</span>
+              )}
             </div>
-          ) : (
-            <div className="rounded-3xl surface min-h-[220px]" />
-          )}
-
-          {/* Rank / skill panel */}
-          <div
-            className="rounded-3xl border border-border p-6 flex flex-col justify-center"
-            style={{ background: 'radial-gradient(130% 130% at 100% 0%, var(--accent) 0%, var(--card) 58%)' }}
-          >
-            {userGlobalStats && meta ? (
-              <>
-                <div className="flex items-center gap-3.5 mb-5">
-                  <RankBadge tier={userGlobalStats.tier} size={56} />
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">Rank</p>
-                    <p className="text-xl font-extrabold tracking-tight" style={{ color: meta.text }}>{meta.label}</p>
-                  </div>
-                  <div className="ml-auto text-right">
-                    <p className="text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">Skill</p>
-                    <p className="mono text-2xl font-semibold tracking-tight">{userGlobalStats.compositeScore}</p>
-                  </div>
-                </div>
-                <div className="h-3 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${tierProgress(userGlobalStats.compositeScore, userGlobalStats.tier) * 100}%`, background: 'linear-gradient(90deg, var(--primary), #06b6d4)' }}
-                  />
-                </div>
-                <div className="flex justify-between mt-2.5 text-[11px] text-muted-foreground">
-                  <span>
-                    {meta.next
-                      ? <><span className="text-primary font-semibold mono">{pointsToNextTier(userGlobalStats.compositeScore, userGlobalStats.tier)} pts</span> to {meta.next}</>
-                      : 'Maximum tier reached'}
-                  </span>
-                  {myRank && <span>Rank <span className="mono">#{myRank.rank}</span> of <span className="mono">{myRank.total}</span></span>}
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-4">
-                <p className="text-sm font-semibold mb-1">No ranking yet</p>
-                <p className="text-xs text-muted-foreground">Play a few games to earn your first skill score and tier.</p>
-              </div>
-            )}
+            <Link
+              href={`/games/${featured.id}`}
+              prefetch={false}
+              onClick={() => trackGamePlay(featured.id)}
+              className="relative z-10 shrink-0 h-10 px-5 sm:px-6 inline-flex items-center rounded-xl bg-white text-violet-800 text-sm font-bold hover:bg-white/90 transition-colors"
+            >
+              {recentlyPlayed[0] === featured.id ? 'Resume ▸' : 'Play ▸'}
+            </Link>
           </div>
-        </div>
+        )}
 
-        {/* Creator's Picks */}
+        {/* Creator's Picks — collapsed disclosure so Browse stays near the top */}
         {!search.trim() && featuredGames.length > 0 && (
-          <section className="mb-8 animate-slide-up">
-            <div className="flex items-center gap-2 mb-3">
+          <section className="mb-6 animate-slide-up">
+            <button
+              type="button"
+              onClick={() => {
+                const next = !showPicks
+                setShowPicks(next)
+                if (typeof window !== 'undefined') localStorage.setItem('library:showPicks', next ? '1' : '0')
+              }}
+              aria-expanded={showPicks}
+              className="flex w-full items-center gap-2 rounded-xl surface px-4 h-11 text-left hover:border-primary/40 transition-colors"
+            >
               <svg className="h-4 w-4 text-amber-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
-              <h2 className="text-base font-bold tracking-tight">Creator's Picks</h2>
-            </div>
-            <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {featuredGames.map((game) => (
-                <div key={game.id} className="w-44 shrink-0">
-                  <GameCard
-                    game={game}
-                    isRecent={recentlyPlayed.includes(game.id)}
-                    plays={gamePopularity[game.id] || 0}
-                    best={bestScores[game.id] ?? null}
-                    onPlay={() => trackGamePlay(game.id)}
-                  />
-                </div>
-              ))}
-            </div>
+              <span className="text-sm font-bold tracking-tight">Creator's Picks</span>
+              <span className="text-xs text-muted-foreground mono">({featuredGames.length})</span>
+              <svg className={`ml-auto h-4 w-4 text-muted-foreground shrink-0 transition-transform ${showPicks ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+            {showPicks && (
+              <div className="flex gap-4 overflow-x-auto pt-3 pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {featuredGames.map((game) => (
+                  <div key={game.id} className="w-44 shrink-0">
+                    <GameCard
+                      game={game}
+                      isRecent={recentlyPlayed.includes(game.id)}
+                      plays={gamePopularity[game.id] || 0}
+                      best={bestScores[game.id] ?? null}
+                      onPlay={() => trackGamePlay(game.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 

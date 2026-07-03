@@ -1,9 +1,11 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react'
-import { ThemeContextType } from '@/app/types'
+import { AccentTheme, ThemeContextType } from '@/app/types'
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+const ACCENTS: AccentTheme[] = ['violet', 'blue', 'emerald', 'rose', 'amber']
 
 export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext)
@@ -22,6 +24,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return true
   })
 
+  const [accent, setAccent] = useState<AccentTheme>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('skillforge-accent') as AccentTheme | null
+      if (stored && ACCENTS.includes(stored)) return stored
+    }
+    return 'violet'
+  })
+
   useEffect(() => {
     const root = document.documentElement
     if (darkMode) {
@@ -32,11 +42,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('skillforge-theme', darkMode ? 'dark' : 'light')
   }, [darkMode])
 
+  // Violet is the default (styled by :root/.dark) — no attribute needed for it.
+  useEffect(() => {
+    const root = document.documentElement
+    if (accent === 'violet') {
+      delete root.dataset.accent
+    } else {
+      root.dataset.accent = accent
+    }
+    localStorage.setItem('skillforge-accent', accent)
+  }, [accent])
+
   const toggleDarkMode = () => setDarkMode((prev) => !prev)
 
   const value: ThemeContextType = {
     darkMode,
     toggleDarkMode,
+    setDarkMode,
+    accent,
+    setAccent,
   }
 
   return (

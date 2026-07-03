@@ -9,7 +9,7 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 import { User as FirebaseUser } from 'firebase/auth'
-import { UserProfile } from '@/app/types'
+import { UserPreferences, UserProfile } from '@/app/types'
 import { FieldValue } from 'firebase/firestore'
 import type { DeviceInfo } from '@/app/lib/deviceInfo'
 import { sanitizePhotoURL } from '@/app/lib/sanitizePhotoURL'
@@ -534,4 +534,21 @@ export async function saveRecentlyPlayed(uid: string, gameIds: string[]): Promis
     recentlyPlayed: gameIds.slice(0, MAX_RECENTLY_PLAYED),
     updatedAt: serverTimestamp(),
   })
+}
+
+/**
+ * Persist appearance preferences (theme + accent) onto the profile doc so the
+ * chosen look follows the user across devices. Merges into `preferences` so a
+ * partial update (e.g. accent only) never clobbers the other key. The owner
+ * update rule permits any field except `role`, so no rules change is needed.
+ */
+export async function saveUserPreferences(uid: string, prefs: UserPreferences): Promise<void> {
+  if (!uid) return
+  const clean: UserPreferences = {}
+  if (prefs.theme === 'dark' || prefs.theme === 'light') clean.theme = prefs.theme
+  if (prefs.accent) clean.accent = prefs.accent
+  if (Object.keys(clean).length === 0) return
+  const payload: Record<string, unknown> = { updatedAt: serverTimestamp() }
+  for (const [k, v] of Object.entries(clean)) payload[`preferences.${k}`] = v
+  await updateDoc(doc(db, 'users', uid), payload)
 }

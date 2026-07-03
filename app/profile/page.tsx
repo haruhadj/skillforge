@@ -24,6 +24,7 @@ import { UserProfile, GlobalLeaderboardEntry, RecentActivityItem } from '@/app/t
 import TierProgress from '@/app/components/TierProgress'
 import AvatarEditor, { buildResizedAvatarBlob, readImageDimensions, createInitialEditorState, AVATAR_EXPORT_SIZE, AVATAR_THUMB_SIZE } from './AvatarEditor'
 import ConnectedAccounts from './ConnectedAccounts'
+import AppearanceSettings from './AppearanceSettings'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -283,6 +284,9 @@ export default function ProfilePage() {
               </div>
               <p className="text-xs text-muted-foreground mt-2">3–20 characters, letters, numbers, underscores only</p>
             </div>
+
+            {/* Appearance — theme + accent, synced to the account */}
+            <AppearanceSettings uid={currentUser.uid} />
 
             {/* Change password — only for email/password accounts */}
             {resolveAuthProvider(currentUser) === 'password' && (

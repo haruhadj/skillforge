@@ -48,6 +48,7 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
   const [username, setUsername] = useState<string | null>(null)
   const [isAdminUser, setIsAdminUser] = useState(false)
   const [localSearch, setLocalSearch] = useState('')
+  const [onlineCount, setOnlineCount] = useState<number | null>(null)
   const controlled = onSearch !== undefined
 
   useEffect(() => {
@@ -60,6 +61,19 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
       .catch(() => {})
     isAdmin(currentUser.uid).then(setIsAdminUser).catch(() => setIsAdminUser(false))
   }, [currentUser?.uid])
+
+  // Live "players online now" pill, refreshed on a slow interval (route is cached).
+  useEffect(() => {
+    let active = true
+    const load = () =>
+      fetch('/api/presence/online')
+        .then((r) => r.json())
+        .then((d) => { if (active && typeof d.count === 'number') setOnlineCount(d.count) })
+        .catch(() => {})
+    load()
+    const id = setInterval(load, 60_000)
+    return () => { active = false; clearInterval(id) }
+  }, [])
 
   const name = username || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
@@ -113,6 +127,21 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
 
         {/* Right cluster */}
         <div className="ml-auto flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Players online */}
+          {onlineCount !== null && onlineCount > 0 && (
+            <span
+              className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold"
+              title={`${onlineCount} playing now`}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="mono">{onlineCount}</span>
+              <span className="hidden sm:inline">online</span>
+            </span>
+          )}
+
           {/* Search */}
           <form onSubmit={handleSearchSubmit} className="hidden sm:block">
             <label className="flex items-center gap-2 h-9 px-3 rounded-full border border-border bg-secondary/60 text-muted-foreground focus-within:border-primary/50 transition-colors w-44 lg:w-52">
