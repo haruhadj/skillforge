@@ -64,6 +64,17 @@ export async function getAllScores(uid: string): Promise<Record<string, ScoreDat
   return scores
 }
 
+// Live, uncached, single-doc read of the caller's own best score for one game. Used to
+// patch a just-submitted score into a leaderboard view that was served from the
+// server-side cache (`/api/leaderboard`, up to CACHE_TTL_MS stale) before that cache
+// naturally refreshes — the owner can always read their own scores doc directly.
+export async function getOwnScore(uid: string, gameId: string): Promise<ScoreData | null> {
+  const ref = doc(db, 'users', uid, 'scores', gameId)
+  const snap = await getDoc(ref)
+  if (!snap.exists()) return null
+  return normalizeScoreData(snap.data())
+}
+
 // S2-b: gameStats is now server-authoritative. The weighted leaderboard stats are
 // written by /api/games/score (Admin SDK), and the per-game resume blob by
 // /api/games/progress (Admin SDK). The Firestore rules deny client writes to gameStats,
@@ -162,6 +173,27 @@ export async function getRecentActivity(
   return items
 }
 
+// Live, uncached, single-doc read of the caller's own most recent activity for one
+// game — the per-game counterpart to `getRecentActivity`. Used to patch a just-finished
+// play into a Recent Activity panel served from `/api/activity`'s cache.
+export async function getOwnRecentActivityForGame(
+  uid: string,
+  gameId: string
+): Promise<RecentActivityItem | null> {
+  const ref = doc(db, 'users', uid, 'gameStats', gameId)
+  const snap = await getDoc(ref)
+  if (!snap.exists()) return null
+  const data = snap.data()
+  const updatedAt = convertTimestampToDate(data.updatedAt)
+  if (!updatedAt) return null
+  return {
+    gameId,
+    lastMode: (data.lastMode as 'singleplayer' | 'multiplayer') ?? null,
+    lastScore: typeof data.lastScore === 'number' ? data.lastScore : null,
+    updatedAt,
+  }
+}
+
 /**
  * Global recent activity from the cached, public server route.
  *
@@ -184,3 +216,8 @@ export async function getGlobalRecentActivity(
     updatedAt: new Date(item.updatedAt),
   }))
 }
+
+// Pure merge helpers live in `scoring.ts` (no Firebase dependency) so they stay
+// unit-testable the same way the ranking math is. Re-exported here so pages can import
+// everything they need for the optimistic-update pattern from this one service module.
+export { mergeOwnLeaderboardRow, mergeOwnActivity } from '@/app/services/scoring'

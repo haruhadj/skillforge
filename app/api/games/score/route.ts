@@ -87,7 +87,8 @@ export async function POST(request: NextRequest) {
     const scoreRef = adminDb.collection('users').doc(uid).collection('scores').doc(gameId)
     const scoreSnap = await scoreRef.get()
     const currentBest = scoreSnap.exists ? Number(scoreSnap.data()?.bestScore) : null
-    if (currentBest == null || Number.isNaN(currentBest) || numScore > currentBest) {
+    const isNewBest = currentBest == null || Number.isNaN(currentBest) || numScore > currentBest
+    if (isNewBest) {
       await scoreRef.set(
         {
           bestScore: numScore,
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       { merge: true },
     )
 
-    return NextResponse.json({ success: true, gameId, score: numScore, uid })
+    return NextResponse.json({ success: true, gameId, score: numScore, uid, isNewBest })
   } catch (error) {
     console.error('Score submission error:', error)
     return NextResponse.json({ error: 'Failed to save score' }, { status: 500 })

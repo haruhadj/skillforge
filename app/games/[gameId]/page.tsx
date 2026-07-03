@@ -6,7 +6,13 @@ import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
 import { defaultGames } from '@/app/games/games'
 import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfileService'
-import { getGlobalRecentActivity } from '@/app/services/gameDataService'
+import {
+  getGlobalRecentActivity,
+  getOwnScore,
+  getOwnRecentActivityForGame,
+  mergeOwnLeaderboardRow,
+  mergeOwnActivity,
+} from '@/app/services/gameDataService'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import GameCover from '@/app/components/GameCover'
 import { LeaderboardEntry } from '@/app/types'
@@ -90,7 +96,16 @@ export default function GameDetailsPage() {
         if (!res.ok) throw new Error(payload.error || 'Failed to load leaderboard')
         if (cancelled) return
         const entries = (payload.entries ?? []) as LeaderboardEntry[]
-        const top = entries.slice(0, 10)
+        let top = entries.slice(0, 10)
+
+        // The cached leaderboard doc can be minutes stale (CACHE_TTL_MS). Patch in the
+        // viewer's own live score so a just-set best shows up immediately for them.
+        if (currentUser) {
+          const own = await getOwnScore(currentUser.uid, gameId).catch(() => null)
+          if (own && !cancelled) top = mergeOwnLeaderboardRow(top, currentUser.uid, own, 10)
+        }
+
+        if (cancelled) return
         setLbRows(top)
         const profileMap = await fetchProfiles(top.map((r) => r.uid))
         if (!cancelled) setLbProfiles(profileMap)
@@ -99,17 +114,27 @@ export default function GameDetailsPage() {
       .finally(() => { if (!cancelled) setLbLoading(false) })
 
     return () => { cancelled = true }
-  }, [gameId])
+  }, [gameId, currentUser])
 
   useEffect(() => {
     if (!gameId || !currentUser) return
     let cancelled = false
     setActLoading(true)
 
-    getGlobalRecentActivity(100)
-      .then(async (all) => {
+    Promise.all([
+      getGlobalRecentActivity(100),
+      getOwnRecentActivityForGame(currentUser.uid, gameId).catch(() => null),
+    ])
+      .then(async ([all, own]) => {
         if (cancelled) return
-        const forGame = all.filter((item) => item.gameId === gameId).slice(0, 15)
+        // Patch the viewer's own live activity in ahead of the cached feed's next
+        // refresh (see app/api/activity/route.ts CACHE_TTL_MS), same reasoning as above.
+        const forGame = mergeOwnActivity(
+          all.filter((item) => item.gameId === gameId),
+          currentUser.uid,
+          own ? [own] : [],
+          15,
+        )
         const uids = [...new Set(forGame.map((i) => i.userId))]
         const profileMap = await fetchProfiles(uids)
         if (!cancelled) {

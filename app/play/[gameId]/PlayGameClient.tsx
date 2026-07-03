@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
@@ -23,16 +23,20 @@ function clampScore(value: unknown): number | null {
 // S2: route every leaderboard-relevant score write through the server-authoritative
 // endpoint (verified ID token, gameId allowlist, range clamp, mode enum, per-uid rate
 // limit) instead of writing users/{uid}/scores + gameStats directly via the client SDK.
-// Fire-and-forget: a failed score write must never block gameplay.
+// Fire-and-forget: a failed score write must never block gameplay. Returns null on any
+// failure (caller treats that as "no confirmation to show"), or the save outcome on
+// success — the shared leaderboard/activity caches can take minutes to catch up (see
+// app/api/leaderboard/route.ts CACHE_TTL_MS), so this is what lets the player see their
+// own result immediately instead of waiting on that cache.
 async function postScore(
   getToken: () => Promise<string>,
   gameId: string,
   score: number,
   mode = 'singleplayer',
-): Promise<void> {
+): Promise<{ score: number; isNewBest: boolean } | null> {
   try {
     const token = await getToken()
-    await fetch('/api/games/score', {
+    const res = await fetch('/api/games/score', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,8 +44,13 @@ async function postScore(
       },
       body: JSON.stringify({ gameId, score, mode }),
     })
+    if (!res.ok) return null
+    const data = await res.json().catch(() => null)
+    if (!data?.success) return null
+    return { score, isNewBest: Boolean(data.isNewBest) }
   } catch {
     /* score write failure is non-fatal */
+    return null
   }
 }
 
@@ -125,6 +134,25 @@ export default function PlayGameClient() {
   const playerName = currentUser?.displayName || currentUser?.email || 'Player'
   const playerUid = currentUser?.uid ?? null
   const playerEmail = currentUser?.email ?? null
+
+  // Instant on-screen confirmation that a score save landed, since the shared
+  // leaderboard/activity caches can take minutes to reflect it (see postScore above).
+  const [scoreToast, setScoreToast] = useState<{ id: number; score: number; isNewBest: boolean } | null>(null)
+  const toastTimerRef = useRef<number | null>(null)
+
+  const showScoreToast = useCallback((result: { score: number; isNewBest: boolean } | null) => {
+    if (!result) return
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current)
+    const id = Date.now()
+    setScoreToast({ id, score: result.score, isNewBest: result.isNewBest })
+    toastTimerRef.current = window.setTimeout(() => {
+      setScoreToast((cur) => (cur?.id === id ? null : cur))
+    }, 3000)
+  }, [])
+
+  useEffect(() => () => {
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current)
+  }, [])
 
   // Get chess socket URL
   const chessSocketBaseUrl = useMemo(() => {
@@ -221,7 +249,7 @@ export default function PlayGameClient() {
         // S2: best score + weighted stats are written server-side. The former custom
         // `totalGames` counter is dropped — it never fed the leaderboard composite;
         // buildWeightedModeStats (server route) tracks per-mode play counts instead.
-        postScore(() => authedUser.getIdToken(), 'jose-rizal', score)
+        postScore(() => authedUser.getIdToken(), 'jose-rizal', score).then(showScoreToast)
         return
       }
 
@@ -232,7 +260,7 @@ export default function PlayGameClient() {
         const bestScore = clampScore(msg.data?.bestScore)
         if (bestScore == null) return
         // S2: server route writes both scores + weighted gameStats.
-        postScore(() => authedUser.getIdToken(), gameId, bestScore, 'singleplayer')
+        postScore(() => authedUser.getIdToken(), gameId, bestScore, 'singleplayer').then(showScoreToast)
       }
 
       if (msg.event === 'GAME_STATS') {
@@ -246,7 +274,7 @@ export default function PlayGameClient() {
           const clamped = clampScore(rawScore)
           if (clamped == null) return
           // S2: server route writes both scores + weighted gameStats.
-          postScore(() => authedUser.getIdToken(), gameId, clamped, normalizedMode)
+          postScore(() => authedUser.getIdToken(), gameId, clamped, normalizedMode).then(showScoreToast)
           return
         }
         // S2: the leaderboard-relevant score (if any) goes through the server route;
@@ -256,7 +284,7 @@ export default function PlayGameClient() {
           (msg.data && typeof msg.data === 'object') ? (msg.data as Record<string, unknown>) : {},
         )
         if (score != null) {
-          postScore(() => authedUser.getIdToken(), gameId, score, 'singleplayer')
+          postScore(() => authedUser.getIdToken(), gameId, score, 'singleplayer').then(showScoreToast)
         }
         // S2-b: the resume blob now goes through the server progress route (Admin SDK),
         // not a client-SDK gameStats write. Score-like keys are stripped so they can't
@@ -301,7 +329,7 @@ export default function PlayGameClient() {
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [currentUser, gameId, iframeSrc, postPlayerInfoToIframe])
+  }, [currentUser, gameId, iframeSrc, postPlayerInfoToIframe, showScoreToast])
 
   useEffect(() => {
     if (!iframeSrc) return
@@ -340,6 +368,22 @@ export default function PlayGameClient() {
         <h2 className="text-sm sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight truncate min-w-0 text-center">{game?.name ?? 'Game'}</h2>
         <ThemeToggle />
       </header>
+
+      {scoreToast && (
+        <div className="pointer-events-none fixed inset-x-0 top-16 sm:top-20 z-50 flex justify-center px-4">
+          <div
+            key={scoreToast.id}
+            className={`pointer-events-auto flex items-center gap-2 rounded-full glass px-4 py-2 text-sm font-semibold shadow-lg animate-slide-up ${
+              scoreToast.isNewBest ? 'text-yellow-600 dark:text-yellow-400' : 'text-foreground'
+            }`}
+          >
+            <span aria-hidden="true">{scoreToast.isNewBest ? '🏆' : '✓'}</span>
+            {scoreToast.isNewBest
+              ? `New best score: ${scoreToast.score.toLocaleString()}!`
+              : `Score saved: ${scoreToast.score.toLocaleString()}`}
+          </div>
+        </div>
+      )}
 
       {iframeSrc ? (
         <iframe

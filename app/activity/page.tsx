@@ -8,7 +8,7 @@ import { getPublicProfile, type PublicProfile } from '@/app/services/publicProfi
 import MobileNav from '@/app/components/MobileNav'
 import TopNav from '@/app/components/TopNav'
 import GameCover from '@/app/components/GameCover'
-import { getRecentActivity, getGlobalRecentActivity } from '@/app/services/gameDataService'
+import { getRecentActivity, getGlobalRecentActivity, mergeOwnActivity } from '@/app/services/gameDataService'
 import { defaultGames } from '@/app/games/games'
 import { RecentActivityItem } from '@/app/types'
 import { Button } from '@/components/ui/button'
@@ -87,15 +87,20 @@ export default function ActivityPage() {
 
   // Fetch global activity
   useEffect(() => {
-    if (tab !== 'global') return
+    if (tab !== 'global' || !currentUser) return
 
     let cancelled = false
     setGlobalLoading(true)
     setGlobalError(null)
 
-    getGlobalRecentActivity(50)
-      .then(async (data) => {
+    Promise.all([getGlobalRecentActivity(50), getRecentActivity(currentUser.uid, 20)])
+      .then(async ([rawData, mine]) => {
         if (cancelled) return
+
+        // The global feed is served from a cache that can be up to a minute stale (see
+        // app/api/activity/route.ts CACHE_TTL_MS). getRecentActivity is a live, uncached
+        // read of the viewer's own activity, so patch it in ahead of the cache's refresh.
+        const data = mergeOwnActivity(rawData, currentUser.uid, mine, 50)
 
         // Fetch user profiles for all unique users
         const userIds = [...new Set(data.map((item) => item.userId))]
@@ -135,7 +140,7 @@ export default function ActivityPage() {
     return () => {
       cancelled = true
     }
-  }, [tab])
+  }, [tab, currentUser])
 
   if (!currentUser) return null
 

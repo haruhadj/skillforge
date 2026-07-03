@@ -101,7 +101,7 @@ export default function AdminGamesTab() {
     const idx = featuredIds.indexOf(gameId)
     if (idx <= 0) return
     const newIds = [...featuredIds]
-    ;[newIds[idx - 1], newIds[idx]] = [newIds[idx], newIds[idx - 1]]
+      ;[newIds[idx - 1], newIds[idx]] = [newIds[idx], newIds[idx - 1]]
     updateFeatured(newIds, featuredIds)
   }, [featuredIds, updateFeatured])
 
@@ -109,7 +109,7 @@ export default function AdminGamesTab() {
     const idx = featuredIds.indexOf(gameId)
     if (idx < 0 || idx >= featuredIds.length - 1) return
     const newIds = [...featuredIds]
-    ;[newIds[idx], newIds[idx + 1]] = [newIds[idx + 1], newIds[idx]]
+      ;[newIds[idx], newIds[idx + 1]] = [newIds[idx + 1], newIds[idx]]
     updateFeatured(newIds, featuredIds)
   }, [featuredIds, updateFeatured])
 
@@ -128,10 +128,10 @@ export default function AdminGamesTab() {
     .filter(Boolean) as Game[]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 w-full max-w-full">
 
       {/* ── Creator's Picks ── */}
-      <div>
+      <div className="w-full">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Creator's Picks</h2>
         <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
           Pin games to feature them at the top of the library. Use the arrows to reorder.
@@ -142,23 +142,33 @@ export default function AdminGamesTab() {
             No games pinned yet. Use the ★ button on any game below to feature it here.
           </div>
         ) : (
-          <div className="mt-4 grid gap-2">
+          <div className="mt-4 grid grid-cols-1 gap-4 w-full">
             {featuredGames.map((game, idx) => (
               <div
                 key={game.id}
-                className="glass p-3 flex items-center gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5"
+                className="glass p-4 grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] items-center gap-4 rounded-xl border border-indigo-500/20 bg-indigo-500/5 w-full box-border"
               >
-                <span className="text-xs font-mono text-slate-400 w-5 text-center shrink-0 select-none">{idx + 1}</span>
-                <div className="h-10 w-10 rounded-lg overflow-hidden shrink-0 border border-white/10">
-                  <GameCover gameId={game.id} alt="" className="h-full w-full object-cover" loading="lazy" />
+                {/* Fixed Index Column */}
+                <div className="flex items-center gap-4 shrink-0">
+                  <span className="text-xs font-mono text-slate-400 w-5 text-center select-none">{idx + 1}</span>
+                  <div className="h-12 w-12 rounded-lg overflow-hidden border border-white/10 shadow-md">
+                    <GameCover gameId={game.id} alt="" className="h-full w-full object-cover" loading="lazy" />
+                  </div>
                 </div>
-                <span className="font-medium text-sm text-slate-100 flex-1 truncate">{game.name}</span>
-                <div className="flex items-center gap-1 shrink-0">
+
+                {/* Content Track */}
+                <div className="min-w-0 w-full">
+                  <h3 className="font-semibold text-base text-slate-100 truncate">{game.name}</h3>
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">Pinned Pick</p>
+                </div>
+
+                {/* Controls Column */}
+                <div className="flex items-center justify-end gap-3 shrink-0 border-t border-white/5 pt-3 sm:pt-0 sm:border-0 sm:w-36">
                   <button
                     type="button"
                     onClick={() => handleMoveUp(game.id)}
                     disabled={idx === 0}
-                    className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                    className="h-10 w-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                     aria-label="Move up"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -169,7 +179,7 @@ export default function AdminGamesTab() {
                     type="button"
                     onClick={() => handleMoveDown(game.id)}
                     disabled={idx === featuredGames.length - 1}
-                    className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+                    className="h-10 w-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                     aria-label="Move down"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -179,7 +189,7 @@ export default function AdminGamesTab() {
                   <button
                     type="button"
                     onClick={() => handleUnpin(game.id)}
-                    className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    className="h-10 w-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                     aria-label={`Remove ${game.name} from Creator's Picks`}
                   >
                     <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -196,13 +206,13 @@ export default function AdminGamesTab() {
       <div className="border-t border-slate-700/50" />
 
       {/* ── Game Visibility ── */}
-      <div>
+      <div className="w-full">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Game Visibility</h2>
         <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
           Toggle games on/off for players. Star (★) a game to pin it to Creator's Picks above.
         </p>
 
-        <div className="mt-4 grid gap-4">
+        <div className="mt-4 grid grid-cols-1 gap-4 w-full">
           {games.map((game) => {
             const enabled = visibility[game.id] !== false
             const isPinned = featuredIds.includes(game.id)
@@ -210,33 +220,38 @@ export default function AdminGamesTab() {
             return (
               <div
                 key={game.id}
-                className={`glass p-4 flex items-center justify-between gap-4 transition-all duration-200 rounded-xl border border-white/5 ${
-                  enabled ? 'opacity-100 bg-white/[0.02]' : 'opacity-40 bg-black/20'
-                }`}
+                className={`glass p-4 grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] items-center gap-4 transition-all duration-200 rounded-xl border border-white/5 w-full box-border ${enabled ? 'opacity-100 bg-white/[0.02]' : 'opacity-40 bg-black/20'
+                  }`}
               >
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="h-14 w-14 rounded-lg bg-slate-800 overflow-hidden shrink-0 flex items-center justify-center border border-white/10 shadow-md">
+                {/* Identical Layout Structure matching Creator's Picks above */}
+                <div className="flex items-center gap-4 shrink-0">
+                  <div className="w-5 shrink-0 hidden sm:block" />
+                  <div className="h-12 w-12 rounded-lg bg-slate-800 overflow-hidden flex items-center justify-center border border-white/10 shadow-md">
                     <GameCover gameId={game.id} alt="" className="h-full w-full object-cover" loading="lazy" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-base text-slate-100 truncate">{game.name}</h3>
-                    {game.description && (
-                      <p className="text-sm text-slate-400 truncate mt-0.5">{game.description}</p>
-                    )}
-                    <p className="text-xs text-slate-500 font-mono mt-0.5">ID: {game.id}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                {/* Content Track matches grid definition */}
+                <div className="min-w-0 w-full">
+                  <h3 className="font-semibold text-base text-slate-100 truncate">{game.name}</h3>
+                  {game.description && (
+                    <p className="text-sm text-slate-400 line-clamp-1 truncate mt-0.5 whitespace-normal sm:whitespace-nowrap">
+                      {game.description}
+                    </p>
+                  )}
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">ID: {game.id}</p>
+                </div>
+
+                {/* Controls Column locked to uniform sm:w-36 size */}
+                <div className="flex items-center justify-end gap-3 shrink-0 border-t border-white/5 pt-3 sm:pt-0 sm:border-0 sm:w-36">
                   {/* Pin / unpin */}
                   <button
                     type="button"
                     onClick={() => isPinned ? handleUnpin(game.id) : handlePin(game.id)}
-                    className={`h-10 w-10 flex items-center justify-center rounded-lg transition-colors ${
-                      isPinned
+                    className={`h-10 w-10 flex items-center justify-center rounded-lg transition-colors ${isPinned
                         ? 'text-amber-400 bg-amber-500/15 hover:bg-red-500/15 hover:text-red-400'
                         : 'text-slate-500 hover:text-amber-400 hover:bg-amber-500/15'
-                    }`}
+                      }`}
                     title={isPinned ? "Remove from Creator's Picks" : "Add to Creator's Picks"}
                     aria-label={isPinned ? `Unpin ${game.name}` : `Pin ${game.name} to Creator's Picks`}
                   >
@@ -245,21 +260,21 @@ export default function AdminGamesTab() {
                     </svg>
                   </button>
 
-                  {/* Visibility toggle */}
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={enabled}
-                    aria-label={`Toggle visibility for ${game.name}`}
-                    onClick={() => handleToggle(game.id, enabled)}
-                    className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-inner ${
-                      enabled ? 'bg-indigo-600' : 'bg-slate-700'
-                    }`}
-                  >
-                    <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-200 ${
-                      enabled ? 'translate-x-6' : 'translate-x-1'
-                    }`} />
-                  </button>
+                  {/* Visibility toggle alignment wrapper */}
+                  <div className="h-10 w-12 flex items-center justify-end">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={enabled}
+                      aria-label={`Toggle visibility for ${game.name}`}
+                      onClick={() => handleToggle(game.id, enabled)}
+                      className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-inner ${enabled ? 'bg-indigo-600' : 'bg-slate-700'
+                        }`}
+                    >
+                      <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-200 ${enabled ? 'translate-x-6' : 'translate-x-1'
+                        }`} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )

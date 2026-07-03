@@ -1,4 +1,4 @@
-import { GameStats, GlobalLeaderboardEntry } from '@/app/types'
+import { GameStats, GlobalLeaderboardEntry, LeaderboardEntry, ScoreData, RecentActivityItem } from '@/app/types'
 
 /**
  * Pure scoring + ranking math for SkillForge.
@@ -203,4 +203,59 @@ export function aggregateGamePopularity(statsRows: StatsRow[]): Record<string, n
     byGameId[gameId] = (byGameId[gameId] || 0) + (Number(totalMatchCount) || 0)
   }
   return byGameId
+}
+
+// --- Optimistic client-side merges -----------------------------------------------
+//
+// `/api/leaderboard` and `/api/activity` serve a server-side cache (see CACHE_TTL_MS in
+// those routes) so a page load doesn't pay for a full collectionGroup scan. That means a
+// score a player just submitted can take a few minutes to show up in those results.
+// Rather than reading the shared aggregate more often (which would reintroduce that
+// scan on every visit), these helpers splice the caller's own live, uncached data (an
+// owner-scoped Firestore read of their own scores/gameStats docs) into the cached rows
+// client-side, so a player always sees their own latest result immediately. Other
+// players still see the shared cache on its normal cadence. No Firebase dependency here
+// — the live reads happen in gameDataService, which re-exports these.
+
+/**
+ * Patch the caller's own live best score into a cached per-game leaderboard.
+ * Only inserts a not-yet-listed row when it would legitimately place within `cap`
+ * (i.e. it beats the current lowest-ranked visible row) so a stale/low score never
+ * displaces a genuinely higher-ranked player in the caller's own view.
+ */
+export function mergeOwnLeaderboardRow(
+  rows: LeaderboardEntry[],
+  ownUid: string,
+  own: ScoreData,
+  cap: number
+): LeaderboardEntry[] {
+  const alreadyRanked = rows.some((r) => r.uid === ownUid)
+  const lowest = rows[rows.length - 1]
+  if (!alreadyRanked && rows.length >= cap && lowest && own.bestScore <= lowest.bestScore) {
+    return rows
+  }
+
+  const next = rows.filter((r) => r.uid !== ownUid)
+  next.push({ uid: ownUid, bestScore: own.bestScore, updatedAt: own.updatedAt })
+  next.sort((a, b) => b.bestScore - a.bestScore)
+  return next.slice(0, cap)
+}
+
+/**
+ * Patch the caller's own live recent-activity rows into a cached activity feed,
+ * replacing any stale cached copy of the same (uid, gameId) and re-sorting by recency.
+ */
+export function mergeOwnActivity(
+  items: Array<RecentActivityItem & { userId: string }>,
+  ownUid: string,
+  own: RecentActivityItem[],
+  cap: number
+): Array<RecentActivityItem & { userId: string }> {
+  const ownGameIds = new Set(own.map((item) => item.gameId))
+  const filtered = items.filter((item) => !(item.userId === ownUid && ownGameIds.has(item.gameId)))
+  const ownRows = own.map((item) => ({ ...item, userId: ownUid }))
+
+  return [...filtered, ...ownRows]
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, cap)
 }

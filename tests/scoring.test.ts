@@ -6,9 +6,12 @@ import {
   aggregateGlobalLeaderboard,
   aggregateGameLeaderboard,
   aggregateGamePopularity,
+  mergeOwnLeaderboardRow,
+  mergeOwnActivity,
   type ScoreRow,
   type StatsRow,
 } from '@/app/services/scoring'
+import type { LeaderboardEntry, ScoreData, RecentActivityItem } from '@/app/types'
 
 describe('buildWeightedModeStats', () => {
   it('initializes singleplayer stats from a clean slate', () => {
@@ -164,5 +167,78 @@ describe('aggregateGamePopularity', () => {
       { uid: 'a', gameId: '2048', totalMatchCount: 2 },
     ]
     expect(aggregateGamePopularity(stats)).toEqual({ chess: 8, '2048': 2 })
+  })
+})
+
+describe('mergeOwnLeaderboardRow', () => {
+  const own = (bestScore: number): ScoreData => ({ bestScore, updatedAt: new Date('2026-07-03') })
+
+  it('inserts the caller into a not-yet-full board, sorted by score', () => {
+    const rows: LeaderboardEntry[] = [
+      { uid: 'a', bestScore: 100, updatedAt: new Date() },
+      { uid: 'b', bestScore: 50, updatedAt: new Date() },
+    ]
+    const result = mergeOwnLeaderboardRow(rows, 'me', own(75), 10)
+    expect(result.map((r) => r.uid)).toEqual(['a', 'me', 'b'])
+  })
+
+  it('replaces the caller\'s existing row instead of duplicating it', () => {
+    const rows: LeaderboardEntry[] = [
+      { uid: 'me', bestScore: 10, updatedAt: new Date() },
+      { uid: 'a', bestScore: 20, updatedAt: new Date() },
+    ]
+    const result = mergeOwnLeaderboardRow(rows, 'me', own(30), 10)
+    expect(result.map((r) => r.uid)).toEqual(['me', 'a'])
+    expect(result[0].bestScore).toBe(30)
+  })
+
+  it('does not insert a new, low score that would not place within a full board', () => {
+    const rows: LeaderboardEntry[] = Array.from({ length: 3 }, (_, i) => ({
+      uid: `p${i}`,
+      bestScore: 100 - i * 10,
+      updatedAt: new Date(),
+    }))
+    const result = mergeOwnLeaderboardRow(rows, 'me', own(5), 3)
+    expect(result.map((r) => r.uid)).toEqual(['p0', 'p1', 'p2'])
+  })
+
+  it('inserts and truncates when the caller legitimately beats the lowest row on a full board', () => {
+    const rows: LeaderboardEntry[] = [
+      { uid: 'a', bestScore: 100, updatedAt: new Date() },
+      { uid: 'b', bestScore: 90, updatedAt: new Date() },
+      { uid: 'c', bestScore: 80, updatedAt: new Date() },
+    ]
+    const result = mergeOwnLeaderboardRow(rows, 'me', own(85), 3)
+    expect(result.map((r) => r.uid)).toEqual(['a', 'b', 'me'])
+  })
+})
+
+describe('mergeOwnActivity', () => {
+  const item = (userId: string, gameId: string, updatedAt: string) => ({
+    userId,
+    gameId,
+    lastMode: 'singleplayer' as const,
+    lastScore: 1,
+    updatedAt: new Date(updatedAt),
+  })
+
+  it('replaces a stale cached row for the same (uid, gameId) with the live one', () => {
+    const cached = [item('me', 'chess', '2026-01-01'), item('other', 'chess', '2026-07-01')]
+    const own: RecentActivityItem[] = [
+      { gameId: 'chess', lastMode: 'singleplayer', lastScore: 99, updatedAt: new Date('2026-07-03') },
+    ]
+    const result = mergeOwnActivity(cached, 'me', own, 50)
+    const mine = result.find((r) => r.userId === 'me')
+    expect(mine?.lastScore).toBe(99)
+    expect(result).toHaveLength(2)
+  })
+
+  it('sorts by recency and applies the cap', () => {
+    const cached = [item('a', 'g1', '2026-01-01'), item('b', 'g2', '2026-06-01')]
+    const own: RecentActivityItem[] = [
+      { gameId: 'g3', lastMode: 'singleplayer', lastScore: 1, updatedAt: new Date('2026-07-03') },
+    ]
+    const result = mergeOwnActivity(cached, 'me', own, 2)
+    expect(result.map((r) => r.userId)).toEqual(['me', 'b'])
   })
 })
