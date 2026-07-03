@@ -38,9 +38,9 @@ describe('sanitizePhotoURL', () => {
     expect(sanitizePhotoURL(url)).toBe(url)
   })
 
-  it('accepts Facebook graph/CDN URLs', () => {
-    expect(sanitizePhotoURL('https://graph.facebook.com/12345/picture?type=large')).not.toBeNull()
-    expect(sanitizePhotoURL('https://static.xx.fbcdn.net/rsrc.php/photo.jpg')).not.toBeNull()
+  it('rejects Facebook graph/CDN URLs (provider removed)', () => {
+    expect(sanitizePhotoURL('https://graph.facebook.com/12345/picture?type=large')).toBeNull()
+    expect(sanitizePhotoURL('https://static.xx.fbcdn.net/rsrc.php/photo.jpg')).toBeNull()
   })
 
   it('accepts TikTok CDN URLs', () => {

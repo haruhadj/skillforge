@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
   const remaining = new Set<string>()
   if (userRecord.providerData.some((p) => p.providerId === 'password')) remaining.add('password')
   // The account's native provider is implied by the uid prefix (e.g. `twitter_…`).
-  // Cover all linkable providers so twitter/facebook-native accounts are counted.
+  // Cover all linkable providers so twitter-native accounts are counted.
   for (const p of LINKABLE_PROVIDERS) {
     if (uid.startsWith(`${p}_`)) remaining.add(p)
   }

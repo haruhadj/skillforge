@@ -10,7 +10,7 @@ Educational gaming platform: **Next.js 16 (App Router) + React 19 + TypeScript +
 ### Frontend ↔ Firebase
 - **Client SDK** (`app/lib/firebase.ts`): `auth`, `db`, `storage`, configured from `NEXT_PUBLIC_*` env vars. Used directly from the browser.
 - **Admin SDK** (`app/lib/firebase-admin.ts`): lazy-initialized; used only inside API routes for privileged ops (password-reset link generation, account deletion).
-- **Auth** (`app/contexts/AuthContext.tsx`): email/password + Google + Facebook popups. On every auth-state change it calls `ensureUserProfileDocument()` to self-heal missing Firestore profiles.
+- **Auth** (`app/contexts/AuthContext.tsx`): email/password + Google popup. GitHub/TikTok/Twitter/Discord sign in via a custom OAuth→Firebase custom-token broker (`app/api/auth/*`), not Firebase popups. On every auth-state change it calls `ensureUserProfileDocument()` to self-heal missing Firestore profiles.
 - **Firestore model** (`app/services/gameDataService.ts`): `users/{uid}/scores/{gameId}` (best score, write-if-higher) and `users/{uid}/gameStats/{gameId}` (weighted per-mode stats). Leaderboards are computed **client-side** via `collectionGroup` scans across all users + a composite scoring formula (skill 70% + diversity bonus + sqrt-experience). This reads every score/stat doc per call — a known scaling concern.
 - **Firestore rules** (`firestore.rules`): admin is gated on `users/{uid}.role == 'admin'` via the `isAdmin()` helper (reads the *caller's* doc, not the target). Owner writes are scoped to subcollections (`scores`/`gameStats`); the root profile doc forbids self-assigning `role`. Deploy with `firebase deploy --only firestore:rules --project skillforge-7a058`.
 

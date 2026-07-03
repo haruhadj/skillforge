@@ -8,18 +8,13 @@ const ALLOWED_HOSTNAMES = [
   'avatars.githubusercontent.com',
   // Twitter / X
   'pbs.twimg.com',
-  // Facebook
-  'graph.facebook.com',
   // Discord
   'cdn.discordapp.com',
-  // Facebook CDN suffixes
 ]
 
 const ALLOWED_HOSTNAME_SUFFIXES = [
   '.googleusercontent.com',
   '.twimg.com',
-  '.fbcdn.net',
-  '.fbsbx.com',
   '.tiktokcdn.com',
   '.tiktokcdn-eu.com',
 ]

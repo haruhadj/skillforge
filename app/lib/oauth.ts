@@ -14,12 +14,12 @@ export const OAUTH_PKCE_COOKIE = 'oauth_pkce_verifier'
 // and immediately clears it so the client can complete signInWithCustomToken.
 export const OAUTH_TOKEN_COOKIE = 'oauth_token'
 
-export type OAuthProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'discord'
+export type OAuthProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'discord'
 
 // Single source of truth for which providers can be linked to / unlinked from an
 // account. Shared by link/start and link/remove so the two can never drift out of
 // sync (audit S7: twitter/facebook were linkable but not removable).
-export const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'tiktok', 'twitter', 'facebook', 'discord']
+export const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'tiktok', 'twitter', 'discord']
 
 // Providers that require PKCE (RFC 7636). X (Twitter) OAuth 2.0 mandates it.
 export function providerRequiresPkce(provider: OAuthProvider): boolean {
@@ -91,19 +91,6 @@ export function buildAuthorizeUrl(
       state,
     })
     return `https://www.tiktok.com/v2/auth/authorize/?${params}`
-  }
-
-  if (provider === 'facebook') {
-    const clientId = process.env.FACEBOOK_OAUTH_CLIENT_ID
-    if (!clientId) throw new Error('Facebook OAuth not configured')
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: 'email,public_profile',
-      state,
-    })
-    return `https://www.facebook.com/v19.0/dialog/oauth?${params}`
   }
 
   if (provider === 'discord') {

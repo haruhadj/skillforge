@@ -86,7 +86,7 @@ export function createSuggestedUsername(value: string, fallback = 'player'): str
   return 'player'
 }
 
-export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'password' | 'unknown' {
+export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'tiktok' | 'twitter' | 'password' | 'unknown' {
   if (!user) {
     return 'unknown'
   }
@@ -118,10 +118,6 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
     return 'twitter'
   }
 
-  if (providerIds.includes('facebook.com')) {
-    return 'facebook'
-  }
-
   if (providerIds.includes('password')) {
     return 'password'
   }
@@ -129,7 +125,7 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
   return 'unknown'
 }
 
-export type LinkableProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'discord'
+export type LinkableProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'discord'
 
 export interface ProviderMethodState {
   // Whether this provider can currently sign the user into this account.
@@ -145,7 +141,6 @@ export interface SignInMethodsState {
   github: ProviderMethodState
   tiktok: ProviderMethodState
   twitter: ProviderMethodState
-  facebook: ProviderMethodState
   discord: ProviderMethodState
 }
 
@@ -177,11 +172,6 @@ export function getSignInMethods(
       connected: Boolean(linked.tiktok) || uid.startsWith('tiktok_'),
       email: linked.tiktok?.email ?? null,
     },
-    facebook: {
-      linked: Boolean(linked.facebook),
-      connected: Boolean(linked.facebook) || uid.startsWith('facebook_'),
-      email: linked.facebook?.email ?? (uid.startsWith('facebook_') ? user?.email ?? null : null),
-    },
     // X (Twitter) OAuth 2.0 never provides an email, so the email field stays null.
     twitter: {
       linked: Boolean(linked.twitter),
@@ -209,24 +199,21 @@ export function getProfileSignInMethods(profile: UserProfile | null): SignInMeth
   if (profile.uid?.startsWith('github_')) methods.add('github')
   if (profile.uid?.startsWith('tiktok_')) methods.add('tiktok')
   if (profile.uid?.startsWith('twitter_')) methods.add('twitter')
-  if (profile.uid?.startsWith('facebook_')) methods.add('facebook')
   if (profile.uid?.startsWith('discord_')) methods.add('discord')
   if (profile.authProvider === 'google') methods.add('google')
   if (profile.authProvider === 'github') methods.add('github')
   if (profile.authProvider === 'tiktok') methods.add('tiktok')
   if (profile.authProvider === 'twitter') methods.add('twitter')
-  if (profile.authProvider === 'facebook') methods.add('facebook')
   if (profile.authProvider === 'discord') methods.add('discord')
   if (profile.authProvider === 'password') methods.add('password')
   if (profile.linkedProviders?.google) methods.add('google')
   if (profile.linkedProviders?.github) methods.add('github')
   if (profile.linkedProviders?.tiktok) methods.add('tiktok')
   if (profile.linkedProviders?.twitter) methods.add('twitter')
-  if (profile.linkedProviders?.facebook) methods.add('facebook')
   if (profile.linkedProviders?.discord) methods.add('discord')
 
   // Stable order: password first, then OAuth providers.
-  const order = ['password', 'google', 'github', 'tiktok', 'twitter', 'facebook', 'discord']
+  const order = ['password', 'google', 'github', 'tiktok', 'twitter', 'discord']
   return [...methods].sort((a, b) => order.indexOf(a) - order.indexOf(b))
 }
 
@@ -267,7 +254,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 interface EnsureProfilePayload {
   email: string | null
-  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'password' | 'unknown'
   updatedAt: ReturnType<typeof serverTimestamp>
   photoURL?: string
   photoThumbURL?: string
@@ -363,7 +350,7 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
 
 interface ClaimUsernameMetadata {
   email: string | null
-  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'facebook' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'password' | 'unknown'
 }
 
 interface ClaimUsernameResult {

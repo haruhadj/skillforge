@@ -8,7 +8,7 @@ An educational gaming platform where users log in, play skill-based games, and t
 - Per-game score tracking and personal best history
 - Global leaderboard with a composite skill scoring formula
 - Multiplayer support for Chess, Tic Tac Toe, and Chroma Memory via Socket.IO
-- Google, Facebook, and email/password authentication
+- Google and email/password authentication
 - Admin dashboard for user management
 
 ## Tech Stack
