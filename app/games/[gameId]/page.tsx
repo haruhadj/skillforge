@@ -13,7 +13,6 @@ import {
   mergeOwnLeaderboardRow,
   mergeOwnActivity,
 } from '@/app/services/gameDataService'
-import ThemeToggle from '@/app/components/ThemeToggle'
 import GameCover from '@/app/components/GameCover'
 import { LeaderboardEntry } from '@/app/types'
 import { Button } from '@/components/ui/button'
@@ -174,24 +173,21 @@ export default function GameDetailsPage() {
 
   return (
     <div className="min-h-screen gradient-bg">
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 h-14 flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground -ml-2">
-            <Link href="/library">
-              <svg className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
-              </svg>
-              Back
-            </Link>
-          </Button>
-          <div className="flex-1 flex items-center justify-center">
-            <h1 className="text-base font-bold tracking-tight truncate max-w-xs">{game.name}</h1>
-          </div>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Button
+        variant="ghost"
+        size="sm"
+        asChild
+        className="fixed top-3 left-3 sm:top-4 sm:left-4 z-20 bg-background/80 backdrop-blur-xl border border-border/50 shadow-md rounded-full text-muted-foreground hover:text-foreground"
+      >
+        <Link href="/library">
+          <svg className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
+          </svg>
+          Back
+        </Link>
+      </Button>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-3 sm:py-6 pb-12 space-y-3 sm:space-y-6">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 pt-16 sm:pt-20 pb-12 space-y-3 sm:space-y-6">
         {/* Game info card */}
         <div className="surface overflow-hidden animate-fade-in">
           {/* Mobile: compact horizontal strip */}
