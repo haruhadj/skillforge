@@ -356,7 +356,7 @@ export default function PlayGameClient() {
     <div className="fixed inset-0 flex flex-col gradient-bg transition-colors duration-500">
       <button
         className="fixed top-3 left-3 sm:top-4 sm:left-4 z-50 rounded-full border border-border glass text-secondary-foreground px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-semibold shadow-md hover:bg-secondary/80 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2"
-        onClick={() => router.push('/library')}
+        onClick={() => router.push(`/games/${gameId}`)}
       >
         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.47 3.47a.75.75 0 11-1.06 1.06l-4.75-4.75a.75.75 0 010-1.06l4.75-4.75a.75.75 0 011.06 1.06L5.56 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" />
