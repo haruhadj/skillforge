@@ -1,0 +1,6 @@
+{
+  "name": "Renegade Reversi",
+  "description": "A highly polished clone of the Renegade (Othello/Reversi) board game with tactile 3D-like piece flipping animations, responsive design, and local pass-and-play or vs-AI gameplay modes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

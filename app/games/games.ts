@@ -228,6 +228,13 @@ export const defaultGames: Game[] = [
     description: 'Rearrange a scrambled 5×5 letter grid until every row spells a valid word. Daily puzzles, a timed Sprint marathon, and a full Archive. Powered by WordNet for definitions.',
     category: 'Language',
   },
+  {
+    id: 'renegade',
+    name: 'Renegade Reversi',
+    iframePath: '/games/renegade/index.html',
+    description: 'A tactile take on classic Reversi/Othello with 3D piece flips — play pass-and-play or against an AI opponent.',
+    category: 'Logic',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */
