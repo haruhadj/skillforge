@@ -7,6 +7,8 @@ import GameCover from '@/app/components/GameCover'
 interface GameCardProps {
   game: Game
   isRecent?: boolean
+  /** Whether this game is in the admin-curated Creator's Picks list. */
+  isCreatorsPick?: boolean
   /** Total plays across all users (popularity). */
   plays?: number
   /** Signed-in user's best score for this game, or null if unplayed. */
@@ -20,7 +22,7 @@ const fmt = (n: number) => (n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) +
  * Library game card — cover (tap/click to play) with category chip + optional
  * "Recent" marker, title, and a mono Plays/Best stat strip.
  */
-export default function GameCard({ game, isRecent, plays = 0, best = null, onPlay }: GameCardProps) {
+export default function GameCard({ game, isRecent, isCreatorsPick, plays = 0, best = null, onPlay }: GameCardProps) {
   const playable = !!game.iframePath
 
   const cover = (
@@ -36,11 +38,23 @@ export default function GameCard({ game, isRecent, plays = 0, best = null, onPla
           {game.category}
         </span>
       )}
-      {isRecent && (
-        <span className="absolute top-2 right-2 h-5 px-2 inline-flex items-center gap-1 rounded-md text-[10px] font-semibold bg-foreground/40 text-white backdrop-blur-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          Recent
-        </span>
+      {(isCreatorsPick || isRecent) && (
+        <div className="absolute top-2 right-2 flex flex-col items-end gap-1">
+          {isCreatorsPick && (
+            <span className="h-5 px-2 inline-flex items-center gap-1 rounded-md text-[10px] font-semibold bg-amber-400/90 text-amber-950 backdrop-blur-sm">
+              <svg className="h-2.5 w-2.5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              Pick
+            </span>
+          )}
+          {isRecent && (
+            <span className="h-5 px-2 inline-flex items-center gap-1 rounded-md text-[10px] font-semibold bg-foreground/40 text-white backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Recent
+            </span>
+          )}
+        </div>
       )}
       {!playable && (
         <span className="absolute inset-x-2 bottom-2 h-5 px-2 inline-flex items-center justify-center rounded-md text-[10px] font-semibold bg-background/85 backdrop-blur-sm text-foreground/70">

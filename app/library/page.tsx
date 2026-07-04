@@ -324,6 +324,7 @@ function LibraryContent() {
                 <GameCard
                   game={game}
                   isRecent={recentlyPlayed.includes(game.id)}
+                  isCreatorsPick={featuredIds.includes(game.id)}
                   plays={gamePopularity[game.id] || 0}
                   best={bestScores[game.id] ?? null}
                   onPlay={() => trackGamePlay(game.id)}
