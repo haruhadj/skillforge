@@ -9,9 +9,9 @@ import TopNav from '@/app/components/TopNav'
 import GameCard from '@/app/components/GameCard'
 import { getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
 import { getAllScores } from '@/app/services/gameDataService'
-import { getActiveAnnouncements } from '@/app/services/adminService'
+import { getLibrarySettings } from '@/app/services/adminService'
 import { defaultGames, mergeGamesWithFirestore } from '@/app/games/games'
-import { Announcement, Game } from '@/app/types'
+import { Game } from '@/app/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Select,
@@ -31,8 +31,6 @@ function LibraryContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { currentUser } = useAuth()
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
-  const [dismissedAnnouncements, setDismissedAnnouncements] = useState<string[]>([])
   const [games, setGames] = useState<Game[]>(defaultGames)
   const [gamesLoading, setGamesLoading] = useState(true)
   const [sortBy, setSortBy] = useState<'name' | 'recent' | 'popular'>('name')
@@ -43,6 +41,7 @@ function LibraryContent() {
   const [search, setSearch] = useState(searchParams.get('q') ?? '')
   const [featuredIds, setFeaturedIds] = useState<string[]>([])
   const [showPicks, setShowPicks] = useState(false)
+  const [showContinuePlaying, setShowContinuePlaying] = useState(true)
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
@@ -59,7 +58,7 @@ function LibraryContent() {
   }, [])
 
   useEffect(() => {
-    getActiveAnnouncements().then(setAnnouncements).catch(() => {})
+    getLibrarySettings().then((s) => setShowContinuePlaying(s.showContinuePlaying)).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -178,52 +177,15 @@ function LibraryContent() {
     return enabled.find((g) => g.id === recentlyPlayed[0]) ?? enabled[0] ?? null
   }, [games, recentlyPlayed])
 
-  const visibleAnnouncements = announcements.filter((a) => !dismissedAnnouncements.includes(a.id))
-
   if (!currentUser) return null
 
   return (
     <div className="min-h-screen gradient-bg">
       <TopNav searchValue={search} onSearch={setSearch} />
 
-      {/* Announcements */}
-      {visibleAnnouncements.length > 0 && (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-4 space-y-2">
-          {visibleAnnouncements.map((ann) => {
-            const styles = {
-              info: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/50 text-blue-800 dark:text-blue-300',
-              warning: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300',
-              success: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300',
-            }
-            return (
-              <div key={ann.id} className={`flex items-start gap-3 rounded-xl border px-4 py-3 text-sm animate-slide-up ${styles[ann.type] || styles.info}`}>
-                <span className="mt-0.5 shrink-0 opacity-70">📣</span>
-                <div className="flex-1 min-w-0">
-                  <span className="font-semibold">{ann.title}</span>
-                  {ann.message && (
-                    <span className="opacity-80">
-                      {' — '}
-                      {ann.linkUrl ? (
-                        <>
-                          {ann.message}{' '}
-                          <a href={ann.linkUrl} target="_blank" rel="noopener noreferrer" className="underline font-medium opacity-100 hover:opacity-80 transition-opacity">Learn more ↗</a>
-                        </>
-                      ) : ann.message}
-                    </span>
-                  )}
-                </div>
-                {!ann.sticky && (
-                  <button type="button" onClick={() => setDismissedAnnouncements((p) => [...p, ann.id])} className="shrink-0 opacity-50 hover:opacity-100 transition-opacity text-lg leading-none">×</button>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
-
       <main className="mx-auto max-w-7xl px-4 sm:px-6 pt-6 pb-24 md:pb-8">
         {/* Continue playing — compact, full width (keeps Browse near the top on mobile) */}
-        {featured && (
+        {featured && showContinuePlaying && (
           <div className="relative rounded-2xl overflow-hidden hero-gradient min-h-[112px] flex items-center justify-between gap-4 p-4 sm:p-5 mb-6 animate-slide-up">
             <div className="absolute -bottom-16 -right-8 w-52 h-52 rounded-full bg-white/10 blur-3xl" />
             <div className="relative z-10 min-w-0">

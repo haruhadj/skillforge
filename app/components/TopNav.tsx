@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
+import { Bell } from 'lucide-react'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import { getUserProfile } from '@/app/services/userProfileService'
-import { isAdmin } from '@/app/services/adminService'
+import { isAdmin, getActiveAnnouncements } from '@/app/services/adminService'
+import { Announcement } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -18,6 +20,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+const ANNOUNCEMENT_TYPE_STYLES: Record<Announcement['type'], string> = {
+  info: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/50 text-blue-800 dark:text-blue-300',
+  warning: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300',
+  success: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/50 text-emerald-800 dark:text-emerald-300',
+}
+
+const ANNOUNCEMENTS_LAST_SEEN_KEY = 'announcements:lastSeenId'
 
 const NAV_LINKS = [
   { href: '/library', label: 'Library' },
@@ -49,6 +59,8 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
   const [isAdminUser, setIsAdminUser] = useState(false)
   const [localSearch, setLocalSearch] = useState('')
   const [onlineCount, setOnlineCount] = useState<number | null>(null)
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [hasUnseenAnnouncement, setHasUnseenAnnouncement] = useState(false)
   const controlled = onSearch !== undefined
 
   useEffect(() => {
@@ -74,6 +86,24 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
     const id = setInterval(load, 60_000)
     return () => { active = false; clearInterval(id) }
   }, [])
+
+  useEffect(() => {
+    getActiveAnnouncements()
+      .then((list) => {
+        setAnnouncements(list)
+        if (typeof window === 'undefined' || list.length === 0) return
+        const lastSeenId = localStorage.getItem(ANNOUNCEMENTS_LAST_SEEN_KEY)
+        setHasUnseenAnnouncement(list[0].id !== lastSeenId)
+      })
+      .catch(() => {})
+  }, [])
+
+  const handleAnnouncementsOpenChange = (open: boolean) => {
+    if (open && typeof window !== 'undefined' && announcements.length > 0) {
+      localStorage.setItem(ANNOUNCEMENTS_LAST_SEEN_KEY, announcements[0].id)
+      setHasUnseenAnnouncement(false)
+    }
+  }
 
   const name = username || currentUser?.displayName || currentUser?.email || 'Player'
   const initials = name.slice(0, 2).toUpperCase()
@@ -157,6 +187,38 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
               />
             </label>
           </form>
+
+          <DropdownMenu onOpenChange={handleAnnouncementsOpenChange}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative rounded-full h-9 w-9" aria-label="Announcements">
+                <Bell className="h-[18px] w-[18px]" />
+                {hasUnseenAnnouncement && (
+                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenuLabel>Announcements</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {announcements.length === 0 ? (
+                <p className="px-2 py-4 text-sm text-muted-foreground text-center">No announcements</p>
+              ) : (
+                <div className="max-h-80 overflow-y-auto space-y-2 p-1">
+                  {announcements.map((ann) => (
+                    <div key={ann.id} className={`rounded-xl border px-3 py-2 text-sm ${ANNOUNCEMENT_TYPE_STYLES[ann.type] || ANNOUNCEMENT_TYPE_STYLES.info}`}>
+                      <p className="font-semibold">{ann.title}</p>
+                      {ann.message && <p className="opacity-80 mt-0.5">{ann.message}</p>}
+                      {ann.linkUrl && (
+                        <a href={ann.linkUrl} target="_blank" rel="noopener noreferrer" className="underline font-medium mt-1 inline-block hover:opacity-80 transition-opacity">
+                          Learn more ↗
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <ThemeToggle />
 

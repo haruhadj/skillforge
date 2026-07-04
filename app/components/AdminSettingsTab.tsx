@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { getOAuthConfig, saveOAuthConfig, OAuthConfig } from '@/app/services/adminService'
+import {
+  getOAuthConfig,
+  saveOAuthConfig,
+  OAuthConfig,
+  getLibrarySettings,
+  saveLibrarySettings,
+  LibrarySettings,
+} from '@/app/services/adminService'
 
 const PROVIDERS: { key: keyof OAuthConfig; label: string; description: string; icon: React.ReactNode }[] = [
   {
@@ -62,13 +69,17 @@ const PROVIDERS: { key: keyof OAuthConfig; label: string; description: string; i
 
 export default function AdminSettingsTab() {
   const [config, setConfig] = useState<OAuthConfig | null>(null)
+  const [librarySettings, setLibrarySettings] = useState<LibrarySettings | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    getOAuthConfig()
-      .then(setConfig)
-      .catch(() => toast.error('Failed to load OAuth settings'))
+    Promise.all([getOAuthConfig(), getLibrarySettings()])
+      .then(([oauth, library]) => {
+        setConfig(oauth)
+        setLibrarySettings(library)
+      })
+      .catch(() => toast.error('Failed to load settings'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -77,12 +88,17 @@ export default function AdminSettingsTab() {
     setConfig({ ...config, [key]: !config[key] })
   }
 
+  const toggleLibrarySetting = (key: keyof LibrarySettings) => {
+    if (!librarySettings) return
+    setLibrarySettings({ ...librarySettings, [key]: !librarySettings[key] })
+  }
+
   const handleSave = async () => {
-    if (!config) return
+    if (!config || !librarySettings) return
     setSaving(true)
     try {
-      await saveOAuthConfig(config)
-      toast.success('OAuth settings saved')
+      await Promise.all([saveOAuthConfig(config), saveLibrarySettings(librarySettings)])
+      toast.success('Settings saved')
     } catch {
       toast.error('Failed to save settings')
     } finally {
@@ -98,7 +114,7 @@ export default function AdminSettingsTab() {
     )
   }
 
-  if (!config) return null
+  if (!config || !librarySettings) return null
 
   return (
     <div className="space-y-6">
@@ -107,6 +123,41 @@ export default function AdminSettingsTab() {
         <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
           Control which OAuth sign-in providers are available on the login page.
         </p>
+      </div>
+
+      <div className="surface rounded-2xl divide-y divide-slate-200/60 dark:divide-gray-700/60 overflow-hidden">
+        <div className="px-5 py-3 bg-slate-50/60 dark:bg-gray-800/40">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-gray-400">
+            Library
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Show Continue Playing card</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 truncate">
+              Display the &quot;Continue playing / Featured game&quot; hero card at the top of the library
+            </p>
+          </div>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={librarySettings.showContinuePlaying}
+            onClick={() => toggleLibrarySetting('showContinuePlaying')}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
+              librarySettings.showContinuePlaying
+                ? 'bg-indigo-500'
+                : 'bg-slate-300 dark:bg-gray-600'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                librarySettings.showContinuePlaying ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       <div className="surface rounded-2xl divide-y divide-slate-200/60 dark:divide-gray-700/60 overflow-hidden">

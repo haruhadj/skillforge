@@ -165,3 +165,22 @@ export async function getOAuthConfig(): Promise<OAuthConfig> {
 export async function saveOAuthConfig(config: OAuthConfig): Promise<void> {
   await setDoc(doc(db, 'config', 'oauthProviders'), config)
 }
+
+// Library page feature flags
+export interface LibrarySettings {
+  showContinuePlaying: boolean
+}
+
+const LIBRARY_SETTINGS_DEFAULTS: LibrarySettings = {
+  showContinuePlaying: true,
+}
+
+export async function getLibrarySettings(): Promise<LibrarySettings> {
+  const snap = await getDoc(doc(db, 'config', 'librarySettings'))
+  if (!snap.exists()) return { ...LIBRARY_SETTINGS_DEFAULTS }
+  return { ...LIBRARY_SETTINGS_DEFAULTS, ...snap.data() } as LibrarySettings
+}
+
+export async function saveLibrarySettings(settings: LibrarySettings): Promise<void> {
+  await setDoc(doc(db, 'config', 'librarySettings'), settings)
+}

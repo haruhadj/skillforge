@@ -50,31 +50,40 @@ export default function GameCard({ game, isRecent, plays = 0, best = null, onPla
     </div>
   )
 
-  return (
-    <div className="group surface overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30">
-      {playable ? (
-        <Link href={`/games/${game.id}`} prefetch={false} onClick={onPlay} aria-label={`Play ${game.name}`}>
-          {cover}
-        </Link>
-      ) : (
-        cover
-      )}
+  const info = (
+    <div className="flex flex-1 flex-col gap-2 p-3">
+      <h3 className="text-sm font-semibold leading-tight line-clamp-1">{game.name}</h3>
 
-      {/* Info */}
-      <div className="flex flex-1 flex-col gap-2 p-3">
-        <h3 className="text-sm font-semibold leading-tight line-clamp-1">{game.name}</h3>
-
-        <div className="mt-auto flex gap-4 px-3 py-2 rounded-xl surface-2">
-          <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-wide font-semibold text-muted-foreground">Plays</p>
-            <p className="mono text-xs font-semibold mt-0.5">{fmt(plays)}</p>
-          </div>
-          <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-wide font-semibold text-muted-foreground">Best</p>
-            <p className="mono text-xs font-semibold mt-0.5">{best != null && best > 0 ? best.toLocaleString() : '—'}</p>
-          </div>
+      <div className="mt-auto flex gap-4 px-3 py-2 rounded-xl surface-2">
+        <div className="min-w-0">
+          <p className="text-[9px] uppercase tracking-wide font-semibold text-muted-foreground">Plays</p>
+          <p className="mono text-xs font-semibold mt-0.5">{fmt(plays)}</p>
+        </div>
+        <div className="min-w-0">
+          <p className="text-[9px] uppercase tracking-wide font-semibold text-muted-foreground">Best</p>
+          <p className="mono text-xs font-semibold mt-0.5">{best != null && best > 0 ? best.toLocaleString() : '—'}</p>
         </div>
       </div>
+    </div>
+  )
+
+  const cardClassName = "group surface overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/30"
+
+  return playable ? (
+    <Link
+      href={`/games/${game.id}`}
+      prefetch={false}
+      onClick={onPlay}
+      aria-label={`Play ${game.name}`}
+      className={cardClassName}
+    >
+      {cover}
+      {info}
+    </Link>
+  ) : (
+    <div className={cardClassName}>
+      {cover}
+      {info}
     </div>
   )
 }
