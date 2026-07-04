@@ -235,6 +235,13 @@ export const defaultGames: Game[] = [
     description: 'A tactile take on classic Reversi/Othello with 3D piece flips — play pass-and-play or against an AI opponent.',
     category: 'Logic',
   },
+  {
+    id: 'hex',
+    name: 'Hex',
+    iframePath: '/games/hex/index.html',
+    description: 'Connect your sides of the board before your opponent connects theirs — a classic no-draws-possible strategy game.',
+    category: 'Logic',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */

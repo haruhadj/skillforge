@@ -1,0 +1,6 @@
+{
+  "name": "Hex",
+  "description": "A fully functional clone of the Hex board game from Clubhouse Games: 51 Worldwide Classics, featuring beautiful minimalist aesthetics, local pass-and-play, and an interactive AI opponent with adjustable difficulty.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
