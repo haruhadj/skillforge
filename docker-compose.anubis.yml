@@ -1,0 +1,41 @@
+# Optional Anubis (https://anubis.techaro.lol) proof-of-work bot filter.
+# Off by default: docker-compose.prod.yml is untouched and binds nginx
+# directly to host port 1234. Applying this file on top inserts Anubis as
+# the new front door and moves nginx internal-only.
+#
+# Toggle with scripts/toggle-anubis.sh on|off — see that script for the
+# exact commands, since turning this off requires recreating nginx to get
+# its host port binding back (Compose can't do that with a single `up`).
+services:
+  nginx:
+    ports: !reset []
+
+  anubis:
+    image: ghcr.io/techarohq/anubis:latest
+    container_name: skillforge-anubis
+    restart: unless-stopped
+    mem_limit: 128m
+    pids_limit: 128
+    environment:
+      - BIND=:8080
+      - METRICS_BIND=:9090
+      - TARGET=http://nginx:80
+      - POLICY_FNAME=/data/cfg/botPolicy.yaml
+      - COOKIE_DOMAIN=haruhadj.org
+      - SERVE_ROBOTS_TXT=true
+      # Must stay stable across redeploys or every visitor gets re-challenged.
+      # Generate once with: openssl rand -hex 32
+      - ED25519_PRIVATE_KEY_HEX=${ANUBIS_ED25519_KEY}
+    ports:
+      - "1234:8080"
+    volumes:
+      - ./anubis/botPolicy.yaml:/data/cfg/botPolicy.yaml:ro
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      nginx:
+        condition: service_healthy
