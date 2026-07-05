@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   RotateCcw, 
   Volume2, 
@@ -30,10 +30,28 @@ const POSITION_WEIGHTS = [
   [120, -20,  20,   5,   5,  20, -20, 120]
 ];
 
+// Geometry for the end-of-game tally, expressed in % of the 8x8 grid area so it
+// stays responsive. Discs sweep off the board, scatter to the rim, then re-pack
+// into sorted territory: Black fills the top rows, White the bottom rows.
+const CELL = 12.5;          // one board cell is 1/8 of the grid = 12.5%
+const DISC = 10.5;          // disc diameter (~84% of a cell, matching the in-play pieces)
+function cellCenter(row: number, col: number): { x: number; y: number } {
+  return { x: (col + 0.5) * CELL, y: (row + 0.5) * CELL };
+}
+
+// A disc travelling through the closing tally: its real board cell (start), the rim
+// position it scatters to, and the sorted territory cell it re-packs into (end).
+type FlyDisc = {
+  color: 'BLACK' | 'WHITE';
+  startX: number; startY: number;
+  scatterX: number; scatterY: number;
+  endX: number; endY: number;
+};
+
 type Player = 'BLACK' | 'WHITE';
 type GameMode = 'PASS_AND_PLAY' | 'VS_COMPUTER';
 type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
-type GameStatus = 'PLAYING' | 'PASS_NOTIFICATION' | 'GAME_OVER';
+type GameStatus = 'PLAYING' | 'PASS_NOTIFICATION' | 'COUNTING' | 'GAME_OVER';
 
 // --- SkillForge iframe bridge ---------------------------------------------
 const BEST_SCORE_KEY = 'renegade-best-score';
@@ -65,6 +83,24 @@ export default function App() {
   const [gameStatus, setGameStatus] = useState<GameStatus>('PLAYING');
   const [winner, setWinner] = useState<'BLACK' | 'WHITE' | 'DRAW' | null>(null);
   const [passPlayer, setPassPlayer] = useState<Player | null>(null);
+
+  // Final tally animation: counters that tick up from 0 to each side's disc count
+  // (mirrors the piece-counting sequence in Clubhouse Games' Reversi before the result).
+  const [countScores, setCountScores] = useState({ black: 0, white: 0 });
+  // Final disc totals for each side (the territory each colour packs into).
+  const [countTarget, setCountTarget] = useState({ black: 0, white: 0 });
+  // Flips true once both territories finish packing, cueing the dividing line + winner highlight.
+  const [countRevealed, setCountRevealed] = useState(false);
+  // Discs reorganising on the board, plus how many have re-packed into their territory so far.
+  const [flyingDiscs, setFlyingDiscs] = useState<FlyDisc[]>([]);
+  const [launched, setLaunched] = useState(0);
+  // True once the discs have lifted off their cells and scattered to the board rim.
+  const [scattered, setScattered] = useState(false);
+  // After the match ends, whether the result card ('CARD') or the packed board
+  // comparison ('BOARD') is on screen — the player can flip between the two.
+  const [resultView, setResultView] = useState<'CARD' | 'BOARD'>('CARD');
+  // Bumped on every reset so an in-flight tally loop can detect a stale match and bail.
+  const matchGenRef = useRef(0);
 
   // Statistics History
   const [matchHistory, setMatchHistory] = useState<{winner: string, blackScore: number, whiteScore: number, date: string}[]>([]);
@@ -124,7 +160,7 @@ export default function App() {
   }, [gameStatus, winner]);
 
   // Sound Synthesizer via Web Audio API (tactile wooden feel)
-  const playSound = useCallback((type: 'place' | 'flip' | 'pass' | 'win' | 'click') => {
+  const playSound = useCallback((type: 'place' | 'flip' | 'pass' | 'win' | 'click' | 'count') => {
     if (isMuted) return;
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -215,6 +251,19 @@ export default function App() {
           osc.start(start);
           osc.stop(start + 0.4);
         });
+      } else if (type === 'count') {
+        // Crisp plastic "tick" for each disc counted during the final tally
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(660, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.09, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.07);
       } else if (type === 'click') {
         // Minimal UI tick
         const osc = ctx.createOscillator();
@@ -246,13 +295,131 @@ export default function App() {
   // Restart/Reset Game
   const handleReset = () => {
     playSound('click');
+    matchGenRef.current += 1; // invalidate any tally loop still running from the previous match
     setBoard(createInitialBoard());
     setTurn('BLACK');
     setGameStatus('PLAYING');
     setWinner(null);
     setPassPlayer(null);
+    setScores({ black: 2, white: 2 });
+    setCountScores({ black: 0, white: 0 });
+    setCountTarget({ black: 0, white: 0 });
+    setCountRevealed(false);
+    setFlyingDiscs([]);
+    setLaunched(0);
+    setScattered(false);
+    setResultView('CARD');
     setIsAnimating(false);
   };
+
+  // Run the closing tally, reorganising the discs on the board itself — the Clubhouse
+  // Games Reversi finish. Every disc lifts off, scatters to the rim, then re-packs into
+  // sorted territory: Black fills the top rows left-to-right, White the bottom rows
+  // bottom-up, so the two colours meet at a clean dividing line before the result.
+  const runFinalCount = useCallback(async (
+    finalBoard: (string | null)[][],
+    blackCount: number,
+    whiteCount: number,
+    finalWinner: 'BLACK' | 'WHITE' | 'DRAW'
+  ) => {
+    const gen = matchGenRef.current;
+
+    // Real board positions of each colour's discs, in reading order.
+    const realBlack: { x: number; y: number }[] = [];
+    const realWhite: { x: number; y: number }[] = [];
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const color = finalBoard[r][c];
+        if (color === 'BLACK') realBlack.push(cellCenter(r, c));
+        else if (color === 'WHITE') realWhite.push(cellCenter(r, c));
+      }
+    }
+
+    // Sorted target cells. Black packs global cells 0..blackCount-1 (top rows, L→R).
+    // White packs the bottom whiteCount cells (indices 64-whiteCount..63) — a contiguous
+    // bottom block that can never collide with Black's top block, with any empty cells
+    // left as a gap in the middle when the board ended short of full.
+    const blackTargets = realBlack.map((_, j) => cellCenter(Math.floor(j / 8), j % 8));
+    const whiteTargets = realWhite.map((_, j) => {
+      const gi = (64 - whiteCount) + j;
+      return cellCenter(Math.floor(gi / 8), gi % 8);
+    });
+
+    // Scatter a disc radially out to the board rim (square border at 6%..94%).
+    const toRim = (p: { x: number; y: number }) => {
+      const dx = p.x - 50;
+      const dy = p.y - 50;
+      const reach = 44 / Math.max(Math.abs(dx), Math.abs(dy), 0.001);
+      return { scatterX: 50 + dx * reach, scatterY: 50 + dy * reach };
+    };
+
+    const build = (
+      color: 'BLACK' | 'WHITE',
+      reals: { x: number; y: number }[],
+      targets: { x: number; y: number }[]
+    ): FlyDisc[] => reals.map((p, k) => {
+      const rim = toRim(p);
+      return {
+        color,
+        startX: p.x, startY: p.y,
+        scatterX: rim.scatterX, scatterY: rim.scatterY,
+        endX: targets[k].x, endY: targets[k].y,
+      };
+    });
+
+    const blackDiscs = build('BLACK', realBlack, blackTargets);       // top-down, L→R
+    const whiteDiscs = build('WHITE', realWhite, whiteTargets)
+      .sort((a, b) => b.endY - a.endY || a.endX - b.endX);            // bottom-up, L→R
+
+    // Interleave so both territories fill simultaneously and converge on the middle.
+    const sequence: FlyDisc[] = [];
+    const maxCount = Math.max(blackDiscs.length, whiteDiscs.length, 1);
+    for (let k = 0; k < maxCount; k++) {
+      if (blackDiscs[k]) sequence.push(blackDiscs[k]);
+      if (whiteDiscs[k]) sequence.push(whiteDiscs[k]);
+    }
+
+    setCountTarget({ black: blackCount, white: whiteCount });
+    setCountScores({ black: 0, white: 0 });
+    setCountRevealed(false);
+    setScattered(false);
+    setResultView('CARD');
+    setFlyingDiscs(sequence);
+    setLaunched(0);
+    setValidMoves([]);
+    setGameStatus('COUNTING');
+
+    // 1. Paint the discs over their real cells, then lift them out to the rim.
+    await new Promise(resolve => setTimeout(resolve, 90));
+    if (matchGenRef.current !== gen) return;
+    setScattered(true);
+    playSound('flip');
+    await new Promise(resolve => setTimeout(resolve, 520));
+    if (matchGenRef.current !== gen) return;
+
+    // 2. Re-pack disc by disc into sorted territory, ticking each count as it lands.
+    let b = 0;
+    let w = 0;
+    for (let i = 0; i < sequence.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 30));
+      if (matchGenRef.current !== gen) return; // match was reset mid-count — abandon this tally
+      setLaunched(i + 1);
+      if (sequence[i].color === 'BLACK') b++; else w++;
+      setCountScores({ black: b, white: w });
+      playSound('count');
+    }
+
+    // 3. Let the last discs settle, then reveal the dividing line + winner highlight.
+    await new Promise(resolve => setTimeout(resolve, 440));
+    if (matchGenRef.current !== gen) return;
+    setCountRevealed(true);
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    if (matchGenRef.current !== gen) return;
+
+    setWinner(finalWinner);
+    setGameStatus('GAME_OVER');
+    playSound('win');
+  }, [playSound]);
 
   // Helper: Adjacency Scan algorithm to find captured pieces
   const getFlippedPieces = (
@@ -385,15 +552,12 @@ export default function App() {
 
       if (nextActiveMoves.length === 0) {
         // Neither player can move (full board or both locked out) -> GAME OVER
-        setValidMoves([]);
-        setGameStatus('GAME_OVER');
-        playSound('win');
-        
+        setIsAnimating(false);
+
         let finalWinner: 'BLACK' | 'WHITE' | 'DRAW' = 'DRAW';
         if (blackCount > whiteCount) finalWinner = 'BLACK';
         else if (whiteCount > blackCount) finalWinner = 'WHITE';
-        setWinner(finalWinner);
-        
+
         // Add to statistics
         setMatchHistory(prev => [
           {
@@ -404,8 +568,9 @@ export default function App() {
           },
           ...prev.slice(0, 9)
         ]);
-        
-        setIsAnimating(false);
+
+        // Sweep the discs off the board into two towers before revealing the winner
+        runFinalCount(finalBoard, blackCount, whiteCount, finalWinner);
       } else {
         // Inform active player opponent passed, turn rolls back
         setPassPlayer(opponent);
@@ -537,12 +702,11 @@ export default function App() {
 
         if (oppMoves.length === 0) {
           // No moves for anyone -> Game Over
-          setGameStatus('GAME_OVER');
-          playSound('win');
           let winState: 'BLACK' | 'WHITE' | 'DRAW' = 'DRAW';
           if (scores.black > scores.white) winState = 'BLACK';
           else if (scores.white > scores.black) winState = 'WHITE';
-          setWinner(winState);
+          // Sweep the discs off the board into two towers before revealing the winner
+          runFinalCount(board, scores.black, scores.white, winState);
         } else {
           // Pass turn automatically with banner
           const autoPass = async () => {
@@ -570,6 +734,14 @@ export default function App() {
     }
     return color === 'BLACK' ? 'PLAYER 1' : 'PLAYER 2';
   };
+
+  // Only surface legal-move hints on the human's turn — highlighting the computer's
+  // own options during its turn just reads as confusing noise.
+  const hintsVisible = showHints && !(gameMode === 'VS_COMPUTER' && turn === computerColor);
+
+  // The packed-territory comparison is on the board during the closing tally, and again
+  // whenever the player flips back to it from the result card after the match ends.
+  const showComparison = gameStatus === 'COUNTING' || (gameStatus === 'GAME_OVER' && resultView === 'BOARD');
 
   return (
     <div className="h-[100dvh] w-full overflow-hidden flex flex-col justify-between bg-gradient-to-b from-neutral-900 via-stone-900 to-neutral-950 text-neutral-100 font-sans relative">
@@ -756,11 +928,11 @@ export default function App() {
                         key={`${rIdx}-${cIdx}`}
                         onClick={() => isLegal && handleCellClick(rIdx, cIdx)}
                         className={`relative aspect-square flex items-center justify-center border border-emerald-950/20 select-none transition-colors duration-150 touch-none
-                          ${isLegal && showHints && !isAnimating ? 'bg-emerald-600/10 cursor-pointer' : ''}
+                          ${isLegal && hintsVisible && !isAnimating ? 'bg-emerald-600/10 cursor-pointer' : ''}
                         `}
                       >
                         {/* 3D double-sided flipping piece */}
-                        {cellValue !== null ? (
+                        {cellValue !== null && !showComparison ? (
                           <div className="w-[84%] h-[84%] rounded-full perspective-1000 relative animate-piece-place">
                             <div 
                               className="w-full h-full rounded-full transform-style-3d transition-transform duration-500 ease-out relative"
@@ -783,7 +955,7 @@ export default function App() {
                           </div>
                         ) : (
                           /* Legal move pulsing rings */
-                          isLegal && showHints && !isAnimating && (
+                          isLegal && hintsVisible && !isAnimating && (
                             <button
                               id={`cell-hint-${rIdx}-${cIdx}`}
                               onClick={(e) => {
@@ -817,8 +989,114 @@ export default function App() {
                 </div>
               )}
 
+              {/* Final Tally — the discs reorganise on the board itself: Black packs the
+                  top rows, White the bottom rows, meeting at a clean territorial line.
+                  Also shown when the player flips back to the comparison from the result. */}
+              {showComparison && (() => {
+                const leader = countTarget.black > countTarget.white
+                  ? 'BLACK'
+                  : countTarget.white > countTarget.black
+                    ? 'WHITE'
+                    : 'DRAW';
+                // In the reopened board view the tally is already complete, so show the
+                // final totals with the divider up rather than the mid-count state.
+                const revealed = countRevealed || gameStatus === 'GAME_OVER';
+                const shownBlack = gameStatus === 'GAME_OVER' ? countTarget.black : countScores.black;
+                const shownWhite = gameStatus === 'GAME_OVER' ? countTarget.white : countScores.white;
+                // Territorial dividing line: midpoint between where Black's top block ends
+                // and White's bottom block begins (they coincide on a full 64-disc board).
+                const blackBottom = (countTarget.black / 8) * CELL;
+                const whiteTop = 100 - (countTarget.white / 8) * CELL;
+                const dividerY = (blackBottom + whiteTop) / 2;
+
+                return (
+                  <div className="absolute inset-0 z-30 overflow-hidden pointer-events-none">
+                    {/* Gentle dim so the reorganising discs read clearly over the felt */}
+                    <div className="absolute inset-0 bg-black/30 animate-fade-in" />
+
+                    {/* Territorial dividing line — revealed once both sides finish packing */}
+                    {revealed && (
+                      <div
+                        className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_10px_2px_rgba(245,158,11,0.6)] animate-fade-in"
+                        style={{ top: `${dividerY}%` }}
+                      />
+                    )}
+
+                    {/* The discs themselves — start cell → scatter to rim → sorted territory */}
+                    {flyingDiscs.map((d, i) => {
+                      const packed = scattered && i < launched;
+                      const x = !scattered ? d.startX : packed ? d.endX : d.scatterX;
+                      const y = !scattered ? d.startY : packed ? d.endY : d.scatterY;
+                      return (
+                        <div
+                          key={i}
+                          className={`absolute rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.55)] ${
+                            d.color === 'BLACK'
+                              ? 'bg-gradient-to-br from-neutral-700 to-neutral-950 border border-neutral-800'
+                              : 'bg-gradient-to-br from-neutral-50 to-neutral-300 border border-neutral-400'
+                          }`}
+                          style={{
+                            width: `${DISC}%`,
+                            height: `${DISC}%`,
+                            left: `${x - DISC / 2}%`,
+                            top: `${y - DISC / 2}%`,
+                            zIndex: i,
+                            transition: 'left 0.5s cubic-bezier(0.34,1.2,0.64,1), top 0.5s cubic-bezier(0.34,1.2,0.64,1)',
+                          }}
+                        />
+                      );
+                    })}
+
+                    {/* Running counts — Black over its top territory, White over its bottom */}
+                    {([
+                      { color: 'BLACK' as Player, count: shownBlack, pos: 'top-[3%]' },
+                      { color: 'WHITE' as Player, count: shownWhite, pos: 'bottom-[3%]' },
+                    ]).map(({ color, count, pos }) => {
+                      const isWinner = revealed && leader === color;
+                      return (
+                        <div
+                          key={color}
+                          className={`absolute left-1/2 -translate-x-1/2 ${pos} flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-sm border transition-colors ${
+                            isWinner
+                              ? 'bg-amber-500/90 border-amber-300 text-neutral-950'
+                              : 'bg-black/55 border-white/10 text-neutral-100'
+                          }`}
+                        >
+                          <span className="text-[8px] font-mono font-bold tracking-widest uppercase opacity-80">
+                            {getPlayerLabel(color)}
+                          </span>
+                          <span
+                            key={`${color}-${count}`}
+                            className="font-display font-extrabold text-lg leading-none tabular-nums animate-piece-place"
+                          >
+                            {count}
+                          </span>
+                          {isWinner && (
+                            <Trophy className="w-3.5 h-3.5" />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+
+              {/* Peek button — flip from the packed comparison back to the result card */}
+              {gameStatus === 'GAME_OVER' && resultView === 'BOARD' && (
+                <button
+                  onClick={() => {
+                    playSound('click');
+                    setResultView('CARD');
+                  }}
+                  className="absolute left-1/2 -translate-x-1/2 bottom-3 z-40 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 animate-fade-in"
+                >
+                  <Trophy className="w-3.5 h-3.5" />
+                  Show Result
+                </button>
+              )}
+
               {/* Game Over Banner Overlay */}
-              {gameStatus === 'GAME_OVER' && (
+              {gameStatus === 'GAME_OVER' && resultView === 'CARD' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/75 backdrop-blur-md z-30 p-4 text-center">
                   <div className="bg-gradient-to-b from-neutral-900 to-neutral-950 p-6 rounded-2xl border-2 border-amber-500 shadow-2xl max-w-xs w-full flex flex-col items-center animate-piece-place gap-4">
                     <div className="p-3 bg-amber-500/15 rounded-full border border-amber-500/30 text-amber-400 animate-pulse-glow">
@@ -846,12 +1124,23 @@ export default function App() {
                       </div>
                     </div>
 
-                    <button
-                      onClick={handleReset}
-                      className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl active:scale-95 transition-all shadow-lg shadow-amber-500/10 cursor-pointer"
-                    >
-                      Play Again
-                    </button>
+                    <div className="flex gap-2 w-full">
+                      <button
+                        onClick={() => {
+                          playSound('click');
+                          setResultView('BOARD');
+                        }}
+                        className="flex-1 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-100 font-bold rounded-xl active:scale-95 transition-all border border-neutral-700 cursor-pointer text-sm"
+                      >
+                        View Board
+                      </button>
+                      <button
+                        onClick={handleReset}
+                        className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl active:scale-95 transition-all shadow-lg shadow-amber-500/10 cursor-pointer text-sm"
+                      >
+                        Play Again
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
