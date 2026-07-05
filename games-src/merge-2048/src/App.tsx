@@ -11,6 +11,14 @@ import { GameMode, GameStats } from './types';
 import { audio } from './utils/audio';
 import { Layers } from 'lucide-react';
 
+// SkillForge bridge: relay a leaderboard score to the host page (no-op when the
+// game is opened standalone rather than embedded in an iframe).
+function postToParent(event: string, data: unknown) {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'GAME_EVENT', event, data }, '*');
+  }
+}
+
 export default function App() {
   const [mode, setMode] = useState<GameMode>('classic');
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -136,6 +144,13 @@ export default function App() {
     setGameActive(false);
     setIsGameOver(true);
   };
+
+  // SkillForge bridge: on game over, report the run's final score. The host keeps
+  // the player's highest across runs (write-if-higher), so this feeds the leaderboard.
+  useEffect(() => {
+    if (!isGameOver) return;
+    postToParent('BEST_SCORE', { bestScore: stats.score });
+  }, [isGameOver]);
 
   return (
     <div

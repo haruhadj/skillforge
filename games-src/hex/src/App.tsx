@@ -79,19 +79,33 @@ export default function App() {
     return () => window.removeEventListener('message', onMessage);
   }, []);
 
-  // SkillForge bridge: report score + stats once a match concludes. Hex has
-  // no draws, so redWins + blueWins is exactly the total completed-match count;
-  // playerWinsVsAi (a monotonic counter) doubles as the "best score".
+  // SkillForge bridge: report a bounded best-match SKILL score once a match ends.
+  // Only a decisive human win vs the AI counts (the human plays red). The score
+  // rewards AI difficulty and an efficient win — a shorter connecting path — so the
+  // leaderboard reflects skill, not how many games were ground out. Hex has no draws;
+  // redWins + blueWins is the total completed-match count. Host keeps the best match.
   useEffect(() => {
     if (!winner) return;
     const saved = localStorage.getItem(STATS_KEY);
     const current: GameStats = saved ? JSON.parse(saved) : stats;
 
     const totalGames = current.redWins + current.blueWins;
-    const bestScore = current.playerWinsVsAi;
 
-    postToParent('BEST_SCORE', { bestScore });
-    postToParent('GAME_STATS', { ...current, bestScore, totalGames, lastResult: winner, gameMode });
+    const DIFF_MULT: Record<AiDifficulty, number> = { easy: 1, medium: 2, hard: 3 };
+    let matchScore = 0;
+    if (gameMode === 'ai' && winner === 'red') {
+      // Shortest possible connecting path is BOARD_SIZE (11) → +400; a meandering
+      // 30-cell path → +0. Fall back to the minimum length if the path is missing.
+      const pathLen = winningPath.length || BOARD_SIZE;
+      const efficiency = Math.max(0, Math.min(400, Math.round(((30 - pathLen) / (30 - BOARD_SIZE)) * 400)));
+      matchScore = 200 * (DIFF_MULT[aiDifficulty] ?? 2) + efficiency;
+    }
+
+    // BEST_SCORE carries the leaderboard skill score; the host keeps the max.
+    postToParent('BEST_SCORE', { bestScore: matchScore });
+    // GAME_STATS is progress/analytics only — no score-like keys (bestScore/score/
+    // lastScore), or the host would count the same match twice.
+    postToParent('GAME_STATS', { ...current, totalGames, lastResult: winner, aiDifficulty, gameMode });
   }, [winner]);
 
   // Save statistics helper

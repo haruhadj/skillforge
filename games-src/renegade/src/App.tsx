@@ -135,18 +135,29 @@ export default function App() {
     return () => window.removeEventListener('message', onMessage);
   }, []);
 
-  // SkillForge bridge: report score + stats once a match concludes.
-  // Session score is the human side's disc tally in a decisive win (0 on a loss/draw),
-  // so "best score" tracks the player's most dominant win margin over time.
+  // SkillForge bridge: report a bounded best-match SKILL score once a match ends.
+  // Only a decisive win vs the AI counts. The score rewards AI difficulty and a
+  // dominant win — a bigger disc margin — so the leaderboard reflects skill, not how
+  // many games were ground out. The host keeps the best single match (write-if-higher).
   useEffect(() => {
     if (gameStatus !== 'GAME_OVER' || !winner) return;
 
     const humanColor = gameMode === 'VS_COMPUTER' ? (computerColor === 'BLACK' ? 'WHITE' : 'BLACK') : null;
     const playerWon = humanColor ? winner === humanColor : winner !== 'DRAW';
-    const sessionScore = playerWon ? (winner === 'BLACK' ? scores.black : scores.white) : 0;
+
+    const DIFF_MULT: Record<Difficulty, number> = { EASY: 1, MEDIUM: 2, HARD: 3 };
+    let matchScore = 0;
+    if (playerWon && humanColor) {
+      const humanDiscs = humanColor === 'BLACK' ? scores.black : scores.white;
+      const oppDiscs = humanColor === 'BLACK' ? scores.white : scores.black;
+      const margin = Math.max(0, humanDiscs - oppDiscs);
+      // A crushing win (margin approaching a 64-0 shutout) → up to +400.
+      const efficiency = Math.max(0, Math.min(400, Math.round((margin / 64) * 400)));
+      matchScore = 200 * (DIFF_MULT[aiDifficulty] ?? 2) + efficiency;
+    }
 
     const prevBest = Number(localStorage.getItem(BEST_SCORE_KEY) || 0);
-    const bestScore = Math.max(prevBest, sessionScore);
+    const bestScore = Math.max(prevBest, matchScore);
     localStorage.setItem(BEST_SCORE_KEY, String(bestScore));
 
     const wins = Number(localStorage.getItem(WINS_KEY) || 0) + (playerWon ? 1 : 0);
@@ -155,8 +166,11 @@ export default function App() {
     const totalGames = Number(localStorage.getItem(TOTAL_GAMES_KEY) || 0) + 1;
     localStorage.setItem(TOTAL_GAMES_KEY, String(totalGames));
 
-    postToParent('BEST_SCORE', { bestScore });
-    postToParent('GAME_STATS', { bestScore, wins, totalGames, lastResult: winner, gameMode });
+    // BEST_SCORE carries the per-match leaderboard skill score; the host keeps the max.
+    postToParent('BEST_SCORE', { bestScore: matchScore });
+    // GAME_STATS is progress/analytics only — no score-like keys (bestScore/score/
+    // lastScore), or the host would count the same match twice.
+    postToParent('GAME_STATS', { wins, totalGames, lastResult: winner, aiDifficulty, gameMode });
   }, [gameStatus, winner]);
 
   // Sound Synthesizer via Web Audio API (tactile wooden feel)

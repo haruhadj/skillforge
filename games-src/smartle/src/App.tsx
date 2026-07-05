@@ -185,6 +185,15 @@ interface UserStats {
   completedArchiveIds: number[];
 }
 
+// SkillForge bridge: relay a leaderboard score to the host page (no-op when the
+// game is opened standalone rather than embedded in an iframe). Sprint runs and
+// single-puzzle solves both feed one bounded skill score; the host keeps the max.
+function postToParent(event: string, data: unknown) {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: "GAME_EVENT", event, data }, "*");
+  }
+}
+
 export default function App() {
   // Game mode
   const [mode, setMode] = useState<"daily" | "sprint" | "archive">("daily");
@@ -306,6 +315,9 @@ export default function App() {
             setIsSprintActive(false);
             // Save Sprint Best Score to stats
             updateSprintBestScore(sprintScore);
+            // SkillForge: each word solved in the run is worth 60 pts — Sprint is the
+            // premium competitive mode, so it can outscore a single-puzzle solve.
+            postToParent("BEST_SCORE", { bestScore: sprintScore * 60 });
             return 0;
           }
           return prev - 1;
@@ -512,6 +524,10 @@ export default function App() {
   const handleGameComplete = () => {
     audio.playSolve();
     setActiveModal("success");
+
+    // SkillForge: a solved single puzzle scores on speed — a fast solve approaches
+    // +400, a slow one floors at +50. The host keeps the player's best across solves.
+    postToParent("BEST_SCORE", { bestScore: Math.max(50, 400 - elapsedSeconds * 3) });
 
     // Update stats structure
     setStats(prev => {

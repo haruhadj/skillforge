@@ -358,14 +358,26 @@ export default function App() {
     return () => window.removeEventListener('message', onMessage);
   }, []);
 
-  // SkillForge bridge: when a match ends, record the result and report score +
-  // stats. The human wins as Hounds on HOUNDS_WIN, or as Hare on either HARE win.
+  // SkillForge bridge: when a match ends, report a bounded best-match SKILL score.
+  // The human wins as Hounds on HOUNDS_WIN, or as Hare on either HARE win. A win
+  // rewards AI difficulty and an efficient game — fewer moves to trap or escape — so
+  // the leaderboard reflects skill, not how many games were ground out. The host
+  // keeps the best single match (write-if-higher).
   useEffect(() => {
     if (gameState !== 'GAME_OVER' || gameStatus === 'PLAYING') return;
 
     const humanWon =
       (humanRole === 'HOUNDS' && gameStatus === 'HOUNDS_WIN') ||
       (humanRole === 'HARE' && (gameStatus === 'HARE_WIN_ESCAPE' || gameStatus === 'HARE_WIN_STALL'));
+
+    const DIFF_MULT: Record<Difficulty, number> = { NORMAL: 1, HARD: 2, AMAZING: 3 };
+    let matchScore = 0;
+    if (humanWon) {
+      // A brisk win (~6 plies) → +400; a drawn-out 40+-ply win → +0.
+      const plies = moveHistory.length;
+      const efficiency = Math.max(0, Math.min(400, Math.round(((40 - plies) / (40 - 6)) * 400)));
+      matchScore = 200 * (DIFF_MULT[cpuDifficulty] ?? 1) + efficiency;
+    }
 
     setMatchStats(prev => {
       const next: MatchStats = {
@@ -375,10 +387,12 @@ export default function App() {
       localStorage.setItem(HH_STATS_KEY, JSON.stringify(next));
 
       const totalGames = next.wins + next.losses;
-      postToParent('BEST_SCORE', { bestScore: next.wins });
+      // BEST_SCORE carries the leaderboard skill score; the host keeps the max.
+      postToParent('BEST_SCORE', { bestScore: matchScore });
+      // GAME_STATS is progress/analytics only — no score-like keys (bestScore/score/
+      // lastScore), or the host would count the same match twice.
       postToParent('GAME_STATS', {
         ...next,
-        bestScore: next.wins,
         totalGames,
         lastResult: humanWon ? 'win' : 'loss',
         humanRole,

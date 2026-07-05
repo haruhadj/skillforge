@@ -117,16 +117,30 @@ export default function GomokuGame() {
     return () => window.removeEventListener('message', onMessage);
   }, []);
 
-  // SkillForge bridge: report score + stats once a match concludes. "Black" is
-  // the player (in AI mode the human plays black), so blackWins doubles as the
-  // best score; totalGames counts every completed match (wins + draws).
+  // SkillForge bridge: report a bounded best-match SKILL score once a match ends.
+  // Only a decisive human win vs the AI counts (the human plays black). The score
+  // rewards AI difficulty and an efficient win — fewer stones to make five — so the
+  // leaderboard reflects skill, not how many games were ground out. The host keeps
+  // the best single match (write-if-higher).
   useEffect(() => {
     if (!winner) return;
     const totalGames = stats.blackWins + stats.whiteWins + stats.draws;
-    const bestScore = stats.blackWins;
 
-    postToParent('BEST_SCORE', { bestScore });
-    postToParent('GAME_STATS', { ...stats, bestScore, totalGames, lastResult: winner, gameMode });
+    const DIFF_MULT: Record<Difficulty, number> = { easy: 1, medium: 2, hard: 3 };
+    let matchScore = 0;
+    if (gameMode === 'ai' && winner === 'black') {
+      // Black moves first, so black's stone count is half the total (rounded up).
+      const blackStones = Math.ceil(moveHistory.length / 2);
+      // 5 stones (the theoretical minimum) → +400; a grindy 40+-stone win → +0.
+      const efficiency = Math.max(0, Math.min(400, Math.round(((40 - blackStones) / (40 - 5)) * 400)));
+      matchScore = 200 * (DIFF_MULT[difficulty] ?? 2) + efficiency;
+    }
+
+    // BEST_SCORE carries the leaderboard skill score; the host keeps the max.
+    postToParent('BEST_SCORE', { bestScore: matchScore });
+    // GAME_STATS is progress/analytics only — it must NOT contain score-like keys
+    // (bestScore/score/lastScore) or the host would count the same match twice.
+    postToParent('GAME_STATS', { ...stats, totalGames, lastResult: winner, difficulty, gameMode });
   }, [winner]);
 
   // Audio helper wrapping our synthesizer with state check
