@@ -75,7 +75,7 @@ export default function GameCard({ game, isRecent, isCreatorsPick, plays = 0, be
         </div>
         <div className="min-w-0">
           <p className="text-[9px] uppercase tracking-wide font-semibold text-muted-foreground">Best</p>
-          <p className="mono text-xs font-semibold mt-0.5">{best != null && best > 0 ? best.toLocaleString() : '—'}</p>
+          <p className="mono text-xs font-semibold mt-0.5">{best != null ? best.toLocaleString() : '—'}</p>
         </div>
       </div>
     </div>
