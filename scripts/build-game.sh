@@ -61,13 +61,16 @@ build_one() {
     fi
   fi
 
-  # Preserve a curated cover.png (the library thumbnail) when the build itself
-  # does not emit one. Covers are usually added separately from the build.
-  local tmp_cover=""
-  if [[ -f "$dest/cover.png" && ! -f "$publish_dir/cover.png" ]]; then
-    tmp_cover="$(mktemp)"
-    cp "$dest/cover.png" "$tmp_cover"
-  fi
+  # Preserve a curated cover (the library thumbnail) when the build itself does
+  # not emit one. Covers are usually added separately from the build. Both the
+  # WebP (GameCover's preferred source) and the PNG fallback are preserved.
+  local cover_tmpdir=""
+  for ext in webp png; do
+    if [[ -f "$dest/cover.$ext" && ! -f "$publish_dir/cover.$ext" ]]; then
+      [[ -z "$cover_tmpdir" ]] && cover_tmpdir="$(mktemp -d)"
+      cp "$dest/cover.$ext" "$cover_tmpdir/cover.$ext"
+    fi
+  done
 
   echo ">> [$id] publishing -> $dest"
   rm -rf "$dest"
@@ -75,9 +78,9 @@ build_one() {
   cp -R "$publish_dir/." "$dest/"
   rm -rf "$dest/node_modules" "$dest/.git"   # never ship these (static-game case)
 
-  if [[ -n "$tmp_cover" ]]; then
-    cp "$tmp_cover" "$dest/cover.png"
-    rm -f "$tmp_cover"
+  if [[ -n "$cover_tmpdir" ]]; then
+    cp "$cover_tmpdir"/cover.* "$dest/"
+    rm -rf "$cover_tmpdir"
   fi
 
   if [[ ! -f "$dest/index.html" ]]; then

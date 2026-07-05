@@ -74,6 +74,9 @@ export default function GomokuGame() {
   
   // Modals & Stats
   const [showRules, setShowRules] = useState(false);
+  // Lets the player dismiss the game-over overlay while keeping `winner` set,
+  // so the board stays locked and the AI does not resume on a finished board.
+  const [overlayDismissed, setOverlayDismissed] = useState(false);
   const [stats, setStats] = useState<GameStats>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('gomoku_stats_v2');
@@ -146,6 +149,7 @@ export default function GomokuGame() {
     aiThinkingRef.current = false;
     setIsAiThinking(false);
     setSelectedCell(null);
+    setOverlayDismissed(false);
   }, [triggerSound]);
 
   // --- Reset scoreboard stats ---
@@ -248,6 +252,7 @@ export default function GomokuGame() {
     if (boardHistory.length === 0 || isAiThinking) return;
     triggerSound('tick');
     setSelectedCell(null);
+    setOverlayDismissed(false);
 
     // In AI mode, we undo BOTH the AI's move and the user's last move (reverting by 2 states)
     if (gameMode === 'ai') {
@@ -786,8 +791,8 @@ export default function GomokuGame() {
 
         {/* --- DIALOG MODAL: GAME OVER / VICTORY OVERLAY --- */}
         <AnimatePresence>
-          {winner && (
-            <motion.div 
+          {winner && !overlayDismissed && (
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -852,7 +857,7 @@ export default function GomokuGame() {
                   </button>
                   <button
                     id="win-close-btn"
-                    onClick={() => { triggerSound('tick'); setWinner(null); }}
+                    onClick={() => { triggerSound('tick'); setOverlayDismissed(true); }}
                     className="w-full py-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 font-semibold rounded-xl transition-colors cursor-pointer"
                   >
                     Close Overlay
