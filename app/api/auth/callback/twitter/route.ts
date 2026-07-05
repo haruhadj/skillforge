@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 
   // Get the X profile. `confirmed_email` requires the users.email scope (X added
   // OAuth 2.0 email support in Apr 2025) and is absent when the user has no
-  // confirmed email — then we fall back to keying by id like TikTok.
+  // confirmed email — then we fall back to keying the account by the stable id.
   const userInfoRes = await fetch(
     'https://api.twitter.com/2/users/me?user.fields=profile_image_url,name,username,confirmed_email',
     { headers: { Authorization: `Bearer ${accessToken}` } },

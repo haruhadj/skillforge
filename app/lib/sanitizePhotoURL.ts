@@ -15,8 +15,6 @@ const ALLOWED_HOSTNAMES = [
 const ALLOWED_HOSTNAME_SUFFIXES = [
   '.googleusercontent.com',
   '.twimg.com',
-  '.tiktokcdn.com',
-  '.tiktokcdn-eu.com',
 ]
 
 export function sanitizePhotoURL(url: string | null | undefined): string | null {

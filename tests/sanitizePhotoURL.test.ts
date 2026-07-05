@@ -43,9 +43,9 @@ describe('sanitizePhotoURL', () => {
     expect(sanitizePhotoURL('https://static.xx.fbcdn.net/rsrc.php/photo.jpg')).toBeNull()
   })
 
-  it('accepts TikTok CDN URLs', () => {
-    const url = 'https://p16-sign-sg.tiktokcdn.com/aweme/720x720/avatar.jpg'
-    expect(sanitizePhotoURL(url)).toBe(url)
+  it('rejects TikTok CDN URLs (provider removed)', () => {
+    expect(sanitizePhotoURL('https://p16-sign-sg.tiktokcdn.com/aweme/720x720/avatar.jpg')).toBeNull()
+    expect(sanitizePhotoURL('https://p16-sign.tiktokcdn-eu.com/aweme/avatar.jpg')).toBeNull()
   })
 
   it('rejects http:// URLs', () => {

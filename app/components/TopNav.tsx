@@ -74,7 +74,9 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
     isAdmin(currentUser.uid).then(setIsAdminUser).catch(() => setIsAdminUser(false))
   }, [currentUser?.uid])
 
-  // Live "players online now" pill, refreshed on a slow interval (route is cached).
+  // Live "players online now" pill. Polls on a short interval (route is cached ~10s
+  // server-side, and the poll stays well under the 60 req/min rate limit) so the
+  // count reflects joins/leaves quickly. Also refreshes when the tab regains focus.
   useEffect(() => {
     let active = true
     const load = () =>
@@ -83,8 +85,14 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
         .then((d) => { if (active && typeof d.count === 'number') setOnlineCount(d.count) })
         .catch(() => {})
     load()
-    const id = setInterval(load, 60_000)
-    return () => { active = false; clearInterval(id) }
+    const id = setInterval(load, 20_000)
+    const onVisible = () => { if (document.visibilityState === 'visible') load() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      active = false
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
   }, [])
 
   useEffect(() => {

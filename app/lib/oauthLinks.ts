@@ -14,8 +14,9 @@ const USERS = 'users'
 export interface OAuthProfile {
   provider: OAuthProvider
   providerId: string
-  // Null for providers that don't return an email (e.g. TikTok); such accounts
-  // are keyed solely by `provider`+`providerId` and skip email unification.
+  // Null for providers that don't return an email (e.g. X/Twitter when the user
+  // has no confirmed email); such accounts are keyed solely by
+  // `provider`+`providerId` and skip email unification.
   email: string | null
   displayName?: string
   photoURL?: string
@@ -96,8 +97,8 @@ export async function resolveSignInUid(p: OAuthProfile): Promise<string> {
     }
   }
 
-  // 2. Email unification — only for providers that return an email (TikTok does
-  //    not), so identities sharing an email collapse onto one account.
+  // 2. Email unification — only for providers that return an email, so identities
+  //    sharing an email collapse onto one account.
   if (p.email) {
     try {
       const existing = await adminAuth.getUserByEmail(p.email)

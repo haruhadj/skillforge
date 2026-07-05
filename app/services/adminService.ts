@@ -144,7 +144,6 @@ export interface OAuthConfig {
   google: boolean
   github: boolean
   twitter: boolean
-  tiktok: boolean
   discord: boolean
 }
 
@@ -152,7 +151,6 @@ const OAUTH_CONFIG_DEFAULTS: OAuthConfig = {
   google: true,
   github: true,
   twitter: true,
-  tiktok: true,
   discord: true,
 }
 

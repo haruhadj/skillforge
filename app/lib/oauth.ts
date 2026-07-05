@@ -14,12 +14,12 @@ export const OAUTH_PKCE_COOKIE = 'oauth_pkce_verifier'
 // and immediately clears it so the client can complete signInWithCustomToken.
 export const OAUTH_TOKEN_COOKIE = 'oauth_token'
 
-export type OAuthProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'discord'
+export type OAuthProvider = 'google' | 'github' | 'twitter' | 'discord'
 
 // Single source of truth for which providers can be linked to / unlinked from an
 // account. Shared by link/start and link/remove so the two can never drift out of
 // sync (audit S7: twitter/facebook were linkable but not removable).
-export const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'tiktok', 'twitter', 'discord']
+export const LINKABLE_PROVIDERS: OAuthProvider[] = ['google', 'github', 'twitter', 'discord']
 
 // Providers that require PKCE (RFC 7636). X (Twitter) OAuth 2.0 mandates it.
 export function providerRequiresPkce(provider: OAuthProvider): boolean {
@@ -77,20 +77,6 @@ export function buildAuthorizeUrl(
       prompt: 'select_account',
     })
     return `https://accounts.google.com/o/oauth2/v2/auth?${params}`
-  }
-
-  if (provider === 'tiktok') {
-    // TikTok uses `client_key` (not `client_id`) and never returns an email.
-    const clientKey = process.env.TIKTOK_OAUTH_CLIENT_KEY
-    if (!clientKey) throw new Error('TikTok OAuth not configured')
-    const params = new URLSearchParams({
-      client_key: clientKey,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: 'user.info.basic',
-      state,
-    })
-    return `https://www.tiktok.com/v2/auth/authorize/?${params}`
   }
 
   if (provider === 'discord') {

@@ -86,7 +86,7 @@ export function createSuggestedUsername(value: string, fallback = 'player'): str
   return 'player'
 }
 
-export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'tiktok' | 'twitter' | 'password' | 'unknown' {
+export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'github' | 'twitter' | 'password' | 'unknown' {
   if (!user) {
     return 'unknown'
   }
@@ -99,12 +99,6 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
 
   if (user.uid.startsWith('github_')) {
     return 'github'
-  }
-
-  // TikTok signs in via a custom token (empty providerData), so it can only be
-  // detected by the uid prefix we assign when creating the account.
-  if (user.uid.startsWith('tiktok_')) {
-    return 'tiktok'
   }
 
   const providerIds = user.providerData?.map((provider) => provider.providerId) || []
@@ -125,7 +119,7 @@ export function resolveAuthProvider(user: FirebaseUser | null): 'google' | 'gith
   return 'unknown'
 }
 
-export type LinkableProvider = 'google' | 'github' | 'tiktok' | 'twitter' | 'discord'
+export type LinkableProvider = 'google' | 'github' | 'twitter' | 'discord'
 
 export interface ProviderMethodState {
   // Whether this provider can currently sign the user into this account.
@@ -139,7 +133,6 @@ export interface SignInMethodsState {
   password: boolean
   google: ProviderMethodState
   github: ProviderMethodState
-  tiktok: ProviderMethodState
   twitter: ProviderMethodState
   discord: ProviderMethodState
 }
@@ -166,13 +159,7 @@ export function getSignInMethods(
       connected: Boolean(linked.github) || uid.startsWith('github_'),
       email: linked.github?.email ?? (uid.startsWith('github_') ? user?.email ?? null : null),
     },
-    // TikTok never provides an email, so the email field stays null.
-    tiktok: {
-      linked: Boolean(linked.tiktok),
-      connected: Boolean(linked.tiktok) || uid.startsWith('tiktok_'),
-      email: linked.tiktok?.email ?? null,
-    },
-    // X (Twitter) OAuth 2.0 never provides an email, so the email field stays null.
+    // X (Twitter) OAuth 2.0 may not provide an email, so the email field can be null.
     twitter: {
       linked: Boolean(linked.twitter),
       connected: Boolean(linked.twitter) || uid.startsWith('twitter_'),
@@ -197,23 +184,20 @@ export function getProfileSignInMethods(profile: UserProfile | null): SignInMeth
 
   if (profile.uid?.startsWith('google_')) methods.add('google')
   if (profile.uid?.startsWith('github_')) methods.add('github')
-  if (profile.uid?.startsWith('tiktok_')) methods.add('tiktok')
   if (profile.uid?.startsWith('twitter_')) methods.add('twitter')
   if (profile.uid?.startsWith('discord_')) methods.add('discord')
   if (profile.authProvider === 'google') methods.add('google')
   if (profile.authProvider === 'github') methods.add('github')
-  if (profile.authProvider === 'tiktok') methods.add('tiktok')
   if (profile.authProvider === 'twitter') methods.add('twitter')
   if (profile.authProvider === 'discord') methods.add('discord')
   if (profile.authProvider === 'password') methods.add('password')
   if (profile.linkedProviders?.google) methods.add('google')
   if (profile.linkedProviders?.github) methods.add('github')
-  if (profile.linkedProviders?.tiktok) methods.add('tiktok')
   if (profile.linkedProviders?.twitter) methods.add('twitter')
   if (profile.linkedProviders?.discord) methods.add('discord')
 
   // Stable order: password first, then OAuth providers.
-  const order = ['password', 'google', 'github', 'tiktok', 'twitter', 'discord']
+  const order = ['password', 'google', 'github', 'twitter', 'discord']
   return [...methods].sort((a, b) => order.indexOf(a) - order.indexOf(b))
 }
 
@@ -254,7 +238,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
 interface EnsureProfilePayload {
   email: string | null
-  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'twitter' | 'password' | 'unknown'
   updatedAt: ReturnType<typeof serverTimestamp>
   photoURL?: string
   photoThumbURL?: string
@@ -350,7 +334,7 @@ export async function isUsernameAvailable(username: string): Promise<boolean> {
 
 interface ClaimUsernameMetadata {
   email: string | null
-  authProvider: 'google' | 'github' | 'tiktok' | 'twitter' | 'password' | 'unknown'
+  authProvider: 'google' | 'github' | 'twitter' | 'password' | 'unknown'
 }
 
 interface ClaimUsernameResult {

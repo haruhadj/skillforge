@@ -9,7 +9,7 @@ import { useAuth } from '@/app/contexts/AuthContext'
  * Fires on mount, on a fixed interval, and whenever the tab returns to the
  * foreground. Best-effort — failures are swallowed. Renders nothing.
  */
-const HEARTBEAT_MS = 60_000
+const HEARTBEAT_MS = 30_000
 
 export default function PresenceTracker() {
   const { currentUser } = useAuth()
