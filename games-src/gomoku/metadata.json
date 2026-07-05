@@ -1,0 +1,6 @@
+{
+  "name": "Gomoku",
+  "description": "A high-fidelity, polished Gomoku (Five-in-a-Row) game featuring tactile stone placement, a warm wooden board, and an intelligent computer opponent.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -242,6 +242,20 @@ export const defaultGames: Game[] = [
     description: 'Connect your sides of the board before your opponent connects theirs — a classic no-draws-possible strategy game.',
     category: 'Logic',
   },
+  {
+    id: 'gomoku',
+    name: 'Gomoku',
+    iframePath: '/games/gomoku/index.html',
+    description: 'A high-fidelity Gomoku (Five-in-a-Row) with tactile stone placement, a warm wooden board, and an intelligent computer opponent.',
+    category: 'Logic',
+  },
+  {
+    id: 'hare-and-hounds-duel',
+    name: 'Hare and Hounds',
+    iframePath: '/games/hare-and-hounds-duel/index.html',
+    description: 'An elegant single-player take on the classic Hare and Hounds board game, with a sleek design and custom-tuned AI difficulty levels.',
+    category: 'Logic',
+  },
 ]
 
 /** Backward-compatible alias — existing code that imports { games } still works. */

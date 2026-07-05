@@ -1,0 +1,6 @@
+{
+  "name": "Hare and Hounds",
+  "description": "A elegant single-player board game of Hare and Hounds, featuring a sleek design inspired by Nintendo's Clubhouse Games and custom-tuned AI difficulty levels.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
