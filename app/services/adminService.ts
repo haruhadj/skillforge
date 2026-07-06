@@ -165,12 +165,17 @@ export async function saveOAuthConfig(config: OAuthConfig): Promise<void> {
 }
 
 // Library page feature flags
+export type LibrarySortMode = 'name' | 'recent' | 'popular'
+
 export interface LibrarySettings {
   showContinuePlaying: boolean
+  // null/undefined = users pick their own sort; otherwise this order is forced for everyone.
+  globalSortMode: LibrarySortMode | null
 }
 
 const LIBRARY_SETTINGS_DEFAULTS: LibrarySettings = {
   showContinuePlaying: true,
+  globalSortMode: null,
 }
 
 export async function getLibrarySettings(): Promise<LibrarySettings> {

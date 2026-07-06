@@ -42,6 +42,7 @@ function LibraryContent() {
   const [featuredIds, setFeaturedIds] = useState<string[]>([])
   const [showPicks, setShowPicks] = useState(false)
   const [showContinuePlaying, setShowContinuePlaying] = useState(true)
+  const [globalSortMode, setGlobalSortMode] = useState<'name' | 'recent' | 'popular' | null>(null)
 
   useEffect(() => {
     if (!currentUser && typeof window !== 'undefined') router.push('/')
@@ -58,7 +59,11 @@ function LibraryContent() {
   }, [])
 
   useEffect(() => {
-    getLibrarySettings().then((s) => setShowContinuePlaying(s.showContinuePlaying)).catch(() => {})
+    getLibrarySettings().then((s) => {
+      setShowContinuePlaying(s.showContinuePlaying)
+      setGlobalSortMode(s.globalSortMode ?? null)
+      if (s.globalSortMode) setSortBy(s.globalSortMode)
+    }).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -261,21 +266,28 @@ function LibraryContent() {
               {gamesLoading ? 'Loading…' : `${sortedGames.length} ${sortedGames.length === 1 ? 'game' : 'games'} available`}
             </p>
           </div>
-          <Select
-            value={sortBy}
-            onValueChange={(v) => {
-              const next = v as typeof sortBy
-              setSortBy(next)
-              if (typeof window !== 'undefined') localStorage.setItem('library:sortBy', next)
-            }}
-          >
-            <SelectTrigger className="w-44 h-9"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {SORT_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {globalSortMode ? (
+            <span className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border px-3 text-sm text-muted-foreground">
+              Sorted by {SORT_OPTIONS.find((o) => o.value === globalSortMode)?.label ?? globalSortMode}
+              <span className="text-xs">(set by admin)</span>
+            </span>
+          ) : (
+            <Select
+              value={sortBy}
+              onValueChange={(v) => {
+                const next = v as typeof sortBy
+                setSortBy(next)
+                if (typeof window !== 'undefined') localStorage.setItem('library:sortBy', next)
+              }}
+            >
+              <SelectTrigger className="w-44 h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {SORT_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         {/* Category filter */}

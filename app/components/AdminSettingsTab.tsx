@@ -9,7 +9,15 @@ import {
   getLibrarySettings,
   saveLibrarySettings,
   LibrarySettings,
+  LibrarySortMode,
 } from '@/app/services/adminService'
+
+const SORT_MODE_OPTIONS: { value: LibrarySortMode | ''; label: string }[] = [
+  { value: '', label: 'Let users choose (default)' },
+  { value: 'name', label: 'Name (A-Z)' },
+  { value: 'recent', label: 'Recently Played' },
+  { value: 'popular', label: 'Most Popular Globally' },
+]
 
 const PROVIDERS: { key: keyof OAuthConfig; label: string; description: string; icon: React.ReactNode }[] = [
   {
@@ -147,6 +155,30 @@ export default function AdminSettingsTab() {
               }`}
             />
           </button>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Global sort order</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 truncate">
+              Force how games are sorted in the library for every player, overriding their own preference
+            </p>
+          </div>
+
+          <select
+            value={librarySettings.globalSortMode ?? ''}
+            onChange={(e) =>
+              setLibrarySettings({
+                ...librarySettings,
+                globalSortMode: (e.target.value || null) as LibrarySettings['globalSortMode'],
+              })
+            }
+            className="h-9 shrink-0 rounded-lg border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-slate-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            {SORT_MODE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
         </div>
       </div>
 
