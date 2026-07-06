@@ -1,0 +1,3 @@
+[submodule "games-src/geomaster"]
+	path = games-src/geomaster
+	url = git@github.com:haruhadj/geomaster.git
