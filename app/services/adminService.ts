@@ -192,7 +192,7 @@ export async function saveLibrarySettings(settings: LibrarySettings): Promise<vo
 export interface SurveySettings {
   enabled: boolean
   minVisitsBeforePrompt: number
-  cooldownHours: number
+  cooldownMinutes: number
   // 0-1 chance an eligible visit actually shows the prompt
   showProbability: number
 }
@@ -200,7 +200,7 @@ export interface SurveySettings {
 const SURVEY_SETTINGS_DEFAULTS: SurveySettings = {
   enabled: true,
   minVisitsBeforePrompt: 1,
-  cooldownHours: 1,
+  cooldownMinutes: 60,
   showProbability: 1,
 }
 

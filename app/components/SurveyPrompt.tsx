@@ -52,7 +52,7 @@ function shouldPrompt(settings: SurveySettings): boolean {
   if (visits < settings.minVisitsBeforePrompt) return false
 
   const lastShown = Number(localStorage.getItem(STORAGE.lastShown) || '0')
-  if (Date.now() - lastShown < settings.cooldownHours * 60 * 60 * 1000) return false
+  if (Date.now() - lastShown < settings.cooldownMinutes * 60 * 1000) return false
 
   return Math.random() < settings.showProbability
 }

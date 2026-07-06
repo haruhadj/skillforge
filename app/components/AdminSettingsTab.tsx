@@ -248,7 +248,7 @@ export default function AdminSettingsTab() {
 
         <div className="flex items-center justify-between gap-4 px-5 py-4">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-slate-900 dark:text-white">Cooldown between prompts (hours)</p>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Cooldown between prompts (minutes)</p>
             <p className="text-xs text-slate-500 dark:text-gray-400 truncate">
               Minimum time before an unresolved prompt can reappear for the same player
             </p>
@@ -256,11 +256,11 @@ export default function AdminSettingsTab() {
           <input
             type="number"
             min={0}
-            value={surveySettings.cooldownHours}
+            value={surveySettings.cooldownMinutes}
             onChange={(e) =>
               setSurveySettings({
                 ...surveySettings,
-                cooldownHours: Math.max(0, Number(e.target.value) || 0),
+                cooldownMinutes: Math.max(0, Number(e.target.value) || 0),
               })
             }
             className="h-9 w-20 shrink-0 rounded-lg border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-slate-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
