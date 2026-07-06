@@ -14,7 +14,7 @@ import { getSurveySettings, SurveySettings } from '@/app/services/adminService'
 // Google Form URL for the software-evaluation survey. Paste the share link here, or
 // set NEXT_PUBLIC_SURVEY_FORM_URL in the environment to override without a rebuild
 // change. The prompt stays hidden until a real form URL is configured.
-const SURVEY_FORM_URL =
+export const SURVEY_FORM_URL =
   process.env.NEXT_PUBLIC_SURVEY_FORM_URL || 'https://forms.gle/m4CpE6KprFbkZW2N8'
 
 // localStorage keys — kept together so the whole state can be reasoned about at a glance.

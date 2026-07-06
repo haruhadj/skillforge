@@ -7,7 +7,7 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import MobileNav from '@/app/components/MobileNav'
 import TopNav from '@/app/components/TopNav'
 import GameCard from '@/app/components/GameCard'
-import SurveyPrompt from '@/app/components/SurveyPrompt'
+import SurveyPrompt, { SURVEY_FORM_URL } from '@/app/components/SurveyPrompt'
 import { getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
 import { getAllScores } from '@/app/services/gameDataService'
 import { getLibrarySettings } from '@/app/services/adminService'
@@ -267,28 +267,38 @@ function LibraryContent() {
               {gamesLoading ? 'Loading…' : `${sortedGames.length} ${sortedGames.length === 1 ? 'game' : 'games'} available`}
             </p>
           </div>
-          {globalSortMode ? (
-            <span className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border px-3 text-sm text-muted-foreground">
-              Sorted by {SORT_OPTIONS.find((o) => o.value === globalSortMode)?.label ?? globalSortMode}
-              <span className="text-xs">(set by admin)</span>
-            </span>
-          ) : (
-            <Select
-              value={sortBy}
-              onValueChange={(v) => {
-                const next = v as typeof sortBy
-                setSortBy(next)
-                if (typeof window !== 'undefined') localStorage.setItem('library:sortBy', next)
-              }}
+          <div className="flex items-center gap-2">
+            <a
+              href={SURVEY_FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
             >
-              <SelectTrigger className="w-44 h-9"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {SORT_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+              📝 Survey
+            </a>
+            {globalSortMode ? (
+              <span className="inline-flex h-9 items-center gap-1.5 rounded-md border border-border px-3 text-sm text-muted-foreground">
+                Sorted by {SORT_OPTIONS.find((o) => o.value === globalSortMode)?.label ?? globalSortMode}
+                <span className="text-xs">(set by admin)</span>
+              </span>
+            ) : (
+              <Select
+                value={sortBy}
+                onValueChange={(v) => {
+                  const next = v as typeof sortBy
+                  setSortBy(next)
+                  if (typeof window !== 'undefined') localStorage.setItem('library:sortBy', next)
+                }}
+              >
+                <SelectTrigger className="w-44 h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </div>
 
         {/* Category filter */}
