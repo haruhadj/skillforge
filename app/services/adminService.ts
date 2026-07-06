@@ -187,3 +187,29 @@ export async function getLibrarySettings(): Promise<LibrarySettings> {
 export async function saveLibrarySettings(settings: LibrarySettings): Promise<void> {
   await setDoc(doc(db, 'config', 'librarySettings'), settings)
 }
+
+// Survey popup pacing (see app/components/SurveyPrompt.tsx)
+export interface SurveySettings {
+  enabled: boolean
+  minVisitsBeforePrompt: number
+  cooldownHours: number
+  // 0-1 chance an eligible visit actually shows the prompt
+  showProbability: number
+}
+
+const SURVEY_SETTINGS_DEFAULTS: SurveySettings = {
+  enabled: true,
+  minVisitsBeforePrompt: 1,
+  cooldownHours: 1,
+  showProbability: 1,
+}
+
+export async function getSurveySettings(): Promise<SurveySettings> {
+  const snap = await getDoc(doc(db, 'config', 'surveySettings'))
+  if (!snap.exists()) return { ...SURVEY_SETTINGS_DEFAULTS }
+  return { ...SURVEY_SETTINGS_DEFAULTS, ...snap.data() } as SurveySettings
+}
+
+export async function saveSurveySettings(settings: SurveySettings): Promise<void> {
+  await setDoc(doc(db, 'config', 'surveySettings'), settings)
+}

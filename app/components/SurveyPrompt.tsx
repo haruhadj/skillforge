@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { getSurveySettings, SurveySettings } from '@/app/services/adminService'
 
 // Google Form URL for the software-evaluation survey. Paste the share link here, or
 // set NEXT_PUBLIC_SURVEY_FORM_URL in the environment to override without a rebuild
@@ -23,12 +24,6 @@ const STORAGE = {
   visits: 'survey:libraryVisits', // how many times the user has landed on the library
 } as const
 
-// Non-aggressive pacing: only start considering the prompt after a little engagement,
-// never re-prompt within the cooldown window, and even when eligible only show it some
-// of the time so it feels occasional rather than every-visit.
-const MIN_VISITS_BEFORE_PROMPT = 2
-const COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000 // 3 days between prompts
-const SHOW_PROBABILITY = 0.4 // ~40% of eligible visits
 const APPEAR_DELAY_MS = 4000 // let the page settle before it slides in
 
 // Guards against showing more than once within a single page-app session (survives
@@ -39,8 +34,13 @@ function isConfigured(): boolean {
   return /^https?:\/\//i.test(SURVEY_FORM_URL)
 }
 
-function shouldPrompt(): boolean {
+// Pacing knobs (min visits, cooldown, show chance) are admin-configurable from
+// config/surveySettings — see AdminSettingsTab. "Maybe later" only defers to the next
+// eligible visit, not a long cooldown; only "Take the survey" / "Don't show this again"
+// permanently resolve the prompt.
+function shouldPrompt(settings: SurveySettings): boolean {
   if (typeof window === 'undefined') return false
+  if (!settings.enabled) return false
   if (!isConfigured()) return false
   if (shownThisSession) return false
 
@@ -49,24 +49,31 @@ function shouldPrompt(): boolean {
 
   const visits = Number(localStorage.getItem(STORAGE.visits) || '0') + 1
   localStorage.setItem(STORAGE.visits, String(visits))
-  if (visits < MIN_VISITS_BEFORE_PROMPT) return false
+  if (visits < settings.minVisitsBeforePrompt) return false
 
   const lastShown = Number(localStorage.getItem(STORAGE.lastShown) || '0')
-  if (Date.now() - lastShown < COOLDOWN_MS) return false
+  if (Date.now() - lastShown < settings.cooldownHours * 60 * 60 * 1000) return false
 
-  return Math.random() < SHOW_PROBABILITY
+  return Math.random() < settings.showProbability
 }
 
 export default function SurveyPrompt() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    if (!shouldPrompt()) return
-    const timer = window.setTimeout(() => {
-      shownThisSession = true
-      localStorage.setItem(STORAGE.lastShown, String(Date.now()))
-      setOpen(true)
-    }, APPEAR_DELAY_MS)
+    let timer: number | undefined
+
+    getSurveySettings()
+      .then((settings) => {
+        if (!shouldPrompt(settings)) return
+        timer = window.setTimeout(() => {
+          shownThisSession = true
+          localStorage.setItem(STORAGE.lastShown, String(Date.now()))
+          setOpen(true)
+        }, APPEAR_DELAY_MS)
+      })
+      .catch(() => {})
+
     return () => window.clearTimeout(timer)
   }, [])
 

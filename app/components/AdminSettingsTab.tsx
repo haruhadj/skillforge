@@ -10,6 +10,9 @@ import {
   saveLibrarySettings,
   LibrarySettings,
   LibrarySortMode,
+  getSurveySettings,
+  saveSurveySettings,
+  SurveySettings,
 } from '@/app/services/adminService'
 
 const SORT_MODE_OPTIONS: { value: LibrarySortMode | ''; label: string }[] = [
@@ -68,14 +71,16 @@ const PROVIDERS: { key: keyof OAuthConfig; label: string; description: string; i
 export default function AdminSettingsTab() {
   const [config, setConfig] = useState<OAuthConfig | null>(null)
   const [librarySettings, setLibrarySettings] = useState<LibrarySettings | null>(null)
+  const [surveySettings, setSurveySettings] = useState<SurveySettings | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    Promise.all([getOAuthConfig(), getLibrarySettings()])
-      .then(([oauth, library]) => {
+    Promise.all([getOAuthConfig(), getLibrarySettings(), getSurveySettings()])
+      .then(([oauth, library, survey]) => {
         setConfig(oauth)
         setLibrarySettings(library)
+        setSurveySettings(survey)
       })
       .catch(() => toast.error('Failed to load settings'))
       .finally(() => setLoading(false))
@@ -92,10 +97,14 @@ export default function AdminSettingsTab() {
   }
 
   const handleSave = async () => {
-    if (!config || !librarySettings) return
+    if (!config || !librarySettings || !surveySettings) return
     setSaving(true)
     try {
-      await Promise.all([saveOAuthConfig(config), saveLibrarySettings(librarySettings)])
+      await Promise.all([
+        saveOAuthConfig(config),
+        saveLibrarySettings(librarySettings),
+        saveSurveySettings(surveySettings),
+      ])
       toast.success('Settings saved')
     } catch {
       toast.error('Failed to save settings')
@@ -112,7 +121,7 @@ export default function AdminSettingsTab() {
     )
   }
 
-  if (!config || !librarySettings) return null
+  if (!config || !librarySettings || !surveySettings) return null
 
   return (
     <div className="space-y-6">
@@ -179,6 +188,105 @@ export default function AdminSettingsTab() {
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
+        </div>
+      </div>
+
+      <div className="surface rounded-2xl divide-y divide-slate-200/60 dark:divide-gray-700/60 overflow-hidden">
+        <div className="px-5 py-3 bg-slate-50/60 dark:bg-gray-800/40">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-gray-400">
+            Survey Popup
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Show survey popup</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 truncate">
+              Occasionally prompt players to fill out the software-evaluation survey
+            </p>
+          </div>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={surveySettings.enabled}
+            onClick={() =>
+              setSurveySettings({ ...surveySettings, enabled: !surveySettings.enabled })
+            }
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
+              surveySettings.enabled ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-gray-600'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                surveySettings.enabled ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Minimum library visits</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 truncate">
+              How many times a player must visit the library before becoming eligible
+            </p>
+          </div>
+          <input
+            type="number"
+            min={1}
+            value={surveySettings.minVisitsBeforePrompt}
+            onChange={(e) =>
+              setSurveySettings({
+                ...surveySettings,
+                minVisitsBeforePrompt: Math.max(1, Number(e.target.value) || 1),
+              })
+            }
+            className="h-9 w-20 shrink-0 rounded-lg border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-slate-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          />
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Cooldown between prompts (hours)</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 truncate">
+              Minimum time before an unresolved prompt can reappear for the same player
+            </p>
+          </div>
+          <input
+            type="number"
+            min={0}
+            value={surveySettings.cooldownHours}
+            onChange={(e) =>
+              setSurveySettings({
+                ...surveySettings,
+                cooldownHours: Math.max(0, Number(e.target.value) || 0),
+              })
+            }
+            className="h-9 w-20 shrink-0 rounded-lg border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-slate-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          />
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Show chance (%)</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 truncate">
+              Chance the popup appears on any given eligible visit
+            </p>
+          </div>
+          <input
+            type="number"
+            min={0}
+            max={100}
+            value={Math.round(surveySettings.showProbability * 100)}
+            onChange={(e) =>
+              setSurveySettings({
+                ...surveySettings,
+                showProbability: Math.min(100, Math.max(0, Number(e.target.value) || 0)) / 100,
+              })
+            }
+            className="h-9 w-20 shrink-0 rounded-lg border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-slate-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          />
         </div>
       </div>
 
