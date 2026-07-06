@@ -7,6 +7,7 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import MobileNav from '@/app/components/MobileNav'
 import TopNav from '@/app/components/TopNav'
 import GameCard from '@/app/components/GameCard'
+import SurveyPrompt from '@/app/components/SurveyPrompt'
 import { getRecentlyPlayed, saveRecentlyPlayed } from '@/app/services/userProfileService'
 import { getAllScores } from '@/app/services/gameDataService'
 import { getLibrarySettings } from '@/app/services/adminService'
@@ -348,6 +349,7 @@ function LibraryContent() {
       </main>
 
       <MobileNav />
+      <SurveyPrompt />
     </div>
   )
 }
