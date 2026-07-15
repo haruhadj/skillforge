@@ -16,15 +16,22 @@ import {
 import { Game, Announcement, PlatformStats, UserProfile } from '@/app/types'
 
 // Role helpers
+export type UserRole = 'admin' | 'teacher' | 'user'
+
 export async function isAdmin(uid: string): Promise<boolean> {
-  if (!uid) return false
-  const snap = await getDoc(doc(db, 'users', uid))
-  return snap.exists() && snap.data().role === 'admin'
+  return (await getUserRole(uid)) === 'admin'
 }
 
-export async function setUserRole(uid: string, role: 'admin' | 'user'): Promise<void> {
+export async function getUserRole(uid: string): Promise<UserRole> {
+  if (!uid) return 'user'
+  const snap = await getDoc(doc(db, 'users', uid))
+  const role = snap.exists() ? snap.data().role : undefined
+  return role === 'admin' || role === 'teacher' ? role : 'user'
+}
+
+export async function setUserRole(uid: string, role: UserRole): Promise<void> {
   if (!uid) throw new Error('Missing user id')
-  if (!['admin', 'user'].includes(role)) throw new Error('Invalid role')
+  if (!['admin', 'teacher', 'user'].includes(role)) throw new Error('Invalid role')
 
   await setDoc(doc(db, 'users', uid), { role, updatedAt: serverTimestamp() }, { merge: true })
 }
@@ -85,7 +92,7 @@ export async function getPlatformStats(): Promise<PlatformStats> {
     headers: { Authorization: `Bearer ${token}` },
   })
   if (!res.ok) {
-    throw new Error(res.status === 403 ? 'Admin access required' : 'Failed to load platform stats')
+    throw new Error(res.status === 403 ? 'Staff access required' : 'Failed to load platform stats')
   }
   return (await res.json()) as PlatformStats
 }

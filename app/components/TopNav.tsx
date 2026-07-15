@@ -8,7 +8,7 @@ import { Bell } from 'lucide-react'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import { getUserProfile } from '@/app/services/userProfileService'
-import { isAdmin, getActiveAnnouncements } from '@/app/services/adminService'
+import { getUserRole, getActiveAnnouncements, UserRole } from '@/app/services/adminService'
 import { Announcement } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -56,7 +56,7 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
   const { currentUser, logout } = useAuth()
   const [avatarURL, setAvatarURL] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
-  const [isAdminUser, setIsAdminUser] = useState(false)
+  const [role, setRole] = useState<UserRole>('user')
   const [localSearch, setLocalSearch] = useState('')
   const [onlineCount, setOnlineCount] = useState<number | null>(null)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
@@ -71,7 +71,7 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
         setUsername(p?.username ?? null)
       })
       .catch(() => {})
-    isAdmin(currentUser.uid).then(setIsAdminUser).catch(() => setIsAdminUser(false))
+    getUserRole(currentUser.uid).then(setRole).catch(() => setRole('user'))
   }, [currentUser?.uid])
 
   // Live "players online now" pill. Polls on a short interval (route is cached ~10s
@@ -248,8 +248,12 @@ export default function TopNav({ searchValue, onSearch }: TopNavProps) {
               <DropdownMenuItem asChild><Link href="/profile" className="cursor-pointer">My Profile</Link></DropdownMenuItem>
               <DropdownMenuItem asChild><Link href="/leaderboard" className="cursor-pointer">Leaderboard</Link></DropdownMenuItem>
               <DropdownMenuItem asChild><Link href="/activity" className="cursor-pointer">Activity</Link></DropdownMenuItem>
-              {isAdminUser && (
-                <DropdownMenuItem asChild><Link href="/admin" className="cursor-pointer">Admin Panel</Link></DropdownMenuItem>
+              {(role === 'admin' || role === 'teacher') && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin" className="cursor-pointer">
+                    {role === 'teacher' ? 'Teacher Panel' : 'Admin Panel'}
+                  </Link>
+                </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive cursor-pointer">

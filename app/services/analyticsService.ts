@@ -32,7 +32,7 @@ export async function getLearningGapReport(): Promise<LearningGapReport> {
     headers: { Authorization: `Bearer ${token}` },
   })
   if (!res.ok) {
-    throw new Error(res.status === 403 ? 'Admin access required' : 'Failed to load analytics')
+    throw new Error(res.status === 403 ? 'Staff access required' : 'Failed to load analytics')
   }
 
   const data = await res.json()

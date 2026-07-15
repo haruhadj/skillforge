@@ -1,0 +1,185 @@
+DEVELOPMENT OF INTERACTIVE
+GAME HUB FOR IMPROVED STUDENT ENGAGEMENT AND LEARNING 
+Presented by: 
+Fernandez, Michael G.
+Dela Torre, Zyryll Jay L.
+Guban, Mark Gian M.
+Our Lady of Assumption College of Laguna – 2025
+
+INTRODUCTION
+In today’s digital age, traditional teaching methods are often no longer enough to maintain students’ attention and motivation. With the rise of smartphones, video games, and social media, learners now expect interactivity and instant feedback. Educational institutions like Our Lady of Assumption College face growing challenges in keeping students engaged in subjects such as Math, Science, and Literature.
+
+SkillForge was developed as a solution to this issue—a web-based educational game hub that brings gamification into the learning environment. By integrating points, levels, badges, and leaderboards, it transforms ordinary lessons into fun and competitive experiences that encourage active participation and continuous improvement.
+
+
+INTRODUCTION
+With SkillForge, students aren’t just absorbing information—they're immersed in learning experiences that are challenging, enjoyable, and tailored to their needs.
+
+
+Key Features of SkillForge:
+Curriculum-aligned games for Senior High School subjects
+Accessible on both web and mobile devices
+Real-time progress tracking and analytics for teachers
+Personalized learning with engaging, interactive modules
+
+
+PROJECT CONTEXT
+Many schools, including Our Lady of Assumption College, still rely on traditional teaching methods that often fail to engage today’s tech-savvy students. While young learners are immersed in interactive technologies like mobile games and social media, classroom instruction hasn’t kept pace.
+
+Gamification—using elements like challenges, rewards, and instant feedback—has proven effective in boosting student motivation, engagement, and learning outcomes.
+
+SkillForge offers a solution by providing a centralized, game-based learning platform aligned with the curriculum. It personalizes the learning experience, allowing students to track their progress, earn rewards, and learn in a fun, interactive way.
+
+
+PURPOSE AND DESCRIPTION
+The main goal of this project is to design and develop SkillForge, a web-based educational game hub that boosts student engagement and learning outcomes through gamification. By transforming lessons into interactive experiences, SkillForge motivates students to participate more actively in their education.
+
+Designed for Senior High School students at Our Lady of Assumption College, SkillForge is accessible on both computers and mobile devices. It integrates curriculum-aligned games with performance tracking to offer a fun, flexible, and effective way of learning.
+
+
+PURPOSE AND DESCRIPTION
+SkillForge serves as a complement to traditional education, offering students a richer and more motivating learning environment. What SkillForge offers:
+
+Curriculum-based games in major subjects like Math, Science, English, and Literature
+Gamified features: rankings, points, levels, badges, leaderboards
+Real-time analytics to guide student learning and teacher instruction
+Multi-platform access via web and mobile devices
+
+
+OBJECTIVES OF THE STUDY
+SkillForge is developed with a clear set of objectives focused on enhancing student learning and engagement through a gamified educational experience. These objectives guide every feature, function, and design decision in the system.
+
+To design and develop a system, an interactive educational game hub aligned with the curriculum of Our Lady of Assumption College, aiming to improve student engagement and learning outcomes through gamification.
+
+OBJECTIVES OF THE STUDY
+Here are the main objectives:
+To create curriculum-based game modules across key subjects like Mathematics, Science, English, and Literature
+To integrate gamification elements such as points, levels, badges, and leaderboards
+To implement a learning analytics system that tracks student performance, identifies learning patterns, and delivers insights
+To provide real-time feedback and personalized recommendations based on individual student data
+To support teachers with dashboards that help guide instruction and identify areas for intervention
+
+
+SCOPE AND LIMITATIONS
+Scope:
+Covers selected Senior High School subjects: Math, Science, English, and Literature
+Accessible via web browsers and mobile devices
+Features include user logins, curriculum-based games, student progress tracking, and analytics dashboards for teachers
+Built using modern web technologies and designed for compatibility with the school’s infrastructure
+Intended as a supplementary tool, not a replacement for traditional teaching methods
+
+
+SCOPE AND LIMITATIONS
+Limitations:
+Does not replace classroom teaching or official grading systems
+Initial rollout is limited to selected grade levels only
+Requires internet access and compatible devices for full functionality
+Post-launch maintenance and system updates depend on the school’s IT support
+
+
+RELATED LITERATURE AND STUDIES
+Local Studies
+
+Dela Cruz (2023) explored how gamification can improve motivation, self-regulation, and academic performance in an online physics lab for engineering students. To address low performance in pandemic-era online classes, game elements such as leaderboards, coins, and level ranks were introduced into two test classes.
+Using a mixed-methods approach (tests, surveys, learning logs, focus groups), the study revealed that students became more motivated and achieved better academic results after the gamification features were implemented.
+    Key findings of the Study:
+Increased student motivation and self-regulation
+Improved academic performance through gamified mechanics
+Positive student feedback on the interactive learning experience
+
+
+FOREIGN STUDIES
+Darad (2025) examined how gamification transforms both education and corporate training by enhancing learner engagement and knowledge retention. The study emphasized that integrating game elements like points, badges, leaderboards, and challenges leads to higher completion rates and more active learning.
+
+It also highlighted the power of intrinsic and extrinsic motivation, showing that learners are more driven when their efforts are recognized through rewards and progress tracking. The integration of AI-powered tools was also noted for enabling real-time, personalized feedback.
+
+
+LOCAL LITERATURE
+Bagsic (2023) conducted a quasi-experimental study to assess the effectiveness of localized, gamified learning materials in improving the academic performance of Grade 11 students in Practical Research 1. The study compared two groups: one using traditional instruction, and another using gamified supplementary materials.
+The results showed that students who used the gamified materials achieved significantly higher scores in both formative assessments and posttests, confirming the positive impact of game-based resources in enhancing learning outcomes.
+    Key Points:
+Gamified materials led to higher student performance
+Study confirmed positive effects on learning outcomes
+Supports SkillForge’s approach of using gamified content as an academic supplement
+
+
+FOREIGN LITERATURE
+Temel and Cesur (2024) investigated how gamification through Web 2.0 tools—such as Kahoot!, Socrative, Quizizz, and Mentimeter—affects students learning English as a Foreign Language (EFL) in online settings. Using a mixed-methods approach that combined quantitative and qualitative data, the study found that these interactive, game-based platforms significantly increased student motivation and academic performance. 
+
+The results highlight the effectiveness of integrating gamified elements like quizzes and challenges in digital learning, supporting the use of tools such as leaderboards and achievements in educational platforms like SkillForge.
+
+DESIGN OF THE STUDY
+
+DESIGN OF THE STUDY
+This study follows a developmental research approach using the Software Development Life Cycle (SDLC) model to guide the creation of SkillForge. The SDLC ensures each phase—from planning to testing—is carefully executed to produce a high-quality educational platform.
+
+At the core of this project is a three-tier system architecture consisting of a presentation layer (user interface), an application layer (logic and processing), and a data layer (database). This structure allows for modular development, scalability, and effective performance tracking.
+
+
+DESIGN OF THE STUDY
+Key Design Elements:
+Frontend: Built with HTML, CSS, JavaScript, React.js and Bootstrap for responsive design
+Backend: Node.js with Express.js for scalable server-side logic
+Database: PostgreSQL for storing student data, game progress, and analytics
+Web Server: Apache for stable and reliable content delivery
+User Roles: Admin, Teacher, Student — each with distinct access levels and functions
+
+
+USE CASE DIAGRAM
+Student Role:
+Play curriculum-aligned educational games
+Track personal progress and achievements
+View leaderboards and analytics
+
+
+USE CASE DIAGRAM
+Teacher Role:
+Monitor student performance in real-time
+Can help generate class and individual reports
+Align games with curriculum objectives
+
+
+USE CASE DIAGRAM
+Admin Role:
+Manage user accounts and access levels
+Oversee system settings and maintenance
+Monitor platform-wide analytics
+
+
+OPERATING PROCEDURES
+Student Workflow:
+Login using credentials
+Select a subject-aligned educational game
+Play and complete game modules
+View scores, achievements, and leaderboard position
+Use analytics for self-assessment
+
+
+OPERATING PROCEDURES
+Teacher Workflow:
+Login to the dashboard
+Monitor individual and class performance
+Analyze student progress using built-in analytics
+Generate performance reports
+Align content with learning outcomes
+
+
+OPERATING PROCEDURES
+Admin Workflow:
+Login to the admin panel
+Manage user accounts and roles
+Monitor system-wide data and activity
+Configure platform settings and updates
+Export reports and maintain data integrity
+
+
+OPERATING PROCEDURES
+Tester Workflow:
+Launch the game system on desktop and mobile
+Play through full game sessions to validate mechanics
+Test reward systems, user progress tracking, and UI responsiveness
+Report bugs and inconsistencies
+Verify curriculum content alignment and analytics accuracy
+
+
+THANK YOU

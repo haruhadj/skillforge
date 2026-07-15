@@ -10,6 +10,7 @@ import {
   type StatsRow,
 } from '@/app/services/scoring'
 import { rateLimit, clientIpFrom, sweepExpired } from '@/app/lib/rateLimit'
+import { getTestAccountUids } from '@/app/lib/testAccounts'
 
 // Public, unauthenticated read — throttle per IP so a flood can't repeatedly
 // trigger the expensive collectionGroup fallback when the cache doc is missing.
@@ -51,23 +52,27 @@ function uidFromPath(path: string): string {
   return path.split('/')[1]
 }
 
-async function readScoreRows(): Promise<ScoreRow[]> {
+async function readScoreRows(excludeUids: Set<string>): Promise<ScoreRow[]> {
   const snap = await getAdminDb().collectionGroup('scores').get()
-  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({
-    uid: uidFromPath(d.ref.path),
-    gameId: d.id,
-    bestScore: Number(d.data().bestScore) || 0,
-    updatedAt: toMillis(d.data().updatedAt),
-  }))
+  return snap.docs
+    .map((d: QueryDocumentSnapshot<DocumentData>) => ({
+      uid: uidFromPath(d.ref.path),
+      gameId: d.id,
+      bestScore: Number(d.data().bestScore) || 0,
+      updatedAt: toMillis(d.data().updatedAt),
+    }))
+    .filter((r) => !excludeUids.has(r.uid))
 }
 
-async function readStatsRows(): Promise<StatsRow[]> {
+async function readStatsRows(excludeUids: Set<string>): Promise<StatsRow[]> {
   const snap = await getAdminDb().collectionGroup('gameStats').get()
-  return snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({
-    uid: uidFromPath(d.ref.path),
-    gameId: d.id,
-    totalMatchCount: Number(d.data().totalMatchCount) || 0,
-  }))
+  return snap.docs
+    .map((d: QueryDocumentSnapshot<DocumentData>) => ({
+      uid: uidFromPath(d.ref.path),
+      gameId: d.id,
+      totalMatchCount: Number(d.data().totalMatchCount) || 0,
+    }))
+    .filter((r) => !excludeUids.has(r.uid))
 }
 
 export async function GET(request: NextRequest) {
@@ -103,7 +108,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ entries: cached!.entries })
       }
 
-      const entries = aggregateGameLeaderboard(await readScoreRows(), gameId).slice(0, 10)
+      const testUids = await getTestAccountUids(adminDb)
+      const entries = aggregateGameLeaderboard(await readScoreRows(testUids), gameId).slice(0, 10)
       await adminDb.collection('leaderboards').doc(gameId).set({ entries, recomputedAt: now })
       return NextResponse.json({ entries })
     }
@@ -115,7 +121,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ popularity: data!.popularity })
       }
 
-      const popularity = aggregateGamePopularity(await readStatsRows())
+      const testUids = await getTestAccountUids(adminDb)
+      const popularity = aggregateGamePopularity(await readStatsRows(testUids))
       await adminDb.collection('leaderboards').doc('_popularity').set({ popularity, recomputedAt: now })
       return NextResponse.json({ popularity })
     }
@@ -127,7 +134,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ entries: cachedGlobal!.entries })
     }
 
-    const [scoreRows, statsRows] = await Promise.all([readScoreRows(), readStatsRows()])
+    const testUids = await getTestAccountUids(adminDb)
+    const [scoreRows, statsRows] = await Promise.all([readScoreRows(testUids), readStatsRows(testUids)])
     const entries = aggregateGlobalLeaderboard(scoreRows, statsRows)
     await adminDb.collection('leaderboards').doc('_global').set({ entries, recomputedAt: now })
     return NextResponse.json({ entries })
