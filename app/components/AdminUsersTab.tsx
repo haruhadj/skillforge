@@ -60,11 +60,37 @@ const PROVIDER_BADGE: Record<SignInMethod, { label: string; className: string; i
   },
 }
 
+type SortOrder = 'newest' | 'oldest' | 'name'
+
+/**
+ * `getAllUsers` spreads raw Firestore doc data, so `createdAt` arrives as a
+ * Timestamp rather than the `Date` the UserProfile type declares. Accept either,
+ * plus ISO strings from older profile writes.
+ */
+function toMillis(value: unknown): number | null {
+  if (!value) return null
+  if (value instanceof Date) return value.getTime()
+  if (typeof value === 'object' && 'toDate' in value && typeof (value as { toDate: unknown }).toDate === 'function') {
+    return (value as { toDate(): Date }).toDate().getTime()
+  }
+  if (typeof value === 'string' || typeof value === 'number') {
+    const ms = new Date(value).getTime()
+    return Number.isNaN(ms) ? null : ms
+  }
+  return null
+}
+
+function formatJoined(ms: number | null): string {
+  if (ms === null) return 'Join date unknown'
+  return `Joined ${new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}`
+}
+
 export default function AdminUsersTab() {
   const { currentUser } = useAuth()
   const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('newest')
   const [confirmReset, setConfirmReset] = useState<UserProfile | null>(null)
   const [resetting, setResetting] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<UserProfile | null>(null)
@@ -85,14 +111,27 @@ export default function AdminUsersTab() {
 
   useEffect(() => { loadUsers() }, [])
 
-  const filtered = users.filter((u) => {
-    const q = search.toLowerCase()
-    return (
-      (u.username || '').toLowerCase().includes(q) ||
-      (u.email || '').toLowerCase().includes(q) ||
-      u.uid.toLowerCase().includes(q)
-    )
-  })
+  const filtered = users
+    .filter((u) => {
+      const q = search.toLowerCase()
+      return (
+        (u.username || '').toLowerCase().includes(q) ||
+        (u.email || '').toLowerCase().includes(q) ||
+        u.uid.toLowerCase().includes(q)
+      )
+    })
+    .sort((a, b) => {
+      if (sortOrder === 'name') {
+        return (a.username || a.email || '').localeCompare(b.username || b.email || '')
+      }
+      const aMs = toMillis(a.createdAt)
+      const bMs = toMillis(b.createdAt)
+      // Accounts with no recorded creation date sort last in both directions.
+      if (aMs === null && bMs === null) return 0
+      if (aMs === null) return 1
+      if (bMs === null) return -1
+      return sortOrder === 'newest' ? bMs - aMs : aMs - bMs
+    })
 
   const handleToggleRole = async (user: UserProfile) => {
     if (user.uid === currentUser?.uid) {
@@ -170,18 +209,38 @@ export default function AdminUsersTab() {
         <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">{users.length} registered users</p>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-        </svg>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by username, email, or UID..."
-          className="w-full rounded-xl border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-800 pl-12 pr-4 py-3 text-slate-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 transition-colors placeholder:text-slate-400 dark:placeholder:text-gray-500"
-        />
+      {/* Search + sort */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by username, email, or UID..."
+            className="w-full rounded-xl border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-800 pl-12 pr-4 py-3 text-slate-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 transition-colors placeholder:text-slate-400 dark:placeholder:text-gray-500"
+          />
+        </div>
+        <label className="relative shrink-0">
+          <span className="sr-only">Sort users</span>
+          <svg className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zM2 8.25a.75.75 0 01.75-.75h9.5a.75.75 0 010 1.5h-9.5A.75.75 0 012 8.25zM2 12.75a.75.75 0 01.75-.75h5.5a.75.75 0 010 1.5h-5.5a.75.75 0 01-.75-.75z" clipRule="evenodd" />
+          </svg>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+            className="w-full sm:w-auto appearance-none rounded-xl border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-800 pl-11 pr-10 py-3 text-sm font-medium text-slate-700 dark:text-gray-200 shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 transition-colors"
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="name">Name (A–Z)</option>
+          </select>
+          <svg className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+          </svg>
+        </label>
       </div>
 
       {/* Confirm reset modal */}
@@ -277,6 +336,9 @@ export default function AdminUsersTab() {
                       {isCurrentUser && <span className="ml-2 text-xs font-normal text-indigo-500 dark:text-indigo-400">(you)</span>}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-gray-400 truncate">{user.email || 'No email'}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-gray-500 truncate">
+                      {formatJoined(toMillis(user.createdAt))}
+                    </p>
                   </div>
                 </div>
 
