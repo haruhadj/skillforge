@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { FieldValue, QueryDocumentSnapshot, DocumentData } from 'firebase-admin/firestore'
 import { getAdminDb } from '@/app/lib/firebase-admin'
-import { requireAdmin } from '@/app/lib/requireAdmin'
+import { requireStaff } from '@/app/lib/requireAdmin'
 import { isFresh } from '@/app/lib/cacheFreshness'
+import { getTestAccountUids } from '@/app/lib/testAccounts'
 
 // Cache the platform totals; only rescan gameStats past this TTL. (audit R17)
 const CACHE_TTL_MS = 5 * 60 * 1000
 const CACHE_DOC = 'platformStats'
 
 export async function GET(request: NextRequest) {
-  const gate = await requireAdmin(request)
+  const gate = await requireStaff(request)
   if (!gate.ok) {
     return NextResponse.json({ error: gate.error }, { status: gate.status })
   }
@@ -25,17 +26,20 @@ export async function GET(request: NextRequest) {
     }
 
     // count() avoids reading every user doc just to size the collection.
-    const [usersCount, statsSnap] = await Promise.all([
+    const [usersCount, testUids, statsSnap] = await Promise.all([
       adminDb.collection('users').count().get(),
+      getTestAccountUids(adminDb),
       adminDb.collectionGroup('gameStats').get(),
     ])
 
     let totalMatches = 0
     statsSnap.forEach((d: QueryDocumentSnapshot<DocumentData>) => {
+      const uid = d.ref.path.split('/')[1]
+      if (testUids.has(uid)) return
       totalMatches += Number(d.data().totalMatchCount) || 0
     })
 
-    const stats = { totalUsers: usersCount.data().count, totalMatches }
+    const stats = { totalUsers: usersCount.data().count - testUids.size, totalMatches }
 
     await cacheRef.set({ stats, recomputedAt: FieldValue.serverTimestamp() })
     return NextResponse.json(stats)

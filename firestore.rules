@@ -9,8 +9,9 @@ service cloud.firestore {
     }
 
     // True when the incoming write does not touch privileged fields. `role` is the
-    // sole admin marker (see app/api/admin/delete-user/route.ts) and must never be
-    // self-assignable; gate any future privilege fields here too.
+    // sole privilege marker ('admin' full access, 'teacher' read-only analytics —
+    // see app/lib/requireAdmin.ts) and must never be self-assignable; gate any
+    // future privilege fields here too.
     function noPrivilegeEscalation() {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
     }
@@ -58,11 +59,12 @@ service cloud.firestore {
     // still list the users collection (the rule is uid-independent), non-admins
     // cannot — closing the mass email-enumeration hole (adminService getAllUsers).
     // Owners may create/update their own profile but may NOT set or change `role`;
-    // only an existing admin can assign roles.
+    // only an existing admin can assign roles. Create allows only role 'user' (or no
+    // role at all) so neither 'admin' nor 'teacher' is self-assignable.
     match /users/{uid} {
       allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
       allow create: if request.auth != null && request.auth.uid == uid &&
-        (!('role' in request.resource.data) || request.resource.data.role != 'admin');
+        (!('role' in request.resource.data) || request.resource.data.role == 'user');
       allow update: if request.auth != null && (
         (request.auth.uid == uid && noPrivilegeEscalation()) ||
         isAdmin()

@@ -3,6 +3,7 @@ import { FieldValue, QueryDocumentSnapshot, DocumentData } from 'firebase-admin/
 import { getAdminDb } from '@/app/lib/firebase-admin'
 import { isFresh, toMillis, uidFromPath } from '@/app/lib/cacheFreshness'
 import { rateLimit, clientIpFrom, sweepExpired } from '@/app/lib/rateLimit'
+import { getTestAccountUids } from '@/app/lib/testAccounts'
 
 /**
  * Public global activity feed.
@@ -37,10 +38,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ items: cached!.items })
     }
 
+    const testUids = await getTestAccountUids(adminDb)
+
+    // Over-fetch beyond FEED_SIZE since test-account rows get filtered out below;
+    // otherwise a heavily-seeded test batch could shrink the real feed under FEED_SIZE.
     const snap = await adminDb
       .collectionGroup('gameStats')
       .orderBy('updatedAt', 'desc')
-      .limit(FEED_SIZE)
+      .limit(FEED_SIZE + testUids.size)
       .get()
 
     const items = snap.docs
@@ -48,7 +53,7 @@ export async function GET(request: NextRequest) {
         const data = d.data()
         const ms = toMillis(data.updatedAt)
         const userId = uidFromPath(d.ref.path)
-        if (ms == null || !userId) return null
+        if (ms == null || !userId || testUids.has(userId)) return null
         return {
           userId,
           gameId: d.id,
@@ -58,6 +63,7 @@ export async function GET(request: NextRequest) {
         }
       })
       .filter((x): x is NonNullable<typeof x> => x !== null)
+      .slice(0, FEED_SIZE)
 
     await cacheRef.set({ items, recomputedAt: FieldValue.serverTimestamp() })
     return NextResponse.json({ items })

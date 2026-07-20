@@ -18,6 +18,20 @@ export type AdminGate =
  * the token-verification model in app/api/games/score/route.ts. (audit R17 — admin caching)
  */
 export async function requireAdmin(request: NextRequest): Promise<AdminGate> {
+  return requireRole(request, ['admin'])
+}
+
+/**
+ * Verify the caller is staff: an admin OR a teacher. Teachers are a read-only
+ * oversight role — gate only non-destructive, read-only routes with this
+ * (platform stats, learning-gap analytics). Anything that mutates users, games,
+ * or config must stay behind requireAdmin.
+ */
+export async function requireStaff(request: NextRequest): Promise<AdminGate> {
+  return requireRole(request, ['admin', 'teacher'])
+}
+
+async function requireRole(request: NextRequest, allowedRoles: string[]): Promise<AdminGate> {
   const authHeader = request.headers.get('authorization')
   if (!authHeader?.startsWith('Bearer ')) {
     return { ok: false, status: 401, error: 'Unauthorized' }
@@ -33,7 +47,8 @@ export async function requireAdmin(request: NextRequest): Promise<AdminGate> {
   }
 
   const snap = await getAdminDb().collection('users').doc(uid).get()
-  if (!snap.exists || snap.data()?.role !== 'admin') {
+  const role = snap.exists ? snap.data()?.role : undefined
+  if (!allowedRoles.includes(role)) {
     return { ok: false, status: 403, error: 'Forbidden' }
   }
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
-import { isAdmin } from '@/app/services/adminService'
+import { getUserRole, UserRole } from '@/app/services/adminService'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import AdminDashboardTab from '@/app/components/AdminDashboardTab'
 import AdminUsersTab from '@/app/components/AdminUsersTab'
@@ -70,11 +70,16 @@ const TABS = [
   },
 ]
 
+// Teachers get a read-only oversight view: platform dashboard + learning analytics.
+// Management tabs (games, users, announcements, settings) stay admin-only, matching
+// the requireAdmin/requireStaff split on the API routes.
+const TEACHER_TAB_IDS = ['dashboard', 'analytics']
+
 export default function AdminPage() {
   const router = useRouter()
   const { currentUser } = useAuth()
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [isAdminUser, setIsAdminUser] = useState(false)
+  const [role, setRole] = useState<UserRole>('user')
   const [checkingAdmin, setCheckingAdmin] = useState(true)
 
   useEffect(() => {
@@ -83,10 +88,10 @@ export default function AdminPage() {
       return
     }
 
-    isAdmin(currentUser.uid)
-      .then((admin) => {
-        setIsAdminUser(admin)
-        if (!admin) {
+    getUserRole(currentUser.uid)
+      .then((r) => {
+        setRole(r)
+        if (r !== 'admin' && r !== 'teacher') {
           router.push('/library')
         }
       })
@@ -94,8 +99,12 @@ export default function AdminPage() {
       .finally(() => setCheckingAdmin(false))
   }, [currentUser, router])
 
+  const isStaffUser = role === 'admin' || role === 'teacher'
+  const visibleTabs = role === 'teacher' ? TABS.filter((t) => TEACHER_TAB_IDS.includes(t.id)) : TABS
+
   const renderContent = () => {
-    switch (activeTab) {
+    const allowed = visibleTabs.some((t) => t.id === activeTab) ? activeTab : 'dashboard'
+    switch (allowed) {
       case 'dashboard': return <AdminDashboardTab />
       case 'analytics': return <AdminAnalyticsTab />
       case 'games': return <AdminGamesTab />
@@ -114,7 +123,7 @@ export default function AdminPage() {
     )
   }
 
-  if (!isAdminUser) {
+  if (!isStaffUser) {
     return null // Will redirect
   }
 
@@ -135,7 +144,7 @@ export default function AdminPage() {
             </Link>
             <div className="h-6 w-px bg-slate-300 dark:bg-gray-600 hidden sm:block" />
             <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-              <span className="text-gradient">Admin</span> Panel
+              <span className="text-gradient">{role === 'teacher' ? 'Teacher' : 'Admin'}</span> Panel
             </h1>
           </div>
           <ThemeToggle />
@@ -146,7 +155,7 @@ export default function AdminPage() {
         {/* Desktop Sidebar */}
         <aside className="hidden lg:flex lg:w-56 lg:shrink-0 lg:flex-col lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] px-4 py-6">
           <nav className="space-y-1">
-            {TABS.map((tab) => (
+            {visibleTabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
@@ -166,7 +175,7 @@ export default function AdminPage() {
         {/* Mobile bottom tabs */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 glass border-t border-slate-200/50 dark:border-gray-700/50 pb-[env(safe-area-inset-bottom)]">
           <div className="flex justify-around">
-            {TABS.map((tab) => (
+            {visibleTabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"

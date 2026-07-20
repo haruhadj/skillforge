@@ -16,7 +16,7 @@ export interface UserProfile {
     discord?: { email: string | null; linkedAt?: Date }
   }
   profileCompleted?: boolean
-  role?: 'admin' | 'user'
+  role?: 'admin' | 'teacher' | 'user'
   preferences?: UserPreferences
   createdAt?: Date
   updatedAt?: Date
